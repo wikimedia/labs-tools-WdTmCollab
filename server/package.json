@@ -20,6 +20,7 @@
     "@types/express": "^5.0.1",
     "@types/sparql-http-client": "^3.0.5",
     "axios": "^1.8.4",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "sparql-http-client": "^3.0.1"
   }
 }

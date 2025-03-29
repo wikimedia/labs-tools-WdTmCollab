@@ -1,3 +1,5 @@
 import express, { Router } from "express";
 
-export const collaboratorsRouter: Router = express.Router();
+const collaboratorsRouter: Router = express.Router();
+
+export default collaboratorsRouter;

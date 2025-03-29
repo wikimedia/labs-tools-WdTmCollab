@@ -1,7 +1,7 @@
 import express from "express";
-import { actorsRouter } from "./routers/actorsRoutes.js";
-import { productionRouter } from "./routers/productionRouters.js";
-import { collaboratorsRouter } from "./routers/collaborationRouters.js";
+import actorsRouter from "./routers/actorsRoutes.js";
+import productionRouter from "./routers/productionRouters.js";
+import collaboratorsRouter from "./routers/collaborationRouters.js";
 const app = express();
 const port: number = 3000;
 

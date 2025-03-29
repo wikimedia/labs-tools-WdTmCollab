@@ -1,3 +1,5 @@
 import express, { Router } from "express";
 
-export const productionRouter: Router = express.Router();
+const productionRouter: Router = express.Router();
+
+export default productionRouter;

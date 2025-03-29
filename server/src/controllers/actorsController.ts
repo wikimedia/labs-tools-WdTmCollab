@@ -15,7 +15,22 @@ export function getSharedProductions(req: Request, res: Response) {
 export function getCoActors(req: Request, res: Response) {
   return findCoActors(req.body.actorId);
 }
+//export function actorSearch(req: Request, res: Response) {
+//  return searchWikidataActor(req.params.name);
+//}
+//
+export async function actorSearch(req: Request, res: Response): Promise<any> {
+  try {
+    const name = req.query.name as string | undefined;
+    if (!name) {
+      return res.status(400).json({ error: "Missing 'name' query parameter" });
+    }
 
-export function searchActor(req: Request, res: Response) {
-  return searchWikidataActor(req.params.name);
+    const results = await searchWikidataActor(name);
+    //const results: any = [];
+    res.json(results); // ✅ Send results to client
+  } catch (error) {
+    console.error("Error searching actor:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }

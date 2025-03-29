@@ -69,7 +69,7 @@ export async function findCoActors(actorId: any) {
 }
 
 // Example usage
-findCoActors("Q40096").then(console.log);
+//findCoActors("Q40096").then(console.log);
 
 interface WikidataSearchResult {
   id: string;
@@ -79,45 +79,40 @@ interface WikidataSearchResult {
   imageUrl: string | null;
 }
 
-export async function searchWikidataActor(
-  actorName: string,
-): Promise<WikidataSearchResult[]> {
-  if (!actorName.trim()) return [];
-
-  const searchUrl = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(
-    actorName,
-  )}&type=item&language=en&limit=10&format=json&origin=*`;
+export async function searchWikidataActor(actorName: any) {
+  // First search for entities matching the actor name
+  const searchUrl = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(actorName)}&type=item&language=en&limit=10&format=json&origin=*`;
 
   try {
     const searchResponse = await fetch(searchUrl);
     const searchData = await searchResponse.json();
 
-    const detailedResults: WikidataSearchResult[] = await Promise.all(
-      searchData.search.map(
-        async (item: { id: string; label: string; description?: string }) => {
-          const entityUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${item.id}&props=claims&format=json&origin=*`;
-          const entityResponse = await fetch(entityUrl);
-          const entityData = await entityResponse.json();
+    // For each result, fetch detailed entity data to get the image
+    const detailedResults = await Promise.all(
+      searchData.search.map(async (item: any) => {
+        const entityUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${item.id}&props=claims&format=json&origin=*`;
+        const entityResponse = await fetch(entityUrl);
+        const entityData = await entityResponse.json();
 
-          // Extract image claim (P18 property)
-          const claims = entityData.entities[item.id]?.claims;
-          const imageClaim = claims?.P18?.[0]?.mainsnak?.datavalue?.value;
-          let imageUrl: string | null = null;
+        // Get image URL (P18 property)
+        const claims = entityData.entities[item.id]?.claims;
+        const imageClaim = claims?.P18?.[0]?.mainsnak?.datavalue?.value;
+        let imageUrl = null;
 
-          if (imageClaim) {
-            const filename = encodeURIComponent(imageClaim.replace(/ /g, "_"));
-            imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=300`;
-          }
+        if (imageClaim) {
+          // Convert the image filename to a Commons URL
+          const filename = encodeURIComponent(imageClaim.replace(/ /g, "_"));
+          imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=300`;
+        }
 
-          return {
-            id: item.id,
-            label: item.label,
-            description: item.description || "",
-            url: `https://www.wikidata.org/wiki/${item.id}`,
-            imageUrl: imageUrl,
-          };
-        },
-      ),
+        return {
+          id: item.id,
+          label: item.label,
+          description: item.description || "",
+          url: `https://www.wikidata.org/wiki/${item.id}`,
+          imageUrl: imageUrl,
+        };
+      }),
     );
 
     return detailedResults;
@@ -126,11 +121,12 @@ export async function searchWikidataActor(
     return [];
   }
 }
-
-// Example usage
-searchWikidataActor("Will Smith").then((results) => {
-  console.log(results);
-  if (results.length > 0 && results[0].imageUrl) {
-    document.body.innerHTML += `<img src="${results[0].imageUrl}" alt="${results[0].label}">`;
-  }
-});
+//
+//// Example usage
+//searchWikidataActor("Will smith").then((results) => {
+//  console.log(results);
+//  // Example of how to display the first result's image:
+//  if (results.length > 0 && results[0].imageUrl) {
+//    document.body.innerHTML += `<img src="${results[0].imageUrl}" alt="${results[0].label}">`;
+//  }
+//});
