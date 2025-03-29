@@ -68,3 +68,44 @@ LIMIT 100`;
     throw new Error("Failed to fetch shared productions");
   }
 }
+
+export async function getSharedActorsFunc(movie1Id: string, movie2Id: string) {
+  console.log(movie1Id, movie2Id);
+
+  const sparqlQuery = `SELECT DISTINCT ?actor ?actorLabel ?actorDescription ?image (COUNT(DISTINCT ?work) AS ?sharedWorks) WHERE {
+    # Use movie IDs dynamically
+    VALUES ?work { wd:${movie1Id} wd:${movie2Id} }  # The two movies/TV shows
+    
+    # Find actors in these works
+    ?work wdt:P161 ?actor.
+    
+    # Get actor details
+    OPTIONAL { ?actor wdt:P18 ?image. }
+    SERVICE wikibase:label { 
+      bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". 
+      ?actor rdfs:label ?actorLabel .
+      ?actor schema:description ?actorDescription .
+    }
+  }
+  GROUP BY ?actor ?actorLabel ?actorDescription ?image
+  HAVING (COUNT(DISTINCT ?work) = 2)  # Must appear in both works
+  ORDER BY ?actorLabel`;
+
+  try {
+    const response = await axios.get(endpointUrl, {
+      params: { query: sparqlQuery, format: "json" },
+    });
+    console.log(response);
+
+    return response.data.results.bindings.map((actor: any) => ({
+      id: actor.actor?.value.split("/").pop(), // Extracts the Wikidata ID
+      name: actor.actorLabel?.value || "Unknown",
+      description: actor.actorDescription?.value || "No description available",
+      image: actor.image?.value || null,
+      sharedWorks: actor.sharedWorks?.value || 0,
+    }));
+  } catch (error) {
+    console.error("Error fetching shared actors:", error);
+    throw new Error("Failed to fetch shared actors");
+  }
+}
