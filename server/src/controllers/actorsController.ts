@@ -7,11 +7,6 @@ import {
 export function getFrequentCollaborators(req: Request, res: Response) {
   res.send("getting frequent collaborators");
 }
-
-export function getSharedProductions(req: Request, res: Response) {
-  res.send("getting frequent collaborators");
-}
-
 export function getCoActors(req: Request, res: Response) {
   const result = findCoActors(req.query.actorId);
   res.json(result);
