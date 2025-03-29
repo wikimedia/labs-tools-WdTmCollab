@@ -13,7 +13,8 @@ export function getSharedProductions(req: Request, res: Response) {
 }
 
 export function getCoActors(req: Request, res: Response) {
-  return findCoActors(req.body.actorId);
+  const result = findCoActors(req.query.actorId);
+  res.json(result);
 }
 //export function actorSearch(req: Request, res: Response) {
 //  return searchWikidataActor(req.params.name);

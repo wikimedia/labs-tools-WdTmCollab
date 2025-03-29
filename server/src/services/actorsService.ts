@@ -16,7 +16,9 @@ const WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
  * @param {string} actorId - The Wikidata ID of the actor (e.g., "Q40096" for Tom Hanks).
  * @returns {Promise<Array>} - List of co-actors with details.
  */
-export async function findCoActors(actorId: any) {
+export async function findCoActors(actorId: any): Promise<any> {
+  console.log(actorId);
+
   const query = `
         SELECT DISTINCT 
             ?actorY 
@@ -60,6 +62,7 @@ export async function findCoActors(actorId: any) {
         sharedWorks: row.sharedWorks.value,
       });
     }
+    console.log(results);
 
     return results;
   } catch (error) {
