@@ -1,103 +1,137 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Header from '@/client/components/layout/header';
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+    <main>
+      <Header />
+      
+      <div className="container mx-auto px-4 py-12">
+        <section className="mb-16 text-center">
+          <h1 className="text-4xl font-bold mb-4">Actor Collaboration Analyzer</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explore the interconnected world of actors, discover frequent collaborators, 
+            and visualize the networks of the entertainment industry.
+          </p>
+        </section>
+        
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <FeatureCard 
+            title="Frequent Collaborators" 
+            description="Discover which actors work together most often"
+            icon={<CollaboratorsIcon />}
+            link="/actors"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <FeatureCard 
+            title="Shared Productions" 
+            description="Find all movies and TV shows shared between actors"
+            icon={<ProductionsIcon />}
+            link="/compare"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <FeatureCard 
+            title="Cross-Project Actors" 
+            description="Identify actors who appeared in multiple productions"
+            icon={<CrossProjectIcon />}
+            link="/productions"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <FeatureCard 
+            title="Collaboration Clusters" 
+            description="Visualize groups of actors who frequently work together"
+            icon={<ClusterIcon />}
+            link="/clusters"
+          />
+        </section>
+        
+        <section className="bg-white rounded-xl shadow-md p-8 mb-16">
+          <h2 className="text-2xl font-bold mb-4">Popular Actors</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {popularActors.map(actor => (
+              <Link 
+                key={actor.id} 
+                href={`/actors/${actor.id}`}
+                className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <div className="font-medium">{actor.name}</div>
+                <div className="text-sm text-gray-500">{actor.collaborations} collaborations</div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }
+
+function FeatureCard({ title, description, icon, link }: { 
+  title: string; 
+  description: string; 
+  icon: React.ReactNode;
+  link: string;
+}) {
+  return (
+    <Link href={link} className="block bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+      <div className="text-blue-600 mb-4">
+        {icon}
+      </div>
+      <h3 className="font-bold mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </Link>
+  );
+}
+
+// Icons
+function CollaboratorsIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function ProductionsIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+      <path d="m9 9 6 6" />
+      <path d="m15 9-6 6" />
+    </svg>
+  );
+}
+
+function CrossProjectIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+      <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+      <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+      <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+    </svg>
+  );
+}
+
+function ClusterIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="4" />
+      <line x1="21.17" x2="12" y1="8" y2="8" />
+      <line x1="3.95" x2="8.54" y1="6.06" y2="14" />
+      <line x1="10.88" x2="15.46" y1="21.94" y2="14" />
+    </svg>
+  );
+}
+
+// Placeholder data
+const popularActors = [
+  { id: '38111', name: 'Tom Hanks', collaborations: 87 },
+  { id: '17492', name: 'Meryl Streep', collaborations: 92 },
+  { id: '42215', name: 'Leonardo DiCaprio', collaborations: 76 },
+  { id: '39187', name: 'Viola Davis', collaborations: 68 },
+  { id: '28782', name: 'Denzel Washington', collaborations: 81 },
+  { id: '37917', name: 'Cate Blanchett', collaborations: 73 },
+  { id: '51329', name: 'Samuel L. Jackson', collaborations: 104 },
+  { id: '47981', name: 'Emma Thompson', collaborations: 65 },
+];
