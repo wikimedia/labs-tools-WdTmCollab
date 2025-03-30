@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
 
 interface ActorCardProps {
   id: string;
@@ -14,6 +15,15 @@ export default function ActorCard({
   imageUrl,
   collaborationCount,
 }: ActorCardProps) {
+  useEffect(() => {
+    console.log(id, name);
+  }, []);
+  //function extractWikidataId(url: string) {
+  //  console.log(url);
+  //
+  //  const match = url.match(/Q\d+/);
+  //  return match ? match[0] : null;
+  //}
   return (
     <Link href={`/actors/${id}`} className="block">
       <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow flex items-center space-x-4">
@@ -23,6 +33,7 @@ export default function ActorCard({
           ) : (
             <div className="flex items-center justify-center w-full h-full text-gray-500">
               {name}
+              {id}
             </div>
           )}
         </div>

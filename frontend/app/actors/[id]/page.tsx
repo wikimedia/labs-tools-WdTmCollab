@@ -8,14 +8,86 @@ import Header from "@/client/components/layout/header";
 export default function ActorDetailPage() {
   const params = useParams();
   const actorId = params.id as string;
-
-  // In a real app, you would fetch this data from the API
-  const actor = mockActors.find((a) => a.id === actorId) || {
+  const [actor, setActor] = useState({
     id: actorId,
-    name: "Unknown Actor",
-    bio: "No biography available",
+    name: "Loading...",
+    bio: "Fetching data...",
     productions: [],
-  };
+  });
+  async function getWikidataInfoWithImage(
+    qId: any,
+    language: any = "en",
+    imageWidth: any,
+  ) {
+    const API_URL = "https://www.wikidata.org/w/api.php";
+
+    const params = new URLSearchParams({
+      action: "wbgetentities",
+      ids: qId.startsWith("Q") ? qId : `Q${qId}`,
+      props: "labels|descriptions|claims",
+      languages: language,
+      format: "json",
+      origin: "*", // CORS header
+    });
+
+    try {
+      const response = await fetch(`${API_URL}?${params}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const entity = data.entities[qId];
+
+      // Extract image filename from P18 claim if available
+      const imageFilename =
+        entity?.claims?.P18?.[0]?.mainsnak?.datavalue?.value;
+      const imageUrl = imageFilename
+        ? getCommonsImageUrl(imageFilename, imageWidth)
+        : null;
+
+      console.log(imageUrl, data);
+
+      return {
+        id: qId,
+        label: entity?.labels?.[language]?.value || "No label available",
+        description:
+          entity?.descriptions?.[language]?.value || "No description available",
+        imageUrl,
+      };
+    } catch (error) {
+      console.error(`Failed to fetch ${qId}:`, error);
+      return {
+        id: qId,
+        label: "Failed to load",
+        description: "Failed to load",
+        imageUrl: null,
+      };
+    }
+  }
+
+  /**
+   * Helper function to generate Commons image URL
+   */
+  function getCommonsImageUrl(filename: any, width: any) {
+    if (!filename) return null;
+    const encoded = encodeURIComponent(filename.replace(/ /g, "_"));
+    return width
+      ? `https://commons.wikimedia.org/wiki/Special:FilePath/${encoded}?width=${width}`
+      : `https://commons.wikimedia.org/wiki/Special:FilePath/${encoded}`;
+  }
+
+  useEffect(() => {
+    async function fetchActorData() {
+      const data = await getWikidataInfoWithImage(actorId, "en", 300);
+      setActor({
+        id: actorId,
+        name: data.label,
+        bio: data.description,
+        productions: [], // This would be replaced with actual production data if available
+      });
+    }
+
+    fetchActorData();
+  }, [actorId]);
 
   return (
     <main>
@@ -54,18 +126,6 @@ export default function ActorDetailPage() {
               <div>
                 <h1 className="text-3xl font-bold mb-2">{actor.name}</h1>
                 <p className="text-gray-600 mb-4">{actor.bio}</p>
-
-                <div className="flex space-x-4">
-                  <Link
-                    href={`/actors/${actorId}/collaborators`}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    View Collaborators
-                  </Link>
-                  <button className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    Add to Compare
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -73,25 +133,6 @@ export default function ActorDetailPage() {
           <div className="border-t">
             <div className="p-8">
               <h2 className="text-xl font-semibold mb-4">Productions</h2>
-
-              {actor.productions && actor.productions.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {actor.productions.map((production) => (
-                    <Link
-                      key={production.id}
-                      href={`/productions/${production.id}`}
-                      className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="font-medium">{production.title}</div>
-                      <div className="text-sm text-gray-500">
-                        {production.year}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500">No productions found.</p>
-              )}
             </div>
           </div>
         </div>
@@ -124,4 +165,3 @@ const mockActors = [
     ],
   },
 ];
-
