@@ -99,6 +99,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 The following Wikidata queries are used to fetch relevant data for this project. Developers and contributors can refer to them for better understanding and debugging.
 
+All these queries can be tested through https://query.wikidata.org/
+
 1. Finding Actors Who Have Worked Together
 The following SPARQL query retrieves actors who have shared roles in multiple works with a specified actor.
 
