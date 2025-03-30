@@ -3,7 +3,6 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import Header from "@/client/components/layout/header";
 
 interface Actor {
   actorId: string;
@@ -33,7 +32,6 @@ export default function ActorCollaboratorsPage() {
 
   return (
     <main>
-      <Header />
       <div className="container mx-auto px-4 py-12">
         <section className="mb-16 text-center">
           <h1 className="text-4xl font-bold mb-4">Actor Collaboration Analyzer</h1>

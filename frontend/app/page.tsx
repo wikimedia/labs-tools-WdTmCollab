@@ -1,11 +1,8 @@
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
 
 export default function Home() {
   return (
-    <main>
-      <Header />
-      
+    <main>      
       <div className="container mx-auto px-4 py-12">
         <section className="mb-16 text-center">
           <h1 className="text-4xl font-bold mb-4">Actor Collaboration Analyzer</h1>

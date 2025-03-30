@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/client/components/layout/header";
 import ActorCard from "@/client/components/actors/actor-card";
 import SearchComponent from "@/client/components/searchComponent";
 
@@ -53,7 +52,6 @@ export default function ActorsPage() {
 
   return (
     <main>
-      <Header />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Actors</h1>
         <div className="mb-8">

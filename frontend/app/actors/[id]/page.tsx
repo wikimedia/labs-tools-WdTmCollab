@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
 
 export default function ActorDetailPage() {
   const params = useParams();
@@ -18,9 +17,7 @@ export default function ActorDetailPage() {
   };
 
   return (
-    <main>
-      <Header />
-      
+    <main>      
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link href="/actors" className="text-blue-600 hover:underline flex items-center">

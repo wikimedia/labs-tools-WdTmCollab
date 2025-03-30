@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
 
 export default function ProductionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,9 +12,7 @@ export default function ProductionsPage() {
   );
 
   return (
-    <main>
-      <Header />
-      
+    <main>      
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Productions</h1>
         

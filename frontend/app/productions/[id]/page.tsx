@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
 import ActorCard from '@/client/components/actors/actor-card';
 
 export default function ProductionDetailPage() {
@@ -21,9 +20,7 @@ export default function ProductionDetailPage() {
   };
 
   return (
-    <main>
-      <Header />
-      
+    <main>      
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link href="/productions" className="text-blue-600 hover:underline flex items-center">

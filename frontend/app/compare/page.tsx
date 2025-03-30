@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import Header from "@/client/components/layout/header";
 import Image from "next/image";
 
 interface Actor {
@@ -74,7 +73,6 @@ export default function ComparePage() {
 
   return (
     <main>
-      <Header />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Compare Actors</h1>
 
