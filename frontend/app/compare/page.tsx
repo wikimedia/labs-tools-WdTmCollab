@@ -11,14 +11,14 @@ interface Actor {
 }
 
 const movieMapping: Record<string, string> = {
-  "Movie One": "Q83495",
-  "Movie Two": "Q15732802",
+  "Pulp Fiction": "Q83495",
+  "Django Unchained": "Q15732802",
 };
 
 export default function SharedActorsFromMovies() {
   // Use movie names as state, with defaults matching the mapping keys.
-  const [movie1Name, setMovie1Name] = useState("Movie One");
-  const [movie2Name, setMovie2Name] = useState("Movie Two");
+  const [movie1Name, setMovie1Name] = useState("Pulp Fiction");
+  const [movie2Name, setMovie2Name] = useState("Django Unchained");
   const [sharedActors, setSharedActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
