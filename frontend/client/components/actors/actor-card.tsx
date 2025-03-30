@@ -19,10 +19,10 @@ export default function ActorCard({
       <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow flex items-center space-x-4">
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200">
           {imageUrl ? (
-            <Image src={imageUrl} alt={name} layout="fill" objectFit="cover" />
+            <img src={imageUrl} alt={name} />
           ) : (
             <div className="flex items-center justify-center w-full h-full text-gray-500">
-              {name.charAt(0)}
+              {name}
             </div>
           )}
         </div>
@@ -39,4 +39,3 @@ export default function ActorCard({
     </Link>
   );
 }
-

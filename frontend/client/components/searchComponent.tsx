@@ -9,7 +9,7 @@ interface Actor {
 }
 
 interface SearchComponentProps {
-  onSelect: (actor: Actor) => void;
+  onSelect: (actor: any) => void;
 }
 export default function SearchComponent({ onSelect }: SearchComponentProps) {
   const [query, setQuery] = useState<string>("");
@@ -37,29 +37,12 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
       }
     };
 
-    const fetchCoActors = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/actors/co-actors?actorId=${encodeURIComponent(query)}`,
-        );
-        const data: Actor[] = await response.json();
-        console.log(data);
-
-        setResults(data);
-      } catch (error) {
-        console.error("Error fetching actors:", error);
-      }
-    };
-
-    const handleSelection = (actor: Actor) => {
-      setSelectedActor(actor);
-    };
-
     const debounce = setTimeout(fetchActors, 300);
     return () => clearTimeout(debounce);
   }, [query]);
   const handleSelection = (actor: Actor) => {
     setSelectedActor(actor);
+    onSelect(actor);
   };
 
   return (
@@ -81,13 +64,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
             >
               <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
                 {actor.imageUrl ? (
-                  <Image
-                    src={actor.imageUrl}
-                    alt={actor.label}
-                    width={300}
-                    height={48}
-                    objectFit="cover"
-                  />
+                  <img src={actor.imageUrl} />
                 ) : (
                   <span className="text-gray-500">{actor.label.charAt(0)}</span>
                 )}
@@ -105,13 +82,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           <div className="flex items-center space-x-4 mt-2">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
               {selectedActor.imageUrl ? (
-                <Image
-                  src={selectedActor.imageUrl}
-                  alt={selectedActor.label}
-                  width={64}
-                  height={64}
-                  objectFit="cover"
-                />
+                <img src={selectedActor.imageUrl} />
               ) : (
                 <span className="text-gray-500">
                   {selectedActor.label.charAt(0)}

@@ -1,16 +1,18 @@
 "use client";
-
+import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import Header from "@/client/components/layout/header";
 import ActorCard from "@/client/components/actors/actor-card";
 import SearchComponent from "@/client/components/searchComponent";
+import { log } from "console";
 
 interface Actor {
   id: string;
-  label: string;
+  name: string;
   description?: string;
   url: string;
-  imageUrl?: string;
+  image?: string;
+  sharedWorks?: number;
 }
 
 export default function ActorsPage() {
@@ -19,9 +21,11 @@ export default function ActorsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchActors = async () => {
+  const fetchCoActors = async () => {
+    console.log(actor);
+
     if (!actor) {
-      setError("Please select an actor first.");
+      alert("Please select an actor first.");
       return;
     }
 
@@ -30,6 +34,7 @@ export default function ActorsPage() {
 
     try {
       console.log("Fetching actors for:", actor);
+      console.log(actor.id);
 
       const response = await fetch(
         `http://localhost:3000/actors/co-actors?actorId=${encodeURIComponent(actor.id)}`,
@@ -61,45 +66,35 @@ export default function ActorsPage() {
             <SearchComponent onSelect={(actor: Actor) => setActor(actor)} />
           </div>
         </div>
-
-        {actor && (
-          <div className="mt-6 p-4 border rounded-lg shadow-md bg-white">
-            <h2 className="text-xl font-bold">Selected Actor</h2>
-            <div className="flex items-center space-x-4 mt-2">
-              {actor.imageUrl && (
-                <img
-                  src={actor.imageUrl}
-                  alt={actor.label}
-                  className="w-16 h-16 rounded-full"
+        <button
+          onClick={fetchCoActors}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          disabled={loading}
+        >
+          {loading ? "Fetching..." : "Fetch Co-Actors"}
+        </button>
+        {/* Display co-actors list */}
+        {results.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold">Co-Actors</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+              {results.map((coActor) => (
+                <ActorCard
+                  key={`${Date.now()}-${uuidv4()}`}
+                  id={coActor.id}
+                  name={coActor.name} // Corrected from `label` to `name`
+                  imageUrl={coActor.image}
+                  collaborationCount={coActor.sharedWorks} // Optional field
                 />
-              )}
-              <div>
-                <h3 className="text-lg font-medium">{actor.label}</h3>
-                <p className="text-sm text-gray-600">ID: {actor.id}</p>
-              </div>
+              ))}{" "}
             </div>
-            <button
-              onClick={fetchActors}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              disabled={loading}
-            >
-              {loading ? "Fetching..." : "Fetch Actors"}
-            </button>
           </div>
         )}
-
+        {/* No co-actors found */}
+        {results.length === 0 && !loading && actor && (
+          <p className="mt-4 text-gray-600">No co-actors found.</p>
+        )}{" "}
         {error && <p className="text-red-500 mt-4">{error}</p>}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-          {results.map((actor) => (
-            <ActorCard
-              key={actor.id}
-              id={actor.id}
-              name={actor.label}
-              collaborationCount={0}
-            />
-          ))}
-        </div>
       </div>
     </main>
   );

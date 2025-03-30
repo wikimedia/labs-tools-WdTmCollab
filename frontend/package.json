@@ -18,7 +18,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sparql-http-client": "^3.0.1",
-    "swr": "^2.3.3"
+    "swr": "^2.3.3",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
