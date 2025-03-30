@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.66.9",
 <<<<<<< HEAD
     "@heroicons/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
