@@ -5,10 +5,6 @@ export function getFrequentCollaborators(actorId: any) {
   return data;
 }
 
-export function getSharedProductions(actorId: any) {
-  const data: any = [];
-  return data;
-}
 const WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 
 /**
@@ -62,7 +58,7 @@ export async function findCoActors(actorId: any): Promise<any> {
         sharedWorks: row.sharedWorks.value,
       });
     }
-    console.log(results);
+    //console.log(results);
 
     return results;
   } catch (error) {
