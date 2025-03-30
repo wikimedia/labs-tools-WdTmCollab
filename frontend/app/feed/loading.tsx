@@ -9,13 +9,13 @@ export default function Loading() {
     setLoading(true); // Active le loader au changement d'URL
 
     const timeout = setTimeout(() => {
-      setLoading(false); // Désactive le loader après 1 seconde
+      setLoading(false); 
     }, 2000);
 
-    return () => clearTimeout(timeout); // Nettoyage du timeout
+    return () => clearTimeout(timeout);
   }, [pathname]);
-  if (!loading) return null; // Cache le loader si pas en chargement
-  // Or a custom loading skeleton component
+  if (!loading) return null; 
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin"></div>
