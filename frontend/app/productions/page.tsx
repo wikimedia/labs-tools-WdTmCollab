@@ -63,6 +63,8 @@ export default function ProductionsPage() {
       }
 
       const data: Production[] = await response.json();
+      console.log(data);
+
       setSharedCastings(data);
     } catch (error) {
       setError("Error fetching shared castings.");
@@ -74,6 +76,7 @@ export default function ProductionsPage() {
 
   return (
     <main>
+      <Header />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Shared Productions</h1>
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
