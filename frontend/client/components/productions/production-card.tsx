@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 interface ProductionCardProps {
   id: string;
@@ -8,9 +8,15 @@ interface ProductionCardProps {
   actorCount?: number;
 }
 
-export default function ProductionCard({ id, title, year, type, actorCount }: ProductionCardProps) {
+export default function ProductionCard({
+  id,
+  title,
+  year,
+  type,
+  actorCount,
+}: ProductionCardProps) {
   return (
-    <Link 
+    <Link
       href={`/productions/${id}`}
       className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
     >
@@ -31,3 +37,4 @@ export default function ProductionCard({ id, title, year, type, actorCount }: Pr
     </Link>
   );
 }
+

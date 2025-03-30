@@ -52,9 +52,10 @@ export default function Navigation() {
             </Link>
           </li>
         </ul>
+
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-3 border rounded-lg hover:bg-gray-100 transition"
+          className="md:hidden rounded-lg hover:bg-gray-100 transition"
           aria-label="Toggle menu"
         >
           {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -62,7 +63,7 @@ export default function Navigation() {
       </div>
 
       <ul
-        className={`md:hidden fixed top-30 left-0 w-[98vw] bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-500 ease-in-out ${
+        className={`md:hidden fixed top-20 left-12 w-[99vw] bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-500 ease-in-out ${
           menuOpen
             ? "opacity-100 scale-100"
             : "opacity-0 scale-95 pointer-events-none"
