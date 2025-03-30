@@ -17,7 +17,7 @@ export default function Navigation() {
             href="/productions"
             className="text-gray-600 hover:text-blue-600 transition-colors"
           >
-            Shared Casting
+            shared productions
           </Link>
         </li>
         <li>
@@ -28,16 +28,7 @@ export default function Navigation() {
             Cross-project Actors
           </Link>
         </li>
-        <li>
-          <Link
-            href="/clusters"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
-          >
-            Clusters
-          </Link>
-        </li>
       </ul>
     </nav>
   );
 }
-
