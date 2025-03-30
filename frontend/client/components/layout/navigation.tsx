@@ -1,8 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
 
 export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,117 +16,78 @@ export default function Navigation() {
   }, []);
 
   return (
-    <>
-      <div className="flex items-center gap-4">
-        <nav className="relative">
-          <div className="flex justify-between items-center gap-x-1 w-full">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Toggle menu"
-            >
-              {menuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
-          <div className="hidden md:flex md:gap-6">
+    <nav className="bg-white">
+      <div className="flex justify-between items-center px-6 py-4">
+        <ul className="hidden md:flex space-x-6 text-lg font-medium">
+          <li>
             <Link
               href="/actors"
-              className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Actors
+              Co-Actors/Collabs
             </Link>
+          </li>
+          <li>
             <Link
               href="/productions"
-              className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Productions
+              Shared Casting
             </Link>
+          </li>
+          <li>
             <Link
               href="/compare"
-              className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Compare
+              Cross-project Actors
             </Link>
+          </li>
+          <li>
             <Link
               href="/clusters"
-              className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               Clusters
             </Link>
-          </div>
-          <ul
-            className={`absolute top-full right-0 w-[93vw] bg-white shadow-lg rounded-lg transition-all duration-500 overflow-hidden ${
-              menuOpen
-                ? "opacity-100 translate-y-0 visible"
-                : "opacity-0 -translate-y-2 invisible"
-            } md:hidden`}
-          >
-            <div className="p-2 space-y-2">
-              <li>
-                <Link
-                  href="/actors"
-                  className="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Actors
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/productions"
-                  className="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Productions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/compare"
-                  className="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Compare
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/clusters"
-                  className="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Clusters
-                </Link>
-              </li>
-            </div>
-          </ul>
-        </nav>
+          </li>
+        </ul>
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden p-3 border rounded-lg hover:bg-gray-100 transition"
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
-    </>
-  );
-}
-    <nav>
-      <ul className="flex space-x-6">
-        <li>
+
+      <ul
+        className={`md:hidden fixed top-30 left-0 w-[98vw] bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-500 ease-in-out ${
+          menuOpen
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-95 pointer-events-none"
+        }`}
+      >
+        <li className="border-b border-gray-200">
           <Link
             href="/actors"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
+            className="block px-6 py-4 text-gray-600 hover:bg-gray-100 hover:text-blue-600 transition"
           >
             Co-Actors/Collabs
           </Link>
         </li>
-        <li>
+        <li className="border-b border-gray-200">
           <Link
             href="/productions"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
+            className="block px-6 py-4 text-gray-600 hover:bg-gray-100 hover:text-blue-600 transition"
           >
             Shared Casting
           </Link>
         </li>
-        <li>
+        <li className="border-b border-gray-200">
           <Link
             href="/compare"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
+            className="block px-6 py-4 text-gray-600 hover:bg-gray-100 hover:text-blue-600 transition"
           >
             Cross-project Actors
           </Link>
@@ -135,7 +95,7 @@ export default function Navigation() {
         <li>
           <Link
             href="/clusters"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
+            className="block px-6 py-4 text-gray-600 hover:bg-gray-100 hover:text-blue-600 transition"
           >
             Clusters
           </Link>
@@ -144,4 +104,3 @@ export default function Navigation() {
     </nav>
   );
 }
-
