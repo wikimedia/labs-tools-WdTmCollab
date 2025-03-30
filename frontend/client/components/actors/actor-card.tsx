@@ -15,7 +15,7 @@ export default function ActorCard({ id, name, collaborationCount }: ActorCardPro
             {name.charAt(0)}
           </div>
           <div>
-            <h3 className="font-medium text-lg">{name}</h3>
+            <h3 className="font-medium text-bg">{name}</h3>
             {collaborationCount !== undefined && (
               <p className="text-sm text-gray-600">
                 {collaborationCount} collaboration{collaborationCount !== 1 ? 's' : ''}
