@@ -8,7 +8,7 @@ export default function ActorsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [actors, setActors] = useState(mockActors);
 
-  const filteredActors = actors.filter(actor => 
+  const filteredActors = actors.filter(actor =>
     actor.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
