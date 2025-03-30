@@ -109,3 +109,83 @@ export async function getSharedActorsFunc(movie1Id: string, movie2Id: string) {
     throw new Error("Failed to fetch shared actors");
   }
 }
+
+export async function searchWikidataMedia(title: string) {
+  const searchUrl = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(title)}&type=item&language=en&limit=10&format=json&origin=*`;
+
+  try {
+    const searchResponse = await fetch(searchUrl);
+    const searchData = await searchResponse.json();
+    console.log(searchData);
+
+    const detailedResults = await Promise.all(
+      searchData.search.map(async (item: any) => {
+        const entityUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${item.id}&props=labels|descriptions|claims&format=json&origin=*`;
+        const entityResponse = await fetch(entityUrl);
+        const entityData = await entityResponse.json();
+        const entity = entityData.entities[item.id];
+
+        const isMovie = entity.claims?.P31?.some(
+          (claim: any) => claim.mainsnak.datavalue?.value.id === "Q11424",
+        );
+        const isTVShow = entity.claims?.P31?.some(
+          (claim: any) => claim.mainsnak.datavalue?.value.id === "Q5398426",
+        );
+
+        if (!isMovie && !isTVShow) return null;
+
+        // Get image (try P18 first, then fall back to P154 for logo)
+        const imageUrl =
+          getImageUrl(entity.claims) || getLogoUrl(entity.claims);
+
+        const result = {
+          id: item.id,
+          label: entity.labels?.en?.value || item.label,
+          description: entity.descriptions?.en?.value || item.description || "",
+          url: `https://www.wikidata.org/wiki/${item.id}`,
+          type: isMovie ? "movie" : "tvshow",
+          year: getYearFromClaims(entity.claims),
+          imageUrl: imageUrl,
+          imageType: imageUrl ? (entity.claims?.P18 ? "poster" : "logo") : null,
+        };
+
+        return result;
+      }),
+    );
+    console.log(detailedResults);
+
+    return detailedResults.filter((result) => result !== null);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+}
+
+// Helper function to extract year from claims
+function getYearFromClaims(claims: any) {
+  const dateClaim = claims?.P577?.[0]?.mainsnak?.datavalue?.value?.time;
+  if (dateClaim) {
+    return new Date(dateClaim).getFullYear();
+  }
+  return null;
+}
+
+// Helper function to get primary image URL (P18)
+function getImageUrl(claims: any) {
+  const imageClaim = claims?.P18?.[0]?.mainsnak?.datavalue?.value;
+  if (imageClaim) {
+    const filename = encodeURIComponent(imageClaim.replace(/ /g, "_"));
+    return `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=300`;
+  }
+  return null;
+}
+
+// Helper function to get logo image URL (P154)
+function getLogoUrl(claims: any) {
+  const logoClaim = claims?.P154?.[0]?.mainsnak?.datavalue?.value;
+  if (logoClaim) {
+    const filename = encodeURIComponent(logoClaim.replace(/ /g, "_"));
+    return `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=300`;
+  }
+  return null;
+}
