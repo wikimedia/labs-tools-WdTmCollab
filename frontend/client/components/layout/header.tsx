@@ -23,7 +23,7 @@ export default function Header() {
             </svg>
             <span className="text-xl font-bold">Actor Collaboration Analyzer</span>
           </Link>
-          <Navigation />
+          <Navigation/>
         </div>
       </div>
     </header>

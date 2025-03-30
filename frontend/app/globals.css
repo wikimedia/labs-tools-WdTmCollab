@@ -28,6 +28,15 @@ body {
       rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
+ul.absolute.top-full.right-0.w-full.bg-white.shadow-lg.rounded-lg.transition-all.duration-300.overflow-hidden.opacity-100.translate-y-0.visible.md\:hidden {
+  margin-right: -40px;
+  width: 10rem
+}
+
+button.md\:hidden.p-2.rounded-lg.hover\:bg-gray-100.transition-colors {
+  margin-right: -16px;
+}
+
 @layer base {
   h1 {
     @apply text-3xl font-bold;
