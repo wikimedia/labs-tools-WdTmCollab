@@ -1,74 +1,54 @@
-'use client';
+"use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import Header from "@/client/components/layout/header";
-import Image from "next/image";
 
 interface Actor {
   id: string;
   name: string;
+  description: string;
+  image: string | null;
 }
 
-interface Production {
-  title: string;
-  description?: string;
-  image?: string | null;
-  logo?: string | null;
-  wikipedia?: string;
-  publicationDate?: string;
-}
+const movieMapping: Record<string, string> = {
+  "Movie One": "Q83495",
+  "Movie Two": "Q15732802",
+};
 
-const BaseUrl = "http://localhost:3001";
+export default function SharedActorsFromMovies() {
+  // Use movie names as state, with defaults matching the mapping keys.
+  const [movie1Name, setMovie1Name] = useState("Movie One");
+  const [movie2Name, setMovie2Name] = useState("Movie Two");
+  const [sharedActors, setSharedActors] = useState<Actor[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-export default function ComparePage() {
-  // Local state for selected actor IDs
-  const [actor1, setActor1] = useState<string>("");
-  const [actor2, setActor2] = useState<string>("");
+  const fetchSharedActors = async () => {
+    const movie1Id = movieMapping[movie1Name];
+    const movie2Id = movieMapping[movie2Name];
 
-  const {
-    data: actorsData,
-    isLoading: actorsLoading,
-    error: actorsError,
-  } = useQuery<Actor[]>({
-    queryKey: ["actorsList"],
-    queryFn: async (): Promise<Actor[]> => {
-      const res = await fetch(`${BaseUrl}/actors`);
-      if (!res.ok) {
-        throw new Error("Error fetching actors");
+    
+    if (!movie1Id || !movie2Id) {
+      alert("One or both movie names are not recognized.");
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const url = `http://localhost:3001/productions/shared-actors?movie1=${movie1Id}&movie2=${movie2Id}`;
+      const response = await fetch(url);
+      console.log(movie1Id, movie2Id, response )
+      if (!response.ok) {
+        throw new Error("Failed to fetch shared actors.");
       }
-      return res.json();
-    },
-  });
-
-  function extractQId(fullUrl: string): string {
-    const parts = fullUrl.split("/");
-    return parts[parts.length - 1];
-  }  
-
-  const {
-    data: sharedProductions,
-    refetch,
-    isLoading: compareLoading,
-    error: compareError,
-  } = useQuery<Production[]>({
-    queryKey: ["compareActors", actor1, actor2],
-    queryFn: async (): Promise<Production[]> => {
-      const id1 = extractQId(actor1);
-      const id2 = extractQId(actor2);
-      const url = `${BaseUrl}/productions/shared?actor1Id=${id1}&actor2Id=${id2}`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error("Error fetching shared productions");
-      }
-      return res.json();
-    },
-    enabled: false,
-  });  
-
-  const handleCompare = () => {
-    if (actor1 && actor2) {
-      refetch();
+      const data: Actor[] = await response.json();
+      setSharedActors(data);
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching shared actors.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,124 +56,55 @@ export default function ComparePage() {
     <main>
       <Header />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Compare Actors</h1>
-
-        {/* Actor selection section */}
-        <div className="bg-white rounded-xl shadow-md p-8 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Select Actors to Compare</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                First Actor
-              </label>
-              {actorsLoading ? (
-                <p>Loading actors...</p>
-              ) : actorsError ? (
-                <p>Error loading actors.</p>
-              ) : (
-                <select
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  value={actor1}
-                  onChange={(e) => setActor1(e.target.value)}
-                >
-                  <option value="">Select an actor</option>
-                  {actorsData?.map((actor) => (  // Fetch the actors list from the backend
-
-                    <option key={actor.id} value={actor.id}>
-                      {actor.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Second Actor
-              </label>
-              {actorsLoading ? (
-                <p>Loading actors...</p>
-              ) : actorsError ? (
-                <p>Error loading actors.</p>
-              ) : (
-                <select
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  value={actor2}
-                  onChange={(e) => setActor2(e.target.value)}
-                >
-                  <option value="">Select an actor</option>
-                  {actorsData?.map((actor) => (
-                    <option key={actor.id} value={actor.id}>
-                      {actor.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              onClick={handleCompare}
-              disabled={!actor1 || !actor2 || compareLoading}
-            >
-              {compareLoading ? "Comparing..." : "Compare"}
-            </button>
-          </div>
-
-          {compareError && (
-            <p className="text-red-500 mt-4">
-              Error: {compareError instanceof Error ? compareError.message : "Unknown error"}
-            </p>
-          )}
+        <h1 className="text-3xl font-bold mb-6">Shared Actors from Movies</h1>
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input
+            type="text"
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+            value={movie1Name}
+            onChange={(e) => setMovie1Name(e.target.value)}
+            placeholder="Enter first movie name"
+          />
+          <input
+            type="text"
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+            value={movie2Name}
+            onChange={(e) => setMovie2Name(e.target.value)}
+            placeholder="Enter second movie name"
+          />
         </div>
-
-        {/* Shared productions display section */}
-        {sharedProductions && (
-          <div className="bg-white rounded-xl shadow-md p-8">
-            <h2 className="text-xl font-semibold mb-4">Shared Productions</h2>
-            {sharedProductions.length > 0 ? (
-              <div className="space-y-4">
-                {sharedProductions.map((production, index) => (
-                  <div key={index} className="border rounded-lg p-4 flex items-center gap-4">
-                    {production.image && (
-                      <Image
-                        src={production.image}
-                        alt={production.title}
-                        width={64}
-                        height={64}
-                        className="object-cover rounded"
-                      />
-                    )}
-                    <div>
-                      <h3 className="font-medium text-lg">{production.title}</h3>
-                      {production.description && (
-                        <p className="text-sm text-gray-600">{production.description}</p>
-                      )}
-                      {production.publicationDate && (
-                        <p className="text-sm text-gray-500">
-                          Publication Date: {production.publicationDate}
-                        </p>
-                      )}
-                      {production.wikipedia && (
-                        <a
-                          href={production.wikipedia}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline text-sm"
-                        >
-                          Wikipedia
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">No shared productions found.</p>
-            )}
+        <button
+          onClick={fetchSharedActors}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          disabled={loading}
+        >
+          {loading ? "Fetching..." : "Fetch Shared Actors"}
+        </button>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        {sharedActors.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold">Shared Actors</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+              {sharedActors.map((actor) => (
+                <div key={actor.id} className="p-4 border rounded-lg shadow-md bg-white">
+                  {actor.image && (
+                    <img
+                      src={actor.image}
+                      alt={actor.name}
+                      className="w-full h-40 object-cover rounded"
+                    />
+                  )}
+                  <h3 className="text-lg font-medium mt-2">{actor.name}</h3>
+                  {actor.description && (
+                    <p className="text-sm text-gray-600">{actor.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
+        )}
+        {sharedActors.length === 0 && !loading && movie1Name && movie2Name && (
+          <p className="mt-4 text-gray-600">No shared actors found.</p>
         )}
       </div>
     </main>

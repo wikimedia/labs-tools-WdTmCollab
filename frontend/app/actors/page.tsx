@@ -4,7 +4,6 @@ import { useState } from "react";
 import Header from "@/client/components/layout/header";
 import ActorCard from "@/client/components/actors/actor-card";
 import SearchComponent from "@/client/components/searchComponent";
-import { log } from "console";
 
 interface Actor {
   id: string;

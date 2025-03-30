@@ -4,7 +4,7 @@ import productionRouter from "./routers/productionRouters.js";
 import collaboratorsRouter from "./routers/collaborationRouters.js";
 import cors from "cors";
 const app = express();
-const port: number = 3000;
+const port: number = 3001;
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
