@@ -23,22 +23,29 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
 @layer base {
   h1 {
     @apply text-3xl font-bold;
   }
+
   h2 {
     @apply text-2xl font-semibold;
   }
+
   h3 {
     @apply text-xl font-medium;
+  }
+}
+
+/* mobile font-size */
+
+@media (min-width: 480px) {
+  span.text-xl.font-bold {
+    font-size: 1rem;
   }
 }
