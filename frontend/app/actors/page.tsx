@@ -54,7 +54,7 @@ export default function ActorsPage() {
       setLoading(false);
     }
   };
-  function extractWikidataId(url) {
+  function extractWikidataId(url: string) {
     const match = url.match(/Q\d+/);
     return match ? match[0] : null;
   }
