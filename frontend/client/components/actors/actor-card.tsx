@@ -46,7 +46,12 @@ export default function ActorCard({
             </p>
           )}
         </div>
+        {collaborationCount !== undefined && (
+          <p className="text-sm text-gray-600">
+            {collaborationCount} collaboration{collaborationCount !== 1 ? 's' : ''}
+          </p>
+        )}
       </div>
     </Link>
-  );
+  )
 }
