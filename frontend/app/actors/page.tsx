@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "@/client/components/layout/header";
 import ActorCard from "@/client/components/actors/actor-card";
 import SearchComponent from "@/client/components/searchComponent";
+import { endpoints } from "@/utils/endpoints";
 
 interface Actor {
   id: string;
@@ -35,9 +36,7 @@ export default function ActorsPage() {
       console.log("Fetching actors for:", actor);
       console.log(actor.id);
 
-      const response = await fetch(
-        `http://localhost:3000/actors/co-actors?actorId=${encodeURIComponent(actor.id)}`,
-      );
+      const response = await fetch(endpoints.co_ActorSearch(actor.id));
 
       if (!response.ok) {
         throw new Error("Failed to fetch actors.");

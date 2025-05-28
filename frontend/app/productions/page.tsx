@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Header from "@/client/components/layout/header";
 import SearchComponent from "@/client/components/searchComponent";
+import { endpoints } from "@/utils/endpoints";
 
 interface ProductionCardProps {
   id: string;
@@ -53,9 +54,7 @@ export default function ProductionsPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/productions/shared?actor1Id=${encodeURIComponent(
-          actor1.id,
-        )}&actor2Id=${encodeURIComponent(actor2.id)}`,
+        endpoints.productionsShared(actor1.id, actor2.id),
       );
 
       if (!response.ok) {
@@ -223,4 +222,3 @@ const mockProductions = [
     actorCount: 43,
   },
 ];
-

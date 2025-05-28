@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { endpoints } from "@/utils/endpoints";
 interface Actor {
   id: string;
   label: string;
@@ -25,9 +26,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
 
     const fetchActors = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/actors/search?name=${encodeURIComponent(query)}`,
-        );
+        const response = await fetch(endpoints.actorSearch(query));
         const data: Actor[] = await response.json();
         console.log(data);
 

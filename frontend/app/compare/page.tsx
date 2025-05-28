@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Header from "@/client/components/layout/header";
+import { endpoints } from "@/utils/endpoints";
 
 interface Actor {
   id: string;
@@ -27,18 +28,17 @@ export default function SharedActorsFromMovies() {
     const movie1Id = movieMapping[movie1Name];
     const movie2Id = movieMapping[movie2Name];
 
-    
     if (!movie1Id || !movie2Id) {
       alert("One or both movie names are not recognized.");
       return;
     }
-    
+
     setLoading(true);
     setError(null);
     try {
-      const url = `http://localhost:3001/productions/shared-actors?movie1=${movie1Id}&movie2=${movie2Id}`;
+      const url = endpoints.sharedActors(movie1Id, movie2Id);
       const response = await fetch(url);
-      console.log(movie1Id, movie2Id, response )
+      console.log(movie1Id, movie2Id, response);
       if (!response.ok) {
         throw new Error("Failed to fetch shared actors.");
       }
@@ -86,7 +86,10 @@ export default function SharedActorsFromMovies() {
             <h2 className="text-xl font-bold">Shared Actors</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               {sharedActors.map((actor) => (
-                <div key={actor.id} className="p-4 border rounded-lg shadow-md bg-white">
+                <div
+                  key={actor.id}
+                  className="p-4 border rounded-lg shadow-md bg-white"
+                >
                   {actor.image && (
                     <img
                       src={actor.image}
