@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
-import ActorCard from '@/client/components/actors/actor-card';
+import Header from '@/src/components/layout/header';
+import ActorCard from '@/src/components/actors/actor-card';
 
 export default function ProductionDetailPage() {
   const params = useParams();

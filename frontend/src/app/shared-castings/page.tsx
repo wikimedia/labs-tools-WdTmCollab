@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Header from '@/client/components/layout/header';
+import Header from '@/src/components/layout/header';
 import Link from 'next/link';
 
 export default function ClustersPage() {

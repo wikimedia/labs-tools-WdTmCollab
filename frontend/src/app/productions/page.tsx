@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
-import SearchComponent from '@/client/components/searchComponent';
+
 import { endpoints } from '@/utils/endpoints';
+import Header from '@/src/components/layout/header';
+import SearchComponent from '@/src/components/searchComponent';
 
 interface ProductionCardProps {
   id: string;

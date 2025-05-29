@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
+import Header from '@/src/components/layout/header';
 
 export default function ActorDetailPage() {
   const params = useParams();

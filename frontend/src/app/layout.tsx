@@ -1,9 +1,10 @@
-//'use client';
+//"use client";
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { ClientProviders } from '@/client/hooks/client-providers';
-import Loading from '../app/feed/loading';
+
+import Loading from './feed/loading';
+import { ClientProviders } from '../hooks/client-providers';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
