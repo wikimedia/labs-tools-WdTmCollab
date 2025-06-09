@@ -1,0 +1,6 @@
+version: 1
+jobs:
+  - name: labs-tools-WdTmCollab-tox
+    commands:
+      - cd "$WORKSPACE"
+      - tox -e tox.ini

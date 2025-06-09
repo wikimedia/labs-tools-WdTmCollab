@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express, { Router } from 'express';
 
 const collaboratorsRouter: Router = express.Router();
 

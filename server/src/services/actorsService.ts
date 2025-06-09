@@ -1,15 +1,15 @@
-import SparqlClient from "sparql-http-client";
+import SparqlClient from 'sparql-http-client';
 
 export function getFrequentCollaborators(actorId: any) {
   const data: any = [];
   return data;
 }
 
-const WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
+const WIKIDATA_SPARQL_ENDPOINT = 'https://query.wikidata.org/sparql';
 
 /**
  * Finds co-actors who have worked with a given actor in multiple projects.
- * @param {string} actorId - The Wikidata ID of the actor (e.g., "Q40096" for Tom Hanks).
+ * @param {string} actorId - The Wikidata ID of the actor (e.g., 'Q40096' for Tom Hanks).
  * @returns {Promise<Array>} - List of co-actors with details.
  */
 export async function findCoActors(actorId: any): Promise<any> {
@@ -33,7 +33,7 @@ export async function findCoActors(actorId: any): Promise<any> {
             OPTIONAL { ?actorY wdt:P18 ?image. }
             
             SERVICE wikibase:label { 
-                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". 
+                bd:serviceParam wikibase:language '[AUTO_LANGUAGE],en'. 
                 ?actorY rdfs:label ?actorYLabel .
                 ?actorY schema:description ?actorYDescription .
             }
@@ -52,8 +52,8 @@ export async function findCoActors(actorId: any): Promise<any> {
     for await (const row of stream) {
       results.push({
         actorId: row.actorY.value,
-        name: row.actorYLabel?.value || "Unknown",
-        description: row.actorYDescription?.value || "No description",
+        name: row.actorYLabel?.value || 'Unknown',
+        description: row.actorYDescription?.value || 'No description',
         image: row.image?.value || null,
         sharedWorks: row.sharedWorks.value,
       });
@@ -62,13 +62,13 @@ export async function findCoActors(actorId: any): Promise<any> {
 
     return results;
   } catch (error) {
-    console.error("Error fetching SPARQL data:", error);
+    console.error('Error fetching SPARQL data:', error);
     return [];
   }
 }
 
 // Example usage
-//findCoActors("Q40096").then(console.log);
+//findCoActors('Q40096').then(console.log);
 
 interface WikidataSearchResult {
   id: string;
@@ -100,14 +100,14 @@ export async function searchWikidataActor(actorName: any) {
 
         if (imageClaim) {
           // Convert the image filename to a Commons URL
-          const filename = encodeURIComponent(imageClaim.replace(/ /g, "_"));
+          const filename = encodeURIComponent(imageClaim.replace(/ /g, '_'));
           imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=300`;
         }
 
         return {
           id: item.id,
           label: item.label,
-          description: item.description || "",
+          description: item.description || '',
           url: `https://www.wikidata.org/wiki/${item.id}`,
           imageUrl: imageUrl,
         };
@@ -116,16 +116,16 @@ export async function searchWikidataActor(actorName: any) {
 
     return detailedResults;
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error('Error fetching data:', error);
     return [];
   }
 }
 //
 //// Example usage
-//searchWikidataActor("Will smith").then((results) => {
+//searchWikidataActor('Will smith').then((results) => {
 //  console.log(results);
 //  // Example of how to display the first result's image:
 //  if (results.length > 0 && results[0].imageUrl) {
-//    document.body.innerHTML += `<img src="${results[0].imageUrl}" alt="${results[0].label}">`;
+//    document.body.innerHTML += `<img src='${results[0].imageUrl}' alt='${results[0].label}'>`;
 //  }
 //});

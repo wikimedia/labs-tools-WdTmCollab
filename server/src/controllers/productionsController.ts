@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import {
   getSharedActorsFunc,
   getSharedProductionsFunc,
   searchWikidataMedia,
-} from "../services/productionService.js";
+} from '../services/productionService.js';
 export async function getSharedProductionsController(
   req: Request,
   res: Response,

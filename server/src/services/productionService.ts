@@ -1,11 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
 
 export function getSharedProductionsObj(actorId: any) {
   const data: any = [];
   return data;
 }
 
-const endpointUrl = "https://query.wikidata.org/sparql";
+const endpointUrl = 'https://query.wikidata.org/sparql';
 
 export async function getSharedProductionsFunc(
   actor1Id: string,
@@ -36,7 +36,7 @@ WHERE {
   OPTIONAL { ?movie wdt:P18 ?image. }       # Main image
   OPTIONAL { ?movie wdt:P154 ?logo. }       # Logo image
   OPTIONAL { ?movie wdt:P577 ?publicationDate. }  # Publication date
-  OPTIONAL { ?movie schema:description ?description. FILTER(LANG(?description) = "en") }
+  OPTIONAL { ?movie schema:description ?description. FILTER(LANG(?description) = 'en') }
   OPTIONAL {
     ?wikipediaArticle schema:about ?movie;
                      schema:isPartOf <https://en.wikipedia.org/>;
@@ -44,28 +44,28 @@ WHERE {
   }
   
   SERVICE wikibase:label { 
-    bd:serviceParam wikibase:language "en". 
+    bd:serviceParam wikibase:language 'en'. 
   }
 }
 ORDER BY DESC(?publicationDate)
 LIMIT 100`;
   try {
     const response = await axios.get(endpointUrl, {
-      params: { query: sparqlQuery, format: "json" },
+      params: { query: sparqlQuery, format: 'json' },
     });
     //console.log(response);
 
     return response.data.results.bindings.map((movie: any) => ({
       title: movie.movieLabel?.value,
-      description: movie.description?.value || "No description available",
+      description: movie.description?.value || 'No description available',
       image: movie.image?.value || null,
       logo: movie.logo?.value || null,
       wikipedia: movie.wikipediaArticle?.value || null,
-      publicationDate: movie.publicationDate?.value || "Unknown",
+      publicationDate: movie.publicationDate?.value || 'Unknown',
     }));
   } catch (error) {
-    console.error("Error fetching shared productions:", error);
-    throw new Error("Failed to fetch shared productions");
+    console.error('Error fetching shared productions:', error);
+    throw new Error('Failed to fetch shared productions');
   }
 }
 
@@ -82,7 +82,7 @@ export async function getSharedActorsFunc(movie1Id: string, movie2Id: string) {
     # Get actor details
     OPTIONAL { ?actor wdt:P18 ?image. }
     SERVICE wikibase:label { 
-      bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". 
+      bd:serviceParam wikibase:language '[AUTO_LANGUAGE],en'. 
       ?actor rdfs:label ?actorLabel .
       ?actor schema:description ?actorDescription .
     }
@@ -93,20 +93,20 @@ export async function getSharedActorsFunc(movie1Id: string, movie2Id: string) {
 
   try {
     const response = await axios.get(endpointUrl, {
-      params: { query: sparqlQuery, format: "json" },
+      params: { query: sparqlQuery, format: 'json' },
     });
     console.log(response);
 
     return response.data.results.bindings.map((actor: any) => ({
-      id: actor.actor?.value.split("/").pop(), // Extracts the Wikidata ID
-      name: actor.actorLabel?.value || "Unknown",
-      description: actor.actorDescription?.value || "No description available",
+      id: actor.actor?.value.split('/').pop(), // Extracts the Wikidata ID
+      name: actor.actorLabel?.value || 'Unknown',
+      description: actor.actorDescription?.value || 'No description available',
       image: actor.image?.value || null,
       sharedWorks: actor.sharedWorks?.value || 0,
     }));
   } catch (error) {
-    console.error("Error fetching shared actors:", error);
-    throw new Error("Failed to fetch shared actors");
+    console.error('Error fetching shared actors:', error);
+    throw new Error('Failed to fetch shared actors');
   }
 }
 
@@ -126,10 +126,10 @@ export async function searchWikidataMedia(title: string) {
         const entity = entityData.entities[item.id];
 
         const isMovie = entity.claims?.P31?.some(
-          (claim: any) => claim.mainsnak.datavalue?.value.id === "Q11424",
+          (claim: any) => claim.mainsnak.datavalue?.value.id === 'Q11424',
         );
         const isTVShow = entity.claims?.P31?.some(
-          (claim: any) => claim.mainsnak.datavalue?.value.id === "Q5398426",
+          (claim: any) => claim.mainsnak.datavalue?.value.id === 'Q5398426',
         );
 
         if (!isMovie && !isTVShow) return null;
@@ -141,12 +141,12 @@ export async function searchWikidataMedia(title: string) {
         const result = {
           id: item.id,
           label: entity.labels?.en?.value || item.label,
-          description: entity.descriptions?.en?.value || item.description || "",
+          description: entity.descriptions?.en?.value || item.description || '',
           url: `https://www.wikidata.org/wiki/${item.id}`,
-          type: isMovie ? "movie" : "tvshow",
+          type: isMovie ? 'movie' : 'tvshow',
           year: getYearFromClaims(entity.claims),
           imageUrl: imageUrl,
-          imageType: imageUrl ? (entity.claims?.P18 ? "poster" : "logo") : null,
+          imageType: imageUrl ? (entity.claims?.P18 ? 'poster' : 'logo') : null,
         };
 
         return result;
@@ -156,7 +156,7 @@ export async function searchWikidataMedia(title: string) {
 
     return detailedResults.filter((result) => result !== null);
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error('Error fetching data:', error);
     return [];
   }
 }
@@ -174,7 +174,7 @@ function getYearFromClaims(claims: any) {
 function getImageUrl(claims: any) {
   const imageClaim = claims?.P18?.[0]?.mainsnak?.datavalue?.value;
   if (imageClaim) {
-    const filename = encodeURIComponent(imageClaim.replace(/ /g, "_"));
+    const filename = encodeURIComponent(imageClaim.replace(/ /g, '_'));
     return `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=300`;
   }
   return null;
@@ -184,7 +184,7 @@ function getImageUrl(claims: any) {
 function getLogoUrl(claims: any) {
   const logoClaim = claims?.P154?.[0]?.mainsnak?.datavalue?.value;
   if (logoClaim) {
-    const filename = encodeURIComponent(logoClaim.replace(/ /g, "_"));
+    const filename = encodeURIComponent(logoClaim.replace(/ /g, '_'));
     return `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=300`;
   }
   return null;
