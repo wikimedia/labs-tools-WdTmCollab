@@ -1,12 +1,12 @@
 {
-  "name": "wma-hackathon",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint \"app/**/*.{ts,tsx}\""
   },
   "dependencies": {
     "@tanstack/react-query": "^5.71.1",

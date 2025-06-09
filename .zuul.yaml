@@ -1,0 +1,6 @@
+- project:
+  check:
+    jobs:
+      - nodejs-nestjs-tests
+      - nodejs-react-tests
+      - nodejs-lint
