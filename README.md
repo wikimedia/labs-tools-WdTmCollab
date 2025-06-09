@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WdTmCollab
 
-## Getting Started
+_**WdTmCollab**_ (Wikidata Transmedia Collaboration Explorer) is a tool which leverages Wikidata’s structured film and television data to analyze their partnerships, identifying frequent collaborators and shared projects while extending insights to directors and producers for a comprehensive view of industry dynamics.
 
-First, run the development server:
+## Developer Set up
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* Browse and clone the code from the [repository](https://gerrit.wikimedia.org/r/admin/repos/labs/tools/WdTmCollab) on gerrit.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* In the root directory, run the `npm install` command ([Nodejs](https://nodejs.org) required)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* Run the development server:
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    # or
+    pnpm dev
+    # or
+    bun dev
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Get Involed
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* Have a look at our [phabricator](https://phabricator.wikimedia.org/project/profile/7831/) tasks and help handle some of the interesting concerns we may have. The [Gerrit Tutorial](https://www.mediawiki.org/wiki/Gerrit/Tutorial) will be a good place to begin if you haven't contributed to wikimedia yet! 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* Help us know what we can work on next or fix by completing our [feature request](https://phabricator.wikimedia.org/maniphest/task/edit/form/102/?tag=WdTmCollab) form.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* Noticed a `Bug`? please help us describe the issue you are facing using our [bug report](https://phabricator.wikimedia.org/maniphest/task/edit/form/43/?tag=WdTmCollab) form.
