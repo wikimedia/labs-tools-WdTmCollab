@@ -6,8 +6,10 @@ import ActorCard from '@/client/components/actors/actor-card';
 import SearchComponent from '@/client/components/searchComponent';
 import { endpoints } from '@/utils/endpoints';
 
+
 interface Actor {
   id: string;
+  actorId: string;
   name: string;
   description?: string;
   url: string;
@@ -15,11 +17,15 @@ interface Actor {
   sharedWorks?: number;
 }
 
+
+
 export default function ActorsPage() {
   const [actor, setActor] = useState<Actor | null>(null);
   const [results, setResults] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+
 
   const fetchCoActors = async () => {
     console.log(actor);
@@ -53,10 +59,9 @@ export default function ActorsPage() {
       setLoading(false);
     }
   };
-  function extractWikidataId(url: string) {
-    const match = url.match(/Q\d+/);
-    return match ? match[0] : null;
-  }
+
+
+  
   return (
     <main>
       <Header />
@@ -82,12 +87,12 @@ export default function ActorsPage() {
               {results.map((coActor) => (
                 <ActorCard
                   key={`${Date.now()}-${uuidv4()}`}
-                  id={coActor.id}
-                  name={coActor.name} // Corrected from `label` to `name`
+                  id={coActor.actorId.match(/Q\d+/)?.[0] || ''}
+                  name={coActor.name}
                   imageUrl={coActor.image}
-                  collaborationCount={coActor.sharedWorks} // Optional field
+                  collaborationCount={coActor.sharedWorks}
                 />
-              ))}{' '}
+              ))}
             </div>
           </div>
         )}

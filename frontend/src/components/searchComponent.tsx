@@ -58,7 +58,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           results.map((actor) => (
             <li
               key={actor.id}
-              className={'p-2 border-b last:border-none flex items-center space-x-4 cursor-pointer }'}
+              className={'p-2 border-b last:border-none flex items-center space-x-4 cursor-pointer'}
               onClick={() => handleSelection(actor)}
             >
               <div className='w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center'>

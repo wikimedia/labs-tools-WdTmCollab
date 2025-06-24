@@ -25,7 +25,7 @@ export const endpoints = {
    * @param name - The name of the actor to search for
    * @returns A URL string for the actor search API
    */
-  actorSearch: (name: string) => `${API_BASE_URL}/actors/search?name=${name}`,
+  actorSearch: (name: string) => `${API_BASE_URL}/actors/search?name=${encodeURIComponent(name)}`,
 
   /**
    * Get a list of co-actors for a given actor.
@@ -33,7 +33,7 @@ export const endpoints = {
    * @returns A URL string for fetching co-actors
    */
   co_ActorSearch: (actorId: string) =>
-    `${API_BASE_URL}/actors/co-actors?actorId=${actorId}`,
+    `${API_BASE_URL}/actors/co-actors?actorId=${encodeURIComponent(actorId)}`,
   /**
    * Get shared actors between two movies.
    * @param movie1Id - ID of the first movie
