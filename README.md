@@ -6,25 +6,36 @@ _**WdTmCollab**_ (Wikidata Transmedia Collaboration Explorer) is a tool which le
 
 * Browse and clone the code from the [repository](https://gerrit.wikimedia.org/r/admin/repos/labs/tools/WdTmCollab) on gerrit.
 
-* In the root directory, run the `npm install` command ([Nodejs](https://nodejs.org) required)
-
+* In the server directory ( by taping cd server in your terminal), run the `npm install` command ([Nodejs](https://nodejs.org) required)
 * Run the development server:
     ```bash
-    npm run dev
+    npm start
     # or
-    yarn dev
+    yarn start
     # or
-    pnpm dev
+    pnpm start
     # or
-    bun dev
+    bun start
     ```
+* In the frontend directory (by taping cd frontend in a new terminal), run the `npm install` command
+
+* Run the frontend locally :
+  ```bash
+  npm run dev
+  # or
+  yarn dev
+  # or
+  pnpm dev
+  # or
+  bun dev
+  ```
 
 The application [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
 ## Get Involed
 
-* Have a look at our [phabricator](https://phabricator.wikimedia.org/project/profile/7831/) tasks and help handle some of the interesting concerns we may have. The [Gerrit Tutorial](https://www.mediawiki.org/wiki/Gerrit/Tutorial) will be a good place to begin if you haven't contributed to wikimedia yet! 
+* Have a look at our [phabricator](https://phabricator.wikimedia.org/project/profile/7831/) tasks and help handle some of the interesting concerns we may have. The [Gerrit Tutorial](https://www.mediawiki.org/wiki/Gerrit/Tutorial) will be a good place to begin if you haven't contributed to wikimedia yet!
 
 * Help us know what we can work on next or fix by completing our [feature request](https://phabricator.wikimedia.org/maniphest/task/edit/form/102/?tag=WdTmCollab) form.
 
