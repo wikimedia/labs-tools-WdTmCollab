@@ -3,8 +3,9 @@
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import Header from '@/client/components/layout/header';
+
 import { endpoints } from '@/utils/endpoints';
+import Header from '@/src/components/layout/header';
 
 interface Actor {
   actorId: string;

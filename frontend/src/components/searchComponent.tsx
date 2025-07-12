@@ -58,7 +58,9 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           results.map((actor) => (
             <li
               key={actor.id}
-              className={'p-2 border-b last:border-none flex items-center space-x-4 cursor-pointer'}
+              className={
+                'p-2 border-b last:border-none flex items-center space-x-4 cursor-pointer'
+              }
               onClick={() => handleSelection(actor)}
             >
               <div className='w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center'>
@@ -71,12 +73,13 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
               <div>
                 <h3 className='font-medium text-lg'>{actor.label}</h3>
                 <p className='text-sm text-gray-600'>ID: {actor.id}</p>
+                <p className='text-sm text-gray-600'>{actor.description}</p>
               </div>
             </li>
           ))}
       </ul>
       {selectedActor && (
-        <div className='mt-4 p-4 border rounded-lg shadow-md bg-white'>
+        <div className='t-4 p-4 border rounded-lg shadow-md bg-white'>
           <h2 className='text-xl font-bold'>Selected Actor</h2>
           <div className='flex items-center space-x-4 mt-2'>
             <div className='w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center'>
@@ -91,6 +94,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
             <div>
               <h3 className='text-lg font-medium'>{selectedActor.label}</h3>
               <p className='text-sm text-gray-600'>ID: {selectedActor.id}</p>
+              <p className='text-sm text-gray-600'>{selectedActor.description}</p>
             </div>
           </div>
         </div>

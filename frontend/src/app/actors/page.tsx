@@ -1,10 +1,10 @@
 'use client';
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from 'react';
-import Header from '@/client/components/layout/header';
-import ActorCard from '@/client/components/actors/actor-card';
-import SearchComponent from '@/client/components/searchComponent';
 import { endpoints } from '@/utils/endpoints';
+import Header from '@/src/components/layout/header';
+import SearchComponent from '@/src/components/searchComponent';
+import ActorCard from '@/src/components/actors/actor-card';
 
 
 interface Actor {
@@ -65,25 +65,25 @@ export default function ActorsPage() {
   return (
     <main>
       <Header />
-      <div className='container mx-auto px-4 py-8'>
-        <h1 className='text-3xl font-bold mb-6'>Actors</h1>
-        <div className='mb-8'>
-          <div className='relative max-w-md'>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Actors</h1>
+        <div className="mb-8">
+          <div className="relative max-w-md">
             <SearchComponent onSelect={(actor: Actor) => setActor(actor)} />
           </div>
         </div>
         <button
           onClick={fetchCoActors}
-          className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           disabled={loading}
         >
           {loading ? 'Fetching...' : 'Fetch Co-Actors'}
         </button>
         {/* Display co-actors list */}
         {results.length > 0 && (
-          <div className='mt-6'>
-            <h2 className='text-xl font-bold'>Co-Actors</h2>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4'>
+          <div className="mt-6">
+            <h2 className="text-xl font-bold">Co-Actors</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               {results.map((coActor) => (
                 <ActorCard
                   key={`${Date.now()}-${uuidv4()}`}
@@ -98,9 +98,9 @@ export default function ActorsPage() {
         )}
         {/* No co-actors found */}
         {results.length === 0 && !loading && actor && (
-          <p className='mt-4 text-gray-600'>No co-actors found.</p>
+          <p className="mt-4 text-gray-600">No co-actors found.</p>
         )}{' '}
-        {error && <p className='text-red-500 mt-4'>{error}</p>}
+        {error && <p className="text-red-500 mt-4">{error}</p>}
       </div>
     </main>
   );
