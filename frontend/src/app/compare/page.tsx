@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import Header from '@/client/components/layout/header';
+import Header from '@/src/components/layout/header';
 import { endpoints } from '@/utils/endpoints';
+
 
 interface Actor {
   id: string;

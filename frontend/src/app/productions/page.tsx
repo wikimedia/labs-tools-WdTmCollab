@@ -94,9 +94,13 @@ export default function ProductionsPage() {
           <div className='mt-6'>
             <h2 className='text-xl font-bold'>Shared Productions</h2>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4'>
-              {sharedCastings.map((production: any) => (
+              {Array.from(
+                new Map(
+                  sharedCastings.map((prod: any) => [prod.id ? prod.id : prod.title, prod])
+                ).values()
+              ).map((production: any, idx: number) => (
                 <div
-                  key={production.title}
+                  key={production.id ? production.id : `${production.title}-${idx}`}
                   className='p-4 border rounded-lg shadow-md bg-white'
                 >
                   {production.image && (
