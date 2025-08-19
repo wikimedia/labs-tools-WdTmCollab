@@ -34,7 +34,7 @@ export default function ProductionsPage() {
   const [productions, setProductions] = useState(mockProductions);
 
   const filteredProductions = productions.filter((production) =>
-    production.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    production.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const [actor1, setActor1] = useState<Actor | null>(null);
   const [actor2, setActor2] = useState<Actor | null>(null);
@@ -55,7 +55,7 @@ export default function ProductionsPage() {
 
     try {
       const response = await fetch(
-        endpoints.productionsShared(actor1.id, actor2.id),
+        endpoints.productionsShared(actor1.id, actor2.id)
       );
 
       if (!response.ok) {
@@ -77,65 +77,72 @@ export default function ProductionsPage() {
   return (
     <main>
       <Header />
-      <div className='container mx-auto px-4 py-8'>
-        <h1 className='text-3xl font-bold mb-6'>Shared Productions</h1>
-        <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <SearchComponent onSelect={(actor: Actor) => setActor1(actor)} />
-          <SearchComponent onSelect={(actor: Actor) => setActor2(actor)} />
-        </div>
-        <button
-          onClick={fetchSharedCastings}
-          className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
-          disabled={loading}
-        >
-          {loading ? 'Fetching...' : 'Fetch Shared Productions'}
-        </button>
-        {sharedCastings.length > 0 && (
-          <div className='mt-6'>
-            <h2 className='text-xl font-bold'>Shared Productions</h2>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4'>
-              {Array.from(
-                new Map(
-                  sharedCastings.map((prod: any) => [prod.id ? prod.id : prod.title, prod])
-                ).values()
-              ).map((production: any, idx: number) => (
-                <div
-                  key={production.id ? production.id : `${production.title}-${idx}`}
-                  className='p-4 border rounded-lg shadow-md bg-white'
-                >
-                  {production.image && (
-                    <img
-                      src={production.image}
-                      alt={production.title}
-                      className='w-full h-40 object-cover rounded'
-                    />
-                  )}
-                  <h3 className='text-lg font-medium mt-2'>
-                    {production.title}
-                  </h3>
-                  <p className='text-sm text-gray-600'>
-                    {production.description}
-                  </p>
-                  {production.wikipedia && (
-                    <a
-                      href={production.wikipedia}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-blue-500 mt-2 block'
-                    >
-                      Wikipedia
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col items-center justify-center w-full">
+          <h1 className="text-3xl font-bold mb-6 text-center">
+            Shared Productions
+          </h1>
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl">
+            <SearchComponent onSelect={(actor: Actor) => setActor1(actor)} />
+            <SearchComponent onSelect={(actor: Actor) => setActor2(actor)} />
           </div>
-        )}
-        {sharedCastings.length === 0 && !loading && actor1 && actor2 && (
-          <p className='mt-4 text-gray-600'>No shared productions found.</p>
-        )}
-        {error && <p className='text-red-500 mt-4'>{error}</p>}
+          <button
+            onClick={fetchSharedCastings}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+          >
+            {loading ? 'Fetching...' : 'Fetch Shared Productions'}
+          </button>
+        </div>
       </div>
+      {sharedCastings.length > 0 && (
+        <div className="flex justify-center items-center w-full mt-6">
+          <h2 className="text-xl font-bold text-center">Shared Productions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            {Array.from(
+              new Map(
+                sharedCastings.map((prod: any) => [
+                  prod.id ? prod.id : prod.title,
+                  prod,
+                ])
+              ).values()
+            ).map((production: any, idx: number) => (
+              <div
+                key={
+                  production.id ? production.id : `${production.title}-${idx}`
+                }
+                className="p-4 border rounded-lg shadow-md bg-white"
+              >
+                {production.image && (
+                  <img
+                    src={production.image}
+                    alt={production.title}
+                    className="w-full h-40 object-cover rounded"
+                  />
+                )}
+                <h3 className="text-lg font-medium mt-2">{production.title}</h3>
+                <p className="text-sm text-gray-600">
+                  {production.description}
+                </p>
+                {production.wikipedia && (
+                  <a
+                    href={production.wikipedia}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 mt-2 block"
+                  >
+                    Wikipedia
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {sharedCastings.length === 0 && !loading && actor1 && actor2 && (
+        <p className="mt-4 text-gray-600">No shared productions found.</p>
+      )}
+      {error && <p className="text-red-500 mt-4">{error}</p>}
     </main>
   );
 }
