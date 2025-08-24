@@ -5,7 +5,7 @@
  * Falls back to http://localhost:3001 if not defined in the environment variables
  */
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:3001' || process.env.BACKEND_URL;
 
 /**
  * A centralized list of API endpoints

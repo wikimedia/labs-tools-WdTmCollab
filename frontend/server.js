@@ -1,0 +1,202 @@
+const path = require("path");
+
+const dir = path.join(__dirname);
+
+process.env.NODE_ENV = "production";
+process.chdir(__dirname);
+
+const currentPort = parseInt(process.env.PORT, 10) || 3000;
+const hostname = process.env.HOSTNAME || "0.0.0.0";
+
+let keepAliveTimeout = parseInt(process.env.KEEP_ALIVE_TIMEOUT, 10);
+const nextConfig = {
+  eslint: { ignoreDuringBuilds: false },
+  typescript: { ignoreBuildErrors: false, tsconfigPath: "tsconfig.json" },
+  distDir: "./.next",
+  cleanDistDir: true,
+  assetPrefix: "",
+  cacheMaxMemorySize: 52428800,
+  configOrigin: "next.config.ts",
+  useFileSystemPublicRoutes: true,
+  generateEtags: true,
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
+  poweredByHeader: true,
+  compress: true,
+  images: {
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    path: "/_next/image",
+    loader: "default",
+    loaderFile: "",
+    domains: [],
+    disableStaticImages: false,
+    minimumCacheTTL: 60,
+    formats: ["image/webp"],
+    dangerouslyAllowSVG: false,
+    contentSecurityPolicy: "script-src 'none'; frame-src 'none'; sandbox;",
+    contentDispositionType: "attachment",
+    unoptimized: false,
+  },
+  devIndicators: { position: "bottom-left" },
+  onDemandEntries: { maxInactiveAge: 60000, pagesBufferLength: 5 },
+  amp: { canonicalBase: "" },
+  basePath: "",
+  sassOptions: {},
+  trailingSlash: false,
+  i18n: null,
+  productionBrowserSourceMaps: false,
+  excludeDefaultMomentLocales: true,
+  serverRuntimeConfig: {},
+  publicRuntimeConfig: {},
+  reactProductionProfiling: false,
+  reactStrictMode: null,
+  reactMaxHeadersLength: 6000,
+  httpAgentOptions: { keepAlive: true },
+  logging: {},
+  expireTime: 31536000,
+  staticPageGenerationTimeout: 60,
+  output: "standalone",
+
+  outputFileTracingRoot: "/builds/collins/wdtmcollab",
+  experimental: {
+    nodeMiddleware: false,
+    cacheLife: {
+      default: { stale: 300, revalidate: 900, expire: 4294967294 },
+      seconds: { stale: 0, revalidate: 1, expire: 60 },
+      minutes: { stale: 300, revalidate: 60, expire: 3600 },
+      hours: { stale: 300, revalidate: 3600, expire: 86400 },
+      days: { stale: 300, revalidate: 86400, expire: 604800 },
+      weeks: { stale: 300, revalidate: 604800, expire: 2592000 },
+      max: { stale: 300, revalidate: 2592000, expire: 4294967294 },
+    },
+    cacheHandlers: {},
+    cssChunking: true,
+    multiZoneDraftMode: false,
+    appNavFailHandling: false,
+    prerenderEarlyExit: true,
+    serverMinification: true,
+    serverSourceMaps: false,
+    linkNoTouchStart: false,
+    caseSensitiveRoutes: false,
+    clientSegmentCache: false,
+    dynamicOnHover: false,
+    preloadEntriesOnStart: true,
+    clientRouterFilter: true,
+    clientRouterFilterRedirects: false,
+    fetchCacheKeyPrefix: "",
+    middlewarePrefetch: "flexible",
+    optimisticClientCache: true,
+    manualClientBasePath: false,
+    cpus: 7,
+    memoryBasedWorkersCount: false,
+    imgOptConcurrency: null,
+    imgOptTimeoutInSeconds: 7,
+    imgOptMaxInputPixels: 268402689,
+    imgOptSequentialRead: null,
+    isrFlushToDisk: true,
+    workerThreads: false,
+    optimizeCss: false,
+    nextScriptWorkers: false,
+    scrollRestoration: false,
+    externalDir: false,
+    disableOptimizedLoading: false,
+    gzipSize: true,
+    craCompat: false,
+    esmExternals: true,
+    fullySpecified: false,
+    swcTraceProfiling: false,
+    forceSwcTransforms: false,
+    largePageDataBytes: 128000,
+    typedRoutes: false,
+    typedEnv: false,
+    clientTraceMetadata: ["baggage", "webpackChunkName"],
+    parallelServerCompiles: false,
+    parallelServerBuildTraces: false,
+    ppr: false,
+    authInterrupts: false,
+    webpackBuildWorker: true,
+    webpackMemoryOptimizations: true,
+    optimizeServerReact: true,
+    useEarlyImport: false,
+    viewTransition: false,
+    routerBFCache: false,
+    staleTimes: { dynamic: 0, static: 300 },
+    serverComponentsHmrCache: true,
+    staticGenerationMaxConcurrency: 8,
+    staticGenerationMinPagesPerWorker: 25,
+    dynamicIO: false,
+    inlineCss: false,
+    useCache: false,
+    optimizePackageImports: [
+      "@tanstack/react-query",
+      "@types/d3",
+      "axios",
+      "d3",
+      "neo4j-driver",
+      "next",
+      "react",
+      "react-dom",
+      "sparql-http-client",
+      "swr",
+      "uuidv4",
+    ],
+    trustHostHeader: false,
+    isExperimentalCompile: false,
+  },
+  bundlePagesRouterDependencies: false,
+  configFileName: "next.config.ts",
+  turbopack: {
+    rules: { "*.lottie": ["@noxfed/lottie-webpack-loader"] },
+    root: "/builds/collins/agpb-v4-web",
+  },
+  serverExternalPackages: [
+    "amqplib",
+    "connect",
+    "dataloader",
+    "express",
+    "generic-pool",
+    "graphql",
+    "@hapi/hapi",
+    "ioredis",
+    "kafkajs",
+    "koa",
+    "lru-memoizer",
+    "mongodb",
+    "mongoose",
+    "mysql",
+    "mysql2",
+    "knex",
+    "pg",
+    "pg-pool",
+    "@node-redis/client",
+    "@redis/client",
+    "redis",
+    "tedious",
+  ],
+};
+
+process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(nextConfig);
+
+require("next");
+const { startServer } = require("next/dist/server/lib/start-server");
+
+if (
+  Number.isNaN(keepAliveTimeout) ||
+  !Number.isFinite(keepAliveTimeout) ||
+  keepAliveTimeout < 0
+) {
+  keepAliveTimeout = undefined;
+}
+
+startServer({
+  dir,
+  isDev: false,
+  config: nextConfig,
+  hostname,
+  port: currentPort,
+  allowRetry: false,
+  keepAliveTimeout,
+}).catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
