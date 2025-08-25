@@ -6,20 +6,10 @@ _**WdTmCollab**_ (Wikidata Transmedia Collaboration Explorer) is a tool which le
 
 * Browse and clone the code from the [repository](https://gerrit.wikimedia.org/r/admin/repos/labs/tools/WdTmCollab) on gerrit.
 
-* In the server directory ( by taping cd server in your terminal), run the `npm install` command ([Nodejs](https://nodejs.org) required)
-* Run the development server:
-    ```bash
-    npm start
-    # or
-    yarn start
-    # or
-    pnpm start
-    # or
-    bun start
-    ```
-* In the frontend directory (by taping cd frontend in a new terminal), run the `npm install` command
+* Run the `npm install` command
 
 * Run the frontend locally :
+
   ```bash
   npm run dev
   # or
@@ -31,7 +21,6 @@ _**WdTmCollab**_ (Wikidata Transmedia Collaboration Explorer) is a tool which le
   ```
 
 The application [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
 
 ## Get Involed
 
