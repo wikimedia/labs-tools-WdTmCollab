@@ -1,22 +1,22 @@
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
+import tsParser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 
 export default [
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        sourceType: 'module',
-        ecmaVersion: 'latest',
+        sourceType: "module",
+        ecmaVersion: "latest",
       },
     },
     plugins: {
-      '@typescript-eslint': tsPlugin,
+      "@typescript-eslint": tsPlugin,
     },
     rules: {
-      semi: ['error', 'always'],
-      quotes: ['error', 'single'],
+      semi: ["error", "always"],
+      quotes: ["error", "double"],
     },
   },
 ];

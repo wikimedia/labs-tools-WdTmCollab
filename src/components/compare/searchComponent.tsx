@@ -1,28 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import { endpoints } from "@/utils/endpoints";
 
-interface Actor {
+interface Movie {
   id: string;
   label: string;
   description?: string;
+  type: string;
   url: string;
   imageUrl?: string;
+  year?: string;
+  imageType: string;
 }
 
 interface SearchComponentProps {
-  onSelect: (actor: Actor | null) => void;
+  onSelect: (movie: Movie | null) => void;
 }
 
 export default function SearchComponent({ onSelect }: SearchComponentProps) {
   const [query, setQuery] = useState<string>("");
-  const [results, setResults] = useState<Actor[]>([]);
-  const [selectedActor, setSelectedActor] = useState<Actor | null>(null);
+  const [results, setResults] = useState<Movie[]>([]);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [displayCount, setDisplayCount] = useState<number>(5); // Initial display count
   const listRef = useRef<HTMLUListElement>(null); // Ref for the scrollable list
 
   useEffect(() => {
-    // Reset displayCount when query changes or an actor is selected/cleared
-    if (query.trim() === "" || selectedActor) {
+    // Reset displayCount when query changes or an Movie is selected/cleared
+    if (query.trim() === "" || selectedMovie) {
       setResults([]);
       setDisplayCount(5); // Reset to initial display count
       return;
@@ -30,11 +33,11 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
 
     const fetchActors = async () => {
       try {
-        const response = await fetch(endpoints.actorSearch(query));
+        const response = await fetch(endpoints.movieSearch(query));
         if (!response.ok) {
           throw new Error("Failed to fetch actors.");
         }
-        const data: Actor[] = await response.json();
+        const data: Movie[] = await response.json();
         setResults(data);
         setDisplayCount(5); // Ensure display count is reset when new results arrive
       } catch (error) {
@@ -45,23 +48,23 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
 
     const debounce = setTimeout(fetchActors, 300);
     return () => clearTimeout(debounce);
-  }, [query, selectedActor]);
+  }, [query, selectedMovie]);
 
   const handleLoadMore = () => {
     // Increase displayCount by 5, but not beyond the total number of results
     setDisplayCount((prevCount) => Math.min(prevCount + 5, results.length));
   };
 
-  const handleSelection = (actor: Actor) => {
-    setSelectedActor(actor);
-    setQuery(actor.label);
-    onSelect(actor);
+  const handleSelection = (movie: Movie) => {
+    setSelectedMovie(movie);
+    setQuery(movie.label);
+    onSelect(movie);
     setResults([]); // Clear results after selection
     setDisplayCount(5); // Reset display count
   };
 
   const handleClearSelection = () => {
-    setSelectedActor(null);
+    setSelectedMovie(null);
     setQuery("");
     onSelect(null);
     setResults([]); // Clear results
@@ -91,7 +94,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           placeholder="Search actors..."
           value={query}
           onChange={(e) => {
-            if (selectedActor) {
+            if (selectedMovie) {
               handleClearSelection();
             }
             setQuery(e.target.value);
@@ -99,7 +102,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           className="w-full p-3 pl-11 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition"
         />
 
-        {selectedActor && (
+        {selectedMovie && (
           <button
             onClick={handleClearSelection}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
@@ -122,40 +125,45 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
         )}
       </div>
 
-      {!selectedActor && results.length > 0 && (
+      {!selectedMovie && results.length > 0 && (
         <ul
           ref={listRef}
           className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto"
         >
           {results.slice(0, displayCount).map(
             (
-              actor // Slice results to limit display
+              movie // Slice results to limit display
             ) => (
               <li
-                key={actor.id}
+                key={movie?.id}
                 className="p-4 border-b border-gray-100 last:border-none flex items-center space-x-4 cursor-pointer hover:bg-blue-50 transition-colors"
-                onClick={() => handleSelection(actor)}
+                onClick={() => handleSelection(movie)}
               >
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  {actor.imageUrl ? (
+                  {movie?.imageUrl ? (
                     <img
-                      src={actor.imageUrl}
-                      alt={actor.label}
+                      src={movie?.imageUrl}
+                      alt={movie?.label}
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <span className="text-gray-500 font-semibold text-lg">
-                      {actor.label.charAt(0)}
+                      {movie?.label}
                     </span>
                   )}
                 </div>
                 <div>
                   <h3 className="font-semibold text-base text-gray-800">
-                    {actor.label}
+                    {movie?.label}
                   </h3>
-                  <p className="text-sm text-gray-500">ID: {actor.id}</p>
-                  {actor.description && (
-                    <p className="text-sm text-gray-500">{actor.description}</p>
+                  <p className="text-sm text-gray-500">ID: {movie?.id}</p>
+                  {movie?.description && (
+                    <p className="text-sm text-gray-500">
+                      {movie?.description}
+                    </p>
+                  )}
+                  {movie?.type && (
+                    <p className="text-sm text-gray-500">{movie?.type}</p>
                   )}
                 </div>
               </li>

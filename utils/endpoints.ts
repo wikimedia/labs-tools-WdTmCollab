@@ -5,7 +5,7 @@
  * Falls back to http://localhost:3001 if not defined in the environment variables
  */
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://wdtmcollab-api.toolforge.org';
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://wdtmcollab-api.toolforge.org";
 
 /**
  * A centralized list of API endpoints
@@ -42,4 +42,12 @@ export const endpoints = {
    */
   sharedActors: (movie1Id: string, movie2Id: string) =>
     `${API_BASE_URL}/productions/shared-actors?movie1=${encodeURIComponent(movie1Id)}&movie2=${encodeURIComponent(movie2Id)}`,
+
+
+  /**
+   *Search for productions by title.
+    * @param title - The title of the production to search for
+   * 
+  */
+  movieSearch: (title: string) => `${API_BASE_URL}/productions/search?title=${encodeURIComponent(title)}`,
 };

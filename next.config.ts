@@ -1,11 +1,11 @@
-import type { NextConfig } from 'next';
-import BundleAnalyzer from '@next/bundle-analyzer';
+import type { NextConfig } from "next";
+import BundleAnalyzer from "@next/bundle-analyzer";
 
 let nextConfig: NextConfig = {
   webpack: (config, { dev }) => {
     if (config.cache && !dev) {
       config.cache = Object.freeze({
-        type: 'memory',
+        type: "memory",
       });
     }
 
@@ -31,17 +31,17 @@ let nextConfig: NextConfig = {
   experimental: {
     webpackMemoryOptimizations: true,
     webpackBuildWorker: true,
-    clientTraceMetadata: ['webpackChunkName'],
+    clientTraceMetadata: ["webpackChunkName"],
   },
 
-  output: 'standalone',
+  output: "standalone",
 };
 
 const WithBundleAnalyzer = BundleAnalyzer({
   enabled: true,
   openAnalyzer: false,
-  analyzerMode: 'static',
-  logLevel: 'info',
+  analyzerMode: "static",
+  logLevel: "info",
 });
 nextConfig = WithBundleAnalyzer(nextConfig);
 
