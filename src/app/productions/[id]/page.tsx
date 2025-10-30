@@ -22,8 +22,6 @@ export default function ProductionDetailPage() {
 
   return (
     <main>
-      <Header />
-
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link

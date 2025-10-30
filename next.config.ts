@@ -20,7 +20,7 @@ let nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    unoptimized: false,
   },
   turbopack: {
     rules: {

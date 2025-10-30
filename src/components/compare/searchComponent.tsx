@@ -14,9 +14,10 @@ interface Movie {
 
 interface SearchComponentProps {
   onSelect: (movie: Movie | null) => void;
+  placeholder?: string;
 }
 
-export default function SearchComponent({ onSelect }: SearchComponentProps) {
+export default function SearchComponent({ onSelect, placeholder }: SearchComponentProps) {
   const [query, setQuery] = useState<string>("");
   const [results, setResults] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -91,7 +92,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
 
         <input
           type="text"
-          placeholder="Search actors..."
+          placeholder={placeholder}
           value={query}
           onChange={(e) => {
             if (selectedMovie) {

@@ -20,6 +20,8 @@ interface Actor {
   name: string;
   description?: string;
   image?: string;
+  sharedWorks?: string;
+  awardCount?: string;
 }
 
 
@@ -71,8 +73,8 @@ export default function SharedActorsFromMovies() {
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold mb-6">Shared Actors from Movies</h1>
           <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-           <SearchComponent onSelect={(movie: Movie) => setMovie1Name(movie)} />
-            <SearchComponent onSelect={(movie: Movie) => setMovie2Name(movie)} />
+           <SearchComponent  placeholder="Search First Movie" onSelect={(movie: Movie) => setMovie1Name(movie)} />
+            <SearchComponent placeholder="Search First Movie" onSelect={(movie: Movie) => setMovie2Name(movie)} />
           </div>
 
           <button
@@ -106,6 +108,14 @@ export default function SharedActorsFromMovies() {
                         {actor.description}
                       </p>
                     )}
+                    <div className="flex justify-between mt-2">
+                      <span className="text-blue-600 font-medium">
+                        {actor.sharedWorks} shared works
+                      </span>
+                      <span className="text-amber-600 font-medium">
+                        {actor.awardCount} awards
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>

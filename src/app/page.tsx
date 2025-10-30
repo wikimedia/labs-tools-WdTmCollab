@@ -1,6 +1,38 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { endpoints } from "@/utils/endpoints";
 
 export default function Home() {
+  interface PopularActor {
+    id: string;
+    name: string;
+    awardCount: number;
+    nominationCount: number;
+    imageUrl: string | null;
+  }
+
+  const [popularActors, setPopularActors] = useState<PopularActor[]>([]);
+  const [loadingPopular, setLoadingPopular] = useState(false);
+
+  useEffect(() => {
+    async function fetchPopular() {
+      setLoadingPopular(true);
+      try {
+        const res = await fetch(endpoints.actorPopular());
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: PopularActor[] = await res.json();
+        setPopularActors(data);
+      } catch (err) {
+        console.error("Failed to load popular actors:", err);
+      } finally {
+        setLoadingPopular(false);
+      }
+    }
+
+    fetchPopular();
+  }, []);
   return (
     <main>
       <div className="container mx-auto px-4 py-12">
@@ -45,18 +77,44 @@ export default function Home() {
         <section className="bg-white rounded-xl shadow-md p-8 mb-16">
           <h2 className="text-2xl font-bold mb-4">Popular Actors</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {popularActors.map((actor) => (
-              <Link
-                key={actor.id}
-                href={`/actors/${actor.id}`}
-                className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div className="font-medium">{actor.name}</div>
-                <div className="text-sm text-gray-500">
-                  {actor.collaborations} collaborations
-                </div>
-              </Link>
-            ))}
+            {loadingPopular ? (
+              <div className="col-span-4 text-center text-gray-500">
+                Loading popular actors...
+              </div>
+            ) : (
+              Array.from(
+                new Map(
+                  popularActors.map((prod: any) => [prod.name, prod])
+                ).values()
+              ).map((actor: any, idx: number) => (
+                <Link
+                  key={actor.id ? actor.id : `${actor.name}-${idx}`}
+                  href={`/actors/${actor.id}`}
+                  className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-4"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
+                    {actor.imageUrl ? (
+                      <img
+                        src={actor.imageUrl}
+                        alt={actor.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-lg">
+                        {actor.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-grow">
+                    <div className="font-medium">{actor.name}</div>
+                    <div className="text-sm text-gray-500">
+                      {actor.nominationCount} Nominations • {actor.awardCount}{" "}
+                      awards
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </section>
       </div>
@@ -172,14 +230,4 @@ function ClusterIcon() {
   );
 }
 
-// Placeholder data
-const popularActors = [
-  { id: "38111", name: "Tom Hanks", collaborations: 87 },
-  { id: "17492", name: "Meryl Streep", collaborations: 92 },
-  { id: "42215", name: "Leonardo DiCaprio", collaborations: 76 },
-  { id: "39187", name: "Viola Davis", collaborations: 68 },
-  { id: "28782", name: "Denzel Washington", collaborations: 81 },
-  { id: "37917", name: "Cate Blanchett", collaborations: 73 },
-  { id: "51329", name: "Samuel L. Jackson", collaborations: 104 },
-  { id: "47981", name: "Emma Thompson", collaborations: 65 },
-];
+// Note: popular actors are loaded from backend /actors/popular

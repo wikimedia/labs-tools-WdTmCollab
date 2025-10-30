@@ -43,6 +43,13 @@ export const endpoints = {
   sharedActors: (movie1Id: string, movie2Id: string) =>
     `${API_BASE_URL}/productions/shared-actors?movie1=${encodeURIComponent(movie1Id)}&movie2=${encodeURIComponent(movie2Id)}`,
 
+  /**
+   * Get actor details (label, description, image) proxied through backend
+   * @param id - Wikidata id (Q...)
+   */
+  actorDetails: (id: string) =>
+    API_BASE_URL + "/actors/details/" + encodeURIComponent(id),
+
 
   /**
    *Search for productions by title.
@@ -50,4 +57,10 @@ export const endpoints = {
    * 
   */
   movieSearch: (title: string) => `${API_BASE_URL}/productions/search?title=${encodeURIComponent(title)}`,
+  
+  /**
+   * Get popular actors from backend
+   * @param limit - optional number of actors to return
+   */
+  actorPopular: () => `${API_BASE_URL}/actors/popular`,
 };
