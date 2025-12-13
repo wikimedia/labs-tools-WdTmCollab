@@ -2,5 +2,6 @@
 host=gerrit.wikimedia.org
 port=29418
 project=labs/tools/WdTmCollab.git
+defaultbranch=main
 track=1
 defaultrebase=0
