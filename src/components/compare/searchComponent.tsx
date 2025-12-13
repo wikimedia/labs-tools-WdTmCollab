@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { endpoints } from "@/utils/endpoints";
+import FormInput from "@/src/components/ui/form-input";
 
 interface Movie {
   id: string;
@@ -22,6 +23,7 @@ export default function SearchComponent({ onSelect, placeholder }: SearchCompone
   const [results, setResults] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [displayCount, setDisplayCount] = useState<number>(5); // Initial display count
+  const [error, setError] = useState<string>("");
   const listRef = useRef<HTMLUListElement>(null); // Ref for the scrollable list
 
   useEffect(() => {
@@ -29,6 +31,7 @@ export default function SearchComponent({ onSelect, placeholder }: SearchCompone
     if (query.trim() === "" || selectedMovie) {
       setResults([]);
       setDisplayCount(5); // Reset to initial display count
+      setError(""); // Clear error
       return;
     }
 
@@ -36,14 +39,16 @@ export default function SearchComponent({ onSelect, placeholder }: SearchCompone
       try {
         const response = await fetch(endpoints.movieSearch(query));
         if (!response.ok) {
-          throw new Error("Failed to fetch actors.");
+          throw new Error("Failed to fetch movies.");
         }
         const data: Movie[] = await response.json();
         setResults(data);
         setDisplayCount(5); // Ensure display count is reset when new results arrive
+        setError(""); // Clear error on success
       } catch (error) {
-        console.error("Error fetching actors:", error);
+        console.error("Error fetching movies:", error);
         setResults([]); // Clear results on error
+        setError("Failed to fetch movies. Please try again.");
       }
     };
 
@@ -70,6 +75,7 @@ export default function SearchComponent({ onSelect, placeholder }: SearchCompone
     onSelect(null);
     setResults([]); // Clear results
     setDisplayCount(5); // Reset display count
+    setError(""); // Clear error
   };
 
   return (
@@ -90,9 +96,7 @@ export default function SearchComponent({ onSelect, placeholder }: SearchCompone
           />
         </svg>
 
-        <input
-          type="text"
-          placeholder={placeholder}
+        <FormInput
           value={query}
           onChange={(e) => {
             if (selectedMovie) {
@@ -100,7 +104,10 @@ export default function SearchComponent({ onSelect, placeholder }: SearchCompone
             }
             setQuery(e.target.value);
           }}
-          className="w-full p-3 pl-11 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition"
+          placeholder={placeholder}
+          aria-label="Search for movies"
+          helperText="Type to search for movies..."
+          error={error}
         />
 
         {selectedMovie && (

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useActorSearch, Actor } from "@/src/hooks/api/useActors";
+import FormInput from "@/src/components/ui/form-input";
 
 // Helper for debouncing
 function useDebounce<T>(value: T, delay: number): T {
@@ -20,8 +21,9 @@ interface SearchComponentProps {
 export default function SearchComponent({ onSelect }: SearchComponentProps) {
   const [query, setQuery] = useState<string>("");
   const [selectedActor, setSelectedActor] = useState<Actor | null>(null);
-  const [displayCount, setDisplayCount] = useState<number>(5);
-  const listRef = useRef<HTMLUListElement>(null);
+  const [displayCount, setDisplayCount] = useState<number>(5); // Initial display count
+  const [error, setError] = useState<string>("");
+  const listRef = useRef<HTMLUListElement>(null); // Ref for the scrollable list
 
   // Use the hook logic instead of manual useEffect
   const debouncedQuery = useDebounce(query, 300);
@@ -29,7 +31,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
   const {
     data: results = [],
     isLoading,
-    isError
+    isError,
   } = useActorSearch(debouncedQuery);
 
   // Reset display count when query changes
@@ -74,15 +76,16 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           />
         </svg>
 
-        <input
-          type="text"
-          placeholder="Search actors..."
+        <FormInput
           value={query}
           onChange={(e) => {
             if (selectedActor) handleClearSelection();
             setQuery(e.target.value);
           }}
-          className="w-full p-3 pl-11 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition"
+          placeholder="Search actors..."
+          aria-label="Search for actors"
+          helperText="Type to search for actors..."
+          error={error}
         />
 
         {selectedActor && (
@@ -97,7 +100,12 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         )}
@@ -113,7 +121,9 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           )}
 
           {isError && (
-            <li className="p-4 text-center text-red-500">Error searching actors</li>
+            <li className="p-4 text-center text-red-500">
+              Error searching actors
+            </li>
           )}
 
           {!isLoading && results.length === 0 && (
