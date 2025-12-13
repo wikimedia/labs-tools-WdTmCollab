@@ -27,6 +27,7 @@ export default function SearchComponent({
 }: SearchComponentProps) {
   const [query, setQuery] = useState<string>(initialValue);
   const [selectedActor, setSelectedActor] = useState<Actor | null>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
   const [displayCount, setDisplayCount] = useState<number>(5);
   const [isFocused, setIsFocused] = useState(false);
   const listRef = useRef<HTMLUListElement>(null);
@@ -58,6 +59,7 @@ export default function SearchComponent({
   };
 
   const handleSelection = (actor: Actor) => {
+    setIsSelecting(true);
     setSelectedActor(actor);
     setQuery(actor.label);
     onSelect(actor);
@@ -67,6 +69,7 @@ export default function SearchComponent({
   const handleClearSelection = () => {
     setSelectedActor(null);
     setQuery("");
+    setIsSelecting(false);
     onSelect(null);
     setDisplayCount(5);
   };

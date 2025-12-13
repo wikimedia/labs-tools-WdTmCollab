@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { useCoActors, Actor } from "@/src/hooks/api/useActors";
+import SkeletonLoader from "@/src/components/ui/skeleton-loader";
 
 export default function ActorsPage() {
   const router = useRouter();
@@ -19,12 +20,8 @@ export default function ActorsPage() {
     data: results = [],
     isLoading: loading,
     isError,
-    isPlaceholderData
-  } = useCoActors(
-    actorId,
-    currentPage,
-    ITEMS_PER_PAGE
-  );
+    isPlaceholderData,
+  } = useCoActors(actorId, currentPage, ITEMS_PER_PAGE);
 
   const displayResults = results.slice(0, ITEMS_PER_PAGE);
 
@@ -68,7 +65,8 @@ export default function ActorsPage() {
             Find Actor Collaborations
           </h1>
           <p className="text-center text-gray-500 text-lg">
-            Start by searching for an actor to see who they frequently work with.
+            Start by searching for an actor to see who they frequently work
+            with.
           </p>
 
           <div className="space-y-4">
@@ -91,7 +89,9 @@ export default function ActorsPage() {
           <div className="w-full max-w-5xl mt-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               Collaborators of{" "}
-              <span className="text-blue-600">{actorLabel || "Selected Actor"}</span>
+              <span className="text-blue-600">
+                {actorLabel || "Selected Actor"}
+              </span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {displayResults.map((coActor: any) => (
@@ -102,7 +102,10 @@ export default function ActorsPage() {
                   <img
                     src={
                       coActor.image ||
-                      `https://ui-avatars.com/api/?name=${coActor.name.replace(/\s/g, "+")}&background=random`
+                      `https://ui-avatars.com/api/?name=${coActor.name.replace(
+                        /\s/g,
+                        "+"
+                      )}&background=random`
                     }
                     alt={coActor.name}
                     className="w-28 h-28 object-cover rounded-full border-4 border-white shadow-lg mb-4"

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { Actor } from "@/src/hooks/api/useActors";
 import { useSharedProductions } from "@/src/hooks/api/useProductSearch";
+import SkeletonLoader from "@/src/components/ui/skeleton-loader";
 
 export default function ProductionsPage() {
   const router = useRouter();
@@ -97,16 +98,33 @@ export default function ProductionsPage() {
       )}
 
       {loading && (
+        <div className="flex items-center justify-center w-full mt-6">
+          <div className="w-full max-w-6xl">
+            <h2 className="text-xl font-bold text-center mb-6">
+              Loading shared productions...
+            </h2>
+            <SkeletonLoader type="production" count={8} />
+          </div>
+        </div>
+      )}
+
+      {loading && (
         <div className="flex justify-center mt-8">
           <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
 
       {sharedCastings.length === 0 && !loading && actor1Id && actor2Id && (
-        <p className="mt-4 text-center text-gray-600">No shared productions found between these actors.</p>
+        <p className="mt-4 text-center text-gray-600">
+          No shared productions found between these actors.
+        </p>
       )}
 
-      {error && <p className="text-red-500 mt-4 text-center">Error fetching shared castings.</p>}
+      {error && (
+        <p className="text-red-500 mt-4 text-center">
+          Error fetching shared castings.
+        </p>
+      )}
     </main>
   );
 }
