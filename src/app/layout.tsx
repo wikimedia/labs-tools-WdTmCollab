@@ -6,6 +6,7 @@ import Loading from "./feed/loading";
 import { ClientProviders } from "../hooks/client-providers";
 import Footer from "../components/layout/footer";
 import Header from "../components/layout/header";
+import ErrorBoundary from "../components/ui/error-boundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,13 +45,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
         <Loading />
-        <ClientProviders>
-          <div className="flex flex-col min-h-full">
-            <Header />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-          </div>
-        </ClientProviders>
+        <ErrorBoundary>
+          <ClientProviders>
+            <div className="flex flex-col min-h-full">
+              <Header />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </div>
+          </ClientProviders>
+        </ErrorBoundary>
       </body>
     </html>
   );
