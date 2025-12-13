@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { endpoints } from "@/utils/endpoints";
+"use client";
 
-interface Actor {
-  id: string;
-  label: string;
-  description?: string;
-  url: string;
-  imageUrl?: string;
+import React, { useState, useRef, useEffect } from "react";
+import { useActorSearch, Actor } from "@/src/hooks/api/useActors";
+
+// Helper for debouncing
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
 }
 
 interface SearchComponentProps {
@@ -15,58 +19,42 @@ interface SearchComponentProps {
 
 export default function SearchComponent({ onSelect }: SearchComponentProps) {
   const [query, setQuery] = useState<string>("");
-  const [results, setResults] = useState<Actor[]>([]);
   const [selectedActor, setSelectedActor] = useState<Actor | null>(null);
-  const [displayCount, setDisplayCount] = useState<number>(5); // Initial display count
-  const listRef = useRef<HTMLUListElement>(null); // Ref for the scrollable list
+  const [displayCount, setDisplayCount] = useState<number>(5);
+  const listRef = useRef<HTMLUListElement>(null);
 
+  // Use the hook logic instead of manual useEffect
+  const debouncedQuery = useDebounce(query, 300);
+
+  const {
+    data: results = [],
+    isLoading,
+    isError
+  } = useActorSearch(debouncedQuery);
+
+  // Reset display count when query changes
   useEffect(() => {
-    // Reset displayCount when query changes or an actor is selected/cleared
-    if (query.trim() === "" || selectedActor) {
-      setResults([]);
-      setDisplayCount(5); // Reset to initial display count
-      return;
-    }
-
-    const fetchActors = async () => {
-      try {
-        const response = await fetch(endpoints.actorSearch(query));
-        if (!response.ok) {
-          throw new Error("Failed to fetch actors.");
-        }
-        const data: Actor[] = await response.json();
-        setResults(data);
-        setDisplayCount(5); // Ensure display count is reset when new results arrive
-      } catch (error) {
-        console.error("Error fetching actors:", error);
-        setResults([]); // Clear results on error
-      }
-    };
-
-    const debounce = setTimeout(fetchActors, 300);
-    return () => clearTimeout(debounce);
-  }, [query, selectedActor]);
+    setDisplayCount(5);
+  }, [debouncedQuery]);
 
   const handleLoadMore = () => {
-    // Increase displayCount by 5, but not beyond the total number of results
-    setDisplayCount((prevCount) => Math.min(prevCount + 5, results.length));
+    setDisplayCount((prev) => Math.min(prev + 5, results.length));
   };
 
   const handleSelection = (actor: Actor) => {
     setSelectedActor(actor);
     setQuery(actor.label);
     onSelect(actor);
-    setResults([]); // Clear results after selection
-    setDisplayCount(5); // Reset display count
   };
 
   const handleClearSelection = () => {
     setSelectedActor(null);
     setQuery("");
     onSelect(null);
-    setResults([]); // Clear results
-    setDisplayCount(5); // Reset display count
+    setDisplayCount(5);
   };
+
+  const showDropdown = !selectedActor && query.length > 2;
 
   return (
     <div className="w-full max-w-md mx-auto relative">
@@ -91,9 +79,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           placeholder="Search actors..."
           value={query}
           onChange={(e) => {
-            if (selectedActor) {
-              handleClearSelection();
-            }
+            if (selectedActor) handleClearSelection();
             setQuery(e.target.value);
           }}
           className="w-full p-3 pl-11 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition"
@@ -111,57 +97,61 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
       </div>
 
-      {!selectedActor && results.length > 0 && (
+      {showDropdown && (
         <ul
           ref={listRef}
           className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto"
         >
-          {results.slice(0, displayCount).map(
-            (
-              actor // Slice results to limit display
-            ) => (
-              <li
-                key={actor.id}
-                className="p-4 border-b border-gray-100 last:border-none flex items-center space-x-4 cursor-pointer hover:bg-blue-50 transition-colors"
-                onClick={() => handleSelection(actor)}
-              >
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  {actor.imageUrl ? (
-                    <img
-                      src={actor.imageUrl}
-                      alt={actor.label}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-gray-500 font-semibold text-lg">
-                      {actor.label.charAt(0)}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-base text-gray-800">
-                    {actor.label}
-                  </h3>
-                  <p className="text-sm text-gray-500">ID: {actor.id}</p>
-                  {actor.description && (
-                    <p className="text-sm text-gray-500">{actor.description}</p>
-                  )}
-                </div>
-              </li>
-            )
+          {isLoading && (
+            <li className="p-4 text-center text-gray-500">Searching...</li>
           )}
-          {results.length > displayCount && ( // Show "Load More" button if there are more results
+
+          {isError && (
+            <li className="p-4 text-center text-red-500">Error searching actors</li>
+          )}
+
+          {!isLoading && results.length === 0 && (
+            <li className="p-4 text-center text-gray-500">No actors found</li>
+          )}
+
+          {results.slice(0, displayCount).map((actor) => (
+            <li
+              key={actor.id}
+              className="p-4 border-b border-gray-100 last:border-none flex items-center space-x-4 cursor-pointer hover:bg-blue-50 transition-colors"
+              onClick={() => handleSelection(actor)}
+            >
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
+                {actor.imageUrl ? (
+                  <img
+                    src={actor.imageUrl}
+                    alt={actor.label}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-gray-500 font-semibold text-lg">
+                    {actor.label.charAt(0)}
+                  </span>
+                )}
+              </div>
+              <div>
+                <h3 className="font-semibold text-base text-gray-800">
+                  {actor.label}
+                </h3>
+                <p className="text-sm text-gray-500">ID: {actor.id}</p>
+                {actor.description && (
+                  <p className="text-sm text-gray-500">{actor.description}</p>
+                )}
+              </div>
+            </li>
+          ))}
+
+          {results.length > displayCount && (
             <li className="p-4 text-center">
               <button
                 onClick={handleLoadMore}

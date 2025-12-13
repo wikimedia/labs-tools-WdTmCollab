@@ -1,74 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { endpoints } from "@/utils/endpoints";
+import { useState } from "react";
 import SearchComponent from "@/src/components/searchComponent";
+import { Actor } from "@/src/hooks/api/useActors";
+import { useSharedProductions } from "@/src/hooks/api/useProductSearch";
 
-interface ProductionCardProps {
-  id: string;
-  title: string;
-  year: number | string;
-  type: string;
-  actorCount?: number;
-}
-interface Production {
-  title: string;
-  description: string;
-  image?: string | null;
-  logo?: string | null;
-  wikipedia?: string;
-  publicationDate?: string;
-}
-interface Actor {
-  id: string;
-  label: string;
-  description?: string;
-  url: string;
-  imageUrl?: string;
-}
 export default function ProductionsPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [productions, setProductions] = useState([] as Production[]);
-
-  const filteredProductions = productions.filter((production) =>
-    production.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
   const [actor1, setActor1] = useState<Actor | null>(null);
   const [actor2, setActor2] = useState<Actor | null>(null);
-  const [sharedCastings, setSharedCastings] = useState<Production[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
-  const fetchSharedCastings = async () => {
+
+  const {
+    data: sharedCastings = [],
+    isLoading: loading,
+    error,
+  } = useSharedProductions(
+    isSearchActive ? actor1?.id : undefined,
+    isSearchActive ? actor2?.id : undefined
+  );
+
+  const handleFetchCastings = () => {
     if (!actor1 || !actor2) {
       alert("Please select both actors.");
       return;
     }
-    console.log(actor1, actor2);
+    setIsSearchActive(true);
+  };
 
-    setLoading(true);
+  const handleSelectActor1 = (actor: Actor | null) => {
+    setActor1(actor);
+    setIsSearchActive(false);
+  };
 
-    setError(null);
-
-    try {
-      const response = await fetch(
-        endpoints.productionsShared(actor1.id, actor2.id)
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch shared castings.");
-      }
-
-      const data: Production[] = await response.json();
-      console.log(data);
-
-      setSharedCastings(data);
-    } catch (error) {
-      setError("Error fetching shared castings.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSelectActor2 = (actor: Actor | null) => {
+    setActor2(actor);
+    setIsSearchActive(false);
   };
 
   return (
@@ -79,11 +46,11 @@ export default function ProductionsPage() {
             Shared Productions
           </h1>
           <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl">
-            <SearchComponent onSelect={(actor: Actor) => setActor1(actor)} />
-            <SearchComponent onSelect={(actor: Actor) => setActor2(actor)} />
+            <SearchComponent onSelect={handleSelectActor1} />
+            <SearchComponent onSelect={handleSelectActor2} />
           </div>
           <button
-            onClick={fetchSharedCastings}
+            onClick={handleFetchCastings}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
             disabled={loading}
           >
@@ -91,27 +58,21 @@ export default function ProductionsPage() {
           </button>
         </div>
       </div>
+
+      {/* Render Logic */}
       {sharedCastings.length > 0 && (
         <>
           <h2 className="text-xl font-bold text-center">Shared Productions</h2>
           <div className="flex items-center justify-center w-full mt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {Array.from(
-                new Map(
-                  sharedCastings.map((prod: any) => [
-                    prod.id ? prod.id : prod.title,
-                    prod,
-                  ])
-                ).values()
-              ).map((production: any, idx: number) => (
+              {/* Note: Logic simplified to standard map since hook returns array */}
+              {sharedCastings.map((production, idx) => (
                 <div
-                  key={
-                    production.id ? production.id : `${production.title}-${idx}`
-                  }
+                  key={production.id || `${production.title}-${idx}`}
                   className="p-4 border rounded-lg shadow-md bg-white flex flex-col"
                 >
                   <img
-                    src={production.image ? production.image : production.logo}
+                    src={production.image || production.logo || ""}
                     alt={production.title}
                     className="w-full h-48 object-cover rounded"
                   />
@@ -137,10 +98,11 @@ export default function ProductionsPage() {
           </div>
         </>
       )}
-      {sharedCastings.length === 0 && !loading && actor1 && actor2 && (
-        <p className="mt-4 text-gray-600">No shared productions found.</p>
+
+      {sharedCastings.length === 0 && !loading && isSearchActive && (
+        <p className="mt-4 text-center text-gray-600">No shared productions found.</p>
       )}
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {error && <p className="text-red-500 mt-4 text-center">Error fetching shared castings.</p>}
     </main>
   );
 }

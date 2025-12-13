@@ -1,94 +1,63 @@
 "use client";
 
 import { useState } from "react";
-import { endpoints } from "@/utils/endpoints";
-import SearchComponent from "@/src/components/compare/searchComponent";
-
-interface Movie {
-  id: string;
-  label: string;
-  description?: string;
-  type: string;
-  url: string;
-  imageUrl?: string;
-  year?: Date | null;
-  imageType: string;
-}
-
-interface Actor {
-  id: string;
-  name: string;
-  description?: string;
-  image?: string;
-  sharedWorks?: string;
-  awardCount?: string;
-}
-
+import SearchComponent from "@/src/components/compare/searchComponent"; // Assuming this handles Movie searching
+import { Movie, useSharedActorsFromMovies } from "@/src/hooks/api/useProductSearch";
 
 export default function SharedActorsFromMovies() {
-  // Use movie names as state, with defaults matching the mapping keys.
   const [movie1, setMovie1Name] = useState<Movie | null>(null);
   const [movie2, setMovie2Name] = useState<Movie | null>(null);
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
-  const [sharedActors, setSharedActors] = useState<Actor[]>([]);
+  // 1. Use the Hook
+  const {
+    data: sharedActors = [],
+    isLoading: loading,
+    error
+  } = useSharedActorsFromMovies(
+    isSearchActive ? movie1?.id : undefined,
+    isSearchActive ? movie2?.id : undefined
+  );
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchSharedActors = async () => {
+  const handleFetch = () => {
     if (!movie1 || !movie2) {
       alert("Please select both movies.");
       return;
     }
-    console.log(movie1, movie2);
-
     if (!movie1.id || !movie2.id) {
       alert("One or both movie names are not recognized.");
       return;
     }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const url = endpoints.sharedActors(movie1.id, movie2.id);
-      const response = await fetch(url);
-      console.log(movie1.id, movie2.id, response);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch shared actors.");
-      }
-
-      const data: Actor[] = await response.json();
-      setSharedActors(data);
-    } catch (err) {
-      console.error(err);
-      setError("Error fetching shared actors.");
-    } finally {
-      setLoading(false);
-    }
+    setIsSearchActive(true);
   };
 
-  return (
-      <main className="flex-grow">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">Shared Actors from Movies</h1>
-          <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-           <SearchComponent  placeholder="Search First Movie" onSelect={(movie: Movie) => setMovie1Name(movie)} />
-            <SearchComponent placeholder="Search First Movie" onSelect={(movie: Movie) => setMovie2Name(movie)} />
-          </div>
+  const handleSelectMovie1 = (m: Movie | null) => { setMovie1Name(m); setIsSearchActive(false); };
+  const handleSelectMovie2 = (m: Movie | null) => { setMovie2Name(m); setIsSearchActive(false); };
 
-          <button
-            onClick={fetchSharedActors}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            disabled={loading}
-          >
-            {loading ? "Fetching..." : "Fetch Shared Actors"}
-          </button>
-          {error && <p className="text-red-500 mt-4">{error}</p>}
-          {sharedActors.length > 0 && (
-            <div className="mt-6">
-              <h2 className="text-xl font-bold">Shared Actors</h2>
-              <div className="flex w-full mt-6">
+  return (
+    <main className="flex-grow">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Shared Actors from Movies</h1>
+        <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* Ensure generic types match if SearchComponent is strictly typed */}
+          <SearchComponent placeholder="Search First Movie" onSelect={handleSelectMovie1} />
+          <SearchComponent placeholder="Search Second Movie" onSelect={handleSelectMovie2} />
+        </div>
+
+        <button
+          onClick={handleFetch}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          disabled={loading}
+        >
+          {loading ? "Fetching..." : "Fetch Shared Actors"}
+        </button>
+
+        {error && <p className="text-red-500 mt-4">Error fetching shared actors.</p>}
+
+        {sharedActors.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold">Shared Actors</h2>
+            <div className="flex w-full mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {sharedActors.map((actor) => (
                   <div
@@ -119,16 +88,14 @@ export default function SharedActorsFromMovies() {
                   </div>
                 ))}
               </div>
-              </div>
             </div>
-          )}
-          {sharedActors.length === 0 &&
-            !loading &&
-            movie1 &&
-            movie2 && (
-              <p className="mt-4 text-gray-600">No shared actors found.</p>
-            )}
-        </div>
-      </main>
+          </div>
+        )}
+
+        {sharedActors.length === 0 && !loading && isSearchActive && (
+          <p className="mt-4 text-gray-600">No shared actors found.</p>
+        )}
+      </div>
+    </main>
   );
 }

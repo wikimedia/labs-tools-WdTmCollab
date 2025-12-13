@@ -1,140 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { endpoints } from "@/utils/endpoints";
-
-interface Award {
-  id: string;
-  label: string;
-  description?: string | null;
-  url?: string | null;
-}
-
-interface CoActor {
-  actorId?: string | null; // maybe a full URL
-  name?: string | null;
-  description?: string | null;
-  image?: string | null;
-  sharedWorks?: string | number | null; // from API it's a string
-}
-
-interface Production {
-  id: string;
-  title: string;
-  year?: number | null;
-}
-
-interface ActorDetail {
-  id: string;
-  name: string;
-  bio?: string | null;
-  imageUrl?: string | null;
-  dateOfBirth?: string | null;
-  placeOfBirth?: string | null;
-  countryOfCitizenship?: string | null;
-  gender?: string | null;
-  occupations?: string[] | null;
-  productions: Production[];
-  awards?: Award[] | null;
-  website?: string | null;
-  coActors?: CoActor[] | null;
-}
+import { useActorDetails } from "@/src/hooks/api/useActors";
 
 export default function ActorDetailPage() {
   const params = useParams();
   const actorId = (params?.id as string) ?? "";
-  const [actor, setActor] = useState<ActorDetail | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!actorId) return;
+  // 1. USE THE HOOK
+  // This replaces all the manual fetch, setState, and try/catch logic
+  const { data: actor, isLoading, error } = useActorDetails(actorId);
 
-    async function fetchActorData() {
-      setLoading(true);
-      try {
-        const resp = await fetch(endpoints.actorDetails(actorId));
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const raw: any = await resp.json();
-
-        // Normalize array/object response
-        const api = Array.isArray(raw) ? raw[0] ?? null : raw;
-        if (!api) {
-          setActor(null);
-          return;
-        }
-
-        const mapped: ActorDetail = {
-          id: String(api.id ?? actorId ?? ""),
-          name: api.label ?? api.name ?? "",
-          bio: api.description ?? api.bio ?? null,
-          imageUrl: api.imageUrl ?? api.image ?? null,
-          dateOfBirth: api.dateOfBirth ?? api.birthDate ?? api.dob ?? null,
-          placeOfBirth: api.placeOfBirth ?? api.birthPlace ?? null,
-          countryOfCitizenship:
-            api.countryOfCitizenship ?? api.citizenship ?? null,
-          gender: api.gender ?? null,
-          occupations: Array.isArray(api.occupations)
-            ? api.occupations
-            : api.occupations
-            ? String(api.occupations)
-                .split(",")
-                .map((s: string) => s.trim())
-            : api.occupation
-            ? [String(api.occupation)]
-            : null,
-          productions: (api.productions || api.filmography || []).map(
-            (p: any) => ({
-              id: String(p.id ?? p.movieId ?? p.title ?? ""),
-              title: p.title ?? p.label ?? p.name ?? "",
-              year:
-                p.year !== undefined && p.year !== null
-                  ? Number(p.year)
-                  : p.releaseYear
-                  ? Number(p.releaseYear)
-                  : null,
-            })
-          ),
-          awards: (api.awards || []).map((a: any) => ({
-            id: String(a.id ?? a.awardId ?? a.url ?? ""),
-            label: a.label ?? a.name ?? "",
-            description: a.description ?? null,
-            url: a.url ?? null,
-          })),
-          website: api.website ?? api.homepage ?? null,
-          coActors: (
-            api.coActors ||
-            api.coactors ||
-            api.collaborators ||
-            []
-          ).map((c: any) => ({
-            actorId: c.actorId ?? c.id ?? null,
-            name: c.name ?? null,
-            description: c.description ?? null,
-            image: c.image ?? c.imageUrl ?? null,
-            sharedWorks: c.sharedWorks ?? c.shared_works ?? null,
-          })),
-        };
-
-        setActor(mapped);
-      } catch (err) {
-        console.error("Failed to fetch actor details:", err);
-        setActor(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchActorData();
-  }, [actorId]);
-
+  // Helper formatting function
   function formatDate(date?: string | null) {
     if (!date) return null;
     try {
       const d = new Date(date);
-      if (isNaN(d.getTime())) return date; // return raw if invalid
+      if (isNaN(d.getTime())) return date;
       return d.toLocaleDateString(undefined, {
         year: "numeric",
         month: "long",
@@ -145,6 +29,26 @@ export default function ActorDetailPage() {
     }
   }
 
+  // 2. RENDER LOADING/ERROR STATES
+  if (isLoading) {
+    return (
+      <main className="container mx-auto px-4 py-8">
+        <div className="text-center text-gray-500 mt-20">Loading actor details...</div>
+      </main>
+    );
+  }
+
+  if (error || !actor) {
+    return (
+      <main className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-500 mt-20">
+          Error loading actor. Please try again later.
+        </div>
+      </main>
+    );
+  }
+
+  // 3. RENDER CONTENT (Exactly as before, but using 'actor' from hook)
   return (
     <main>
       <div className="container mx-auto px-4 py-8">
@@ -176,12 +80,7 @@ export default function ActorDetailPage() {
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-center gap-6">
               <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-                {loading ? (
-                  <div
-                    className="animate-pulse w-full h-full bg-gray-200"
-                    aria-hidden
-                  />
-                ) : actor?.imageUrl ? (
+                {actor.imageUrl ? (
                   <img
                     src={actor.imageUrl}
                     alt={actor.name ?? "actor image"}
@@ -191,43 +90,37 @@ export default function ActorDetailPage() {
                   />
                 ) : (
                   <div className="text-gray-500 text-4xl">
-                    {actor?.name?.charAt(0) ?? "?"}
+                    {actor.name?.charAt(0) ?? "?"}
                   </div>
                 )}
               </div>
 
               <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-1">
-                  {actor?.name ?? (loading ? "Loading…" : "Unknown")}
-                </h1>
-                {actor?.id && (
-                  <div className="text-sm text-gray-500 mb-2">
-                    id: {actor.id}
-                  </div>
-                )}
+                <h1 className="text-3xl font-bold mb-1">{actor.name}</h1>
+                <div className="text-sm text-gray-500 mb-2">id: {actor.id}</div>
 
-                {actor?.bio && (
+                {actor.bio && (
                   <p className="text-gray-700 mb-4">{actor.bio}</p>
                 )}
 
                 <div className="flex flex-wrap gap-3 items-center text-sm">
-                  {actor?.gender && (
+                  {actor.gender && (
                     <span className="px-2 py-1 rounded-md bg-gray-100 text-gray-700">
                       {actor.gender}
                     </span>
                   )}
 
-                  {actor?.dateOfBirth && (
+                  {actor.dateOfBirth && (
                     <div className="text-gray-600">
                       Born: {formatDate(actor.dateOfBirth)}
                     </div>
                   )}
 
-                  {actor?.placeOfBirth && (
+                  {actor.placeOfBirth && (
                     <div className="text-gray-600">• {actor.placeOfBirth}</div>
                   )}
 
-                  {actor?.countryOfCitizenship && (
+                  {actor.countryOfCitizenship && (
                     <div className="text-gray-600">
                       • {actor.countryOfCitizenship}
                     </div>
@@ -241,13 +134,9 @@ export default function ActorDetailPage() {
             <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
               <section className="lg:col-span-2">
                 <h2 className="text-xl font-semibold mb-4">Productions</h2>
-                {loading ? (
-                  <div className="text-gray-600">Loading productions…</div>
-                ) : actor &&
-                  actor.productions &&
-                  actor.productions.length > 0 ? (
+                {actor.productions && actor.productions.length > 0 ? (
                   <ul className="list-disc pl-5 space-y-2">
-                    {actor.productions.map((p) => (
+                    {actor.productions.map((p: any) => (
                       <li key={p.id}>
                         <Link
                           href={`/productions/${p.id}`}
@@ -264,9 +153,9 @@ export default function ActorDetailPage() {
 
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold mb-2">Awards</h3>
-                  {actor?.awards && actor.awards.length > 0 ? (
+                  {actor.awards && actor.awards.length > 0 ? (
                     <ul className="space-y-2">
-                      {actor.awards.map((a) => (
+                      {actor.awards.map((a: any) => (
                         <li key={a.id} className="text-sm">
                           {a.url ? (
                             <a
@@ -297,9 +186,9 @@ export default function ActorDetailPage() {
               <aside className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Occupations</h3>
-                  {actor?.occupations && actor.occupations.length > 0 ? (
+                  {actor.occupations && actor.occupations.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {actor.occupations.map((oc, i) => (
+                      {actor.occupations.map((oc: string, i: number) => (
                         <span
                           key={i}
                           className="text-sm bg-gray-100 px-2 py-1 rounded-full text-gray-700"
@@ -317,7 +206,7 @@ export default function ActorDetailPage() {
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Website</h3>
-                  {actor?.website ? (
+                  {actor.website ? (
                     <a
                       href={actor.website}
                       target="_blank"
@@ -333,10 +222,9 @@ export default function ActorDetailPage() {
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Co-actors</h3>
-                  {actor?.coActors && actor.coActors.length > 0 ? (
+                  {actor.coActors && actor.coActors.length > 0 ? (
                     <div className="grid grid-cols-2 gap-3 max-h-94 overflow-auto overscroll-contain pr-2">
-                      {actor.coActors.map((c, i) => {
-                        // attempt to extract short id (Q...) from actorId url
+                      {actor.coActors.map((c: any, i: number) => {
                         const shortId = c.actorId
                           ? String(c.actorId).split("/").pop()
                           : null;
