@@ -42,3 +42,65 @@ body {
     @apply text-xl font-medium;
   }
 }
+
+/* Accessibility Improvements */
+@layer utilities {
+  /* Screen reader only - hides content visually but keeps it for screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .sr-only:not(.focus\:not-sr-only:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Enhanced focus indicators for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Ensure sufficient color contrast for links */
+  a:not([class]) {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
+
+  a:not([class]):hover {
+    color: #1e40af;
+  }
+
+  a:not([class]):focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion support for users with motion sensitivity */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
