@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { endpoints } from "@/utils/endpoints";
+import { ReactNode } from "react";
 
 // --- Types ---
 export interface Movie {
+  year: ReactNode;
   id: string;
   label: string;
   description?: string;

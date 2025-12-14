@@ -17,7 +17,7 @@ export function useActorSearch(query: string) {
       if (!res.ok) throw new Error("Failed to search actors");
       return res.json();
     },
-    enabled: query.length > 2,
+    enabled: query.length > 1,
     staleTime: 5 * 60 * 1000,
   });
 }

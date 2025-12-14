@@ -1,63 +1,57 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
-import { endpoints } from "@/utils/endpoints";
+import { useMovieSearch, Movie } from "@/src/hooks/api/useProductSearch";
 import FormInput from "@/src/components/ui/form-input";
 
-interface Movie {
-  id: string;
-  label: string;
-  description?: string;
-  type: string;
-  url: string;
-  imageUrl?: string;
-  year?: string;
-  imageType: string;
+// Helper for debouncing
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
 }
 
 interface SearchComponentProps {
   onSelect: (movie: Movie | null) => void;
   placeholder?: string;
+  initialValue?: string;
 }
 
-export default function SearchComponent({ onSelect, placeholder }: SearchComponentProps) {
-  const [query, setQuery] = useState<string>("");
-  const [results, setResults] = useState<Movie[]>([]);
+export default function SearchComponent({
+  onSelect,
+  placeholder,
+  initialValue = ""
+}: SearchComponentProps) {
+  const [query, setQuery] = useState<string>(initialValue);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [displayCount, setDisplayCount] = useState<number>(5); // Initial display count
-  const [error, setError] = useState<string>("");
-  const listRef = useRef<HTMLUListElement>(null); // Ref for the scrollable list
+  const [displayCount, setDisplayCount] = useState<number>(5);
+  const [isFocused, setIsFocused] = useState(false);
+  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    // Reset displayCount when query changes or an Movie is selected/cleared
-    if (query.trim() === "" || selectedMovie) {
-      setResults([]);
-      setDisplayCount(5); // Reset to initial display count
-      setError(""); // Clear error
-      return;
+    if (initialValue && !selectedMovie) {
+      setQuery(initialValue);
     }
+  }, [initialValue]);
 
-    const fetchActors = async () => {
-      try {
-        const response = await fetch(endpoints.movieSearch(query));
-        if (!response.ok) {
-          throw new Error("Failed to fetch movies.");
-        }
-        const data: Movie[] = await response.json();
-        setResults(data);
-        setDisplayCount(5); // Ensure display count is reset when new results arrive
-        setError(""); // Clear error on success
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-        setResults([]); // Clear results on error
-        setError("Failed to fetch movies. Please try again.");
-      }
-    };
+  const debouncedQuery = useDebounce(query, 300);
 
-    const debounce = setTimeout(fetchActors, 300);
-    return () => clearTimeout(debounce);
-  }, [query, selectedMovie]);
+  const isSearchEnabled = debouncedQuery.length > 2 && (!selectedMovie || debouncedQuery !== selectedMovie.label);
+
+  const {
+    data: results = [],
+    isLoading,
+    isError // Added isError to destructuring
+  } = useMovieSearch(isSearchEnabled ? debouncedQuery : "");
+
+  useEffect(() => {
+    setDisplayCount(5);
+  }, [results]);
 
   const handleLoadMore = () => {
-    // Increase displayCount by 5, but not beyond the total number of results
     setDisplayCount((prevCount) => Math.min(prevCount + 5, results.length));
   };
 
@@ -65,130 +59,103 @@ export default function SearchComponent({ onSelect, placeholder }: SearchCompone
     setSelectedMovie(movie);
     setQuery(movie.label);
     onSelect(movie);
-    setResults([]); // Clear results after selection
-    setDisplayCount(5); // Reset display count
+    setIsFocused(false);
   };
 
   const handleClearSelection = () => {
     setSelectedMovie(null);
     setQuery("");
     onSelect(null);
-    setResults([]); // Clear results
-    setDisplayCount(5); // Reset display count
-    setError(""); // Clear error
+    setDisplayCount(5);
   };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setIsFocused(false);
+    }, 200);
+  };
+
+  const showDropdown = isFocused && !selectedMovie && results.length > 0 && query.length > 2;
 
   return (
     <div className="w-full max-w-md mx-auto relative">
       <div className="relative">
+        {/* Search Icon */}
         <svg
-          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
 
         <FormInput
           value={query}
+          onFocus={() => setIsFocused(true)}
+          onBlur={handleBlur}
           onChange={(e) => {
-            if (selectedMovie) {
-              handleClearSelection();
-            }
+            if (selectedMovie) setSelectedMovie(null);
             setQuery(e.target.value);
+            setIsFocused(true);
           }}
-          placeholder={placeholder}
+          placeholder={placeholder || "Search movies..."}
           aria-label="Search for movies"
-          helperText="Type to search for movies..."
-          error={error}
+          // Add padding-left (pl-10) so text doesn't overlap the icon
+          className="pl-10"
+          // Fix: map isError boolean to string or undefined
+          error={isError ? "Error fetching movies" : undefined}
         />
 
-        {selectedMovie && (
+        {query.length > 0 && (
           <button
             onClick={handleClearSelection}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 z-10"
+            type="button"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
       </div>
 
-      {!selectedMovie && results.length > 0 && (
+      {showDropdown && (
         <ul
           ref={listRef}
-          className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto"
+          className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto"
         >
-          {results.slice(0, displayCount).map(
-            (
-              movie // Slice results to limit display
-            ) => (
-              <li
-                key={movie?.id}
-                className="p-4 border-b border-gray-100 last:border-none flex items-center space-x-4 cursor-pointer hover:bg-blue-50 transition-colors"
-                onClick={() => handleSelection(movie)}
-              >
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  {movie?.imageUrl ? (
-                    <img
-                      src={movie?.imageUrl}
-                      alt={movie?.label}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-gray-500 font-semibold text-lg">
-                      {movie?.label}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-base text-gray-800">
-                    {movie?.label}
-                  </h3>
-                  <p className="text-sm text-gray-500">ID: {movie?.id}</p>
-                  {movie?.description && (
-                    <p className="text-sm text-gray-500">
-                      {movie?.description}
-                    </p>
-                  )}
-                  {movie?.type && (
-                    <p className="text-sm text-gray-500">{movie?.type}</p>
-                  )}
-                </div>
-              </li>
-            )
-          )}
-          {results.length > displayCount && ( // Show "Load More" button if there are more results
+          {results.slice(0, displayCount).map((movie) => (
+            <li
+              key={movie?.id}
+              className="p-4 border-b border-gray-100 last:border-none flex items-center space-x-4 cursor-pointer hover:bg-blue-50 transition-colors"
+              onClick={() => handleSelection(movie)}
+            >
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
+                {movie?.imageUrl ? (
+                  <img src={movie?.imageUrl} alt={movie?.label} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-gray-500 font-semibold text-lg">{movie?.label?.charAt(0)}</span>
+                )}
+              </div>
+              <div>
+                <h3 className="font-semibold text-base text-gray-800">{movie?.label}</h3>
+                <p className="text-sm text-gray-500">ID: {movie?.id}</p>
+                {movie?.year && <p className="text-xs text-gray-400">{movie.year}</p>}
+              </div>
+            </li>
+          ))}
+          {results.length > displayCount && (
             <li className="p-4 text-center">
-              <button
-                onClick={handleLoadMore}
-                className="text-blue-600 hover:underline font-medium"
-              >
+              <button onClick={handleLoadMore} className="text-blue-600 hover:underline font-medium">
                 Load More ({results.length - displayCount} remaining)
               </button>
             </li>
           )}
         </ul>
       )}
+      {isLoading && isFocused && <div className="absolute top-full w-full p-2 text-center text-sm text-gray-500">Searching...</div>}
     </div>
   );
 }

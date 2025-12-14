@@ -1,41 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { Actor } from "@/src/hooks/api/useActors";
 import { useSharedProductions } from "@/src/hooks/api/useProductSearch";
 
 export default function ProductionsPage() {
-  const [actor1, setActor1] = useState<Actor | null>(null);
-  const [actor2, setActor2] = useState<Actor | null>(null);
-  const [isSearchActive, setIsSearchActive] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  const actor1Id = searchParams.get("actor1") || undefined;
+  const actor2Id = searchParams.get("actor2") || undefined;
+  const actor1Label = searchParams.get("label1") || "";
+  const actor2Label = searchParams.get("label2") || "";
 
   const {
     data: sharedCastings = [],
     isLoading: loading,
     error,
-  } = useSharedProductions(
-    isSearchActive ? actor1?.id : undefined,
-    isSearchActive ? actor2?.id : undefined
-  );
+  } = useSharedProductions(actor1Id, actor2Id);
 
-  const handleFetchCastings = () => {
-    if (!actor1 || !actor2) {
-      alert("Please select both actors.");
-      return;
+  const updateUrl = (key: "actor1" | "actor2", actor: Actor | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const idKey = key;
+    const labelKey = key === "actor1" ? "label1" : "label2";
+
+    if (actor) {
+      params.set(idKey, actor.id);
+      params.set(labelKey, actor.label);
+    } else {
+      params.delete(idKey);
+      params.delete(labelKey);
     }
-    setIsSearchActive(true);
-  };
-
-  const handleSelectActor1 = (actor: Actor | null) => {
-    setActor1(actor);
-    setIsSearchActive(false);
-  };
-
-  const handleSelectActor2 = (actor: Actor | null) => {
-    setActor2(actor);
-    setIsSearchActive(false);
+    router.push(`?${params.toString()}`);
   };
 
   return (
@@ -46,16 +43,17 @@ export default function ProductionsPage() {
             Shared Productions
           </h1>
           <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl">
-            <SearchComponent onSelect={handleSelectActor1} />
-            <SearchComponent onSelect={handleSelectActor2} />
+            <SearchComponent
+              placeholder="Select First Actor"
+              onSelect={(a) => updateUrl("actor1", a)}
+              initialValue={actor1Label}
+            />
+            <SearchComponent
+              placeholder="Select Second Actor"
+              onSelect={(a) => updateUrl("actor2", a)}
+              initialValue={actor2Label}
+            />
           </div>
-          <button
-            onClick={handleFetchCastings}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            disabled={loading}
-          >
-            {loading ? "Fetching..." : "Fetch Shared Productions"}
-          </button>
         </div>
       </div>
 
@@ -64,8 +62,7 @@ export default function ProductionsPage() {
         <>
           <h2 className="text-xl font-bold text-center">Shared Productions</h2>
           <div className="flex items-center justify-center w-full mt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {/* Note: Logic simplified to standard map since hook returns array */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4">
               {sharedCastings.map((production, idx) => (
                 <div
                   key={production.id || `${production.title}-${idx}`}
@@ -99,9 +96,16 @@ export default function ProductionsPage() {
         </>
       )}
 
-      {sharedCastings.length === 0 && !loading && isSearchActive && (
-        <p className="mt-4 text-center text-gray-600">No shared productions found.</p>
+      {loading && (
+        <div className="flex justify-center mt-8">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
       )}
+
+      {sharedCastings.length === 0 && !loading && actor1Id && actor2Id && (
+        <p className="mt-4 text-center text-gray-600">No shared productions found between these actors.</p>
+      )}
+
       {error && <p className="text-red-500 mt-4 text-center">Error fetching shared castings.</p>}
     </main>
   );

@@ -34,6 +34,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ) => {
     const inputId =
       id || `form-input-${Math.random().toString(36).substr(2, 9)}`;
+
     const describedByIds = [];
     if (error) {
       describedByIds.push(`${inputId}-error`);
@@ -53,9 +54,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={`block text-sm font-medium text-gray-700 mb-1 ${
-              disabled ? "opacity-50" : ""
-            } ${labelClassName || ""}`}
+            className={`block text-sm font-medium text-gray-700 mb-1 ${disabled ? "opacity-50" : ""
+              } ${labelClassName || ""}`}
           >
             {label}
             {showRequired && <span className="text-red-500 ml-1">*</span>}
@@ -71,11 +71,10 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
          disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50
          placeholder:text-gray-400
-         ${
-           error
-             ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-             : "border-gray-300 hover:border-gray-400"
-         }
+         ${error
+              ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+              : "border-gray-300 hover:border-gray-400"
+            }
          ${className || ""}
        `}
           placeholder={placeholder}

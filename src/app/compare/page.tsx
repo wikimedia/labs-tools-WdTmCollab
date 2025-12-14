@@ -1,56 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import SearchComponent from "@/src/components/compare/searchComponent"; // Assuming this handles Movie searching
+import { useRouter, useSearchParams } from "next/navigation";
+import SearchComponent from "@/src/components/compare/searchComponent";
 import { Movie, useSharedActorsFromMovies } from "@/src/hooks/api/useProductSearch";
 
 export default function SharedActorsFromMovies() {
-  const [movie1, setMovie1Name] = useState<Movie | null>(null);
-  const [movie2, setMovie2Name] = useState<Movie | null>(null);
-  const [isSearchActive, setIsSearchActive] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // 1. Use the Hook
+  const movie1Id = searchParams.get("movie1") || undefined;
+  const movie2Id = searchParams.get("movie2") || undefined;
+
+  const movie1Label = searchParams.get("label1") || "";
+  const movie2Label = searchParams.get("label2") || "";
+
   const {
     data: sharedActors = [],
     isLoading: loading,
     error
-  } = useSharedActorsFromMovies(
-    isSearchActive ? movie1?.id : undefined,
-    isSearchActive ? movie2?.id : undefined
-  );
+  } = useSharedActorsFromMovies(movie1Id, movie2Id);
 
-  const handleFetch = () => {
-    if (!movie1 || !movie2) {
-      alert("Please select both movies.");
-      return;
+  const updateUrl = (key: "movie1" | "movie2", movie: Movie | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const idKey = key;
+    const labelKey = key === "movie1" ? "label1" : "label2";
+
+    if (movie) {
+      params.set(idKey, movie.id);
+      params.set(labelKey, movie.label);
+    } else {
+      params.delete(idKey);
+      params.delete(labelKey);
     }
-    if (!movie1.id || !movie2.id) {
-      alert("One or both movie names are not recognized.");
-      return;
-    }
-    setIsSearchActive(true);
+    router.push(`?${params.toString()}`);
   };
-
-  const handleSelectMovie1 = (m: Movie | null) => { setMovie1Name(m); setIsSearchActive(false); };
-  const handleSelectMovie2 = (m: Movie | null) => { setMovie2Name(m); setIsSearchActive(false); };
 
   return (
     <main className="flex-grow">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Shared Actors from Movies</h1>
         <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* Ensure generic types match if SearchComponent is strictly typed */}
-          <SearchComponent placeholder="Search First Movie" onSelect={handleSelectMovie1} />
-          <SearchComponent placeholder="Search Second Movie" onSelect={handleSelectMovie2} />
+          <SearchComponent
+            placeholder="Search First Movie"
+            onSelect={(m) => updateUrl("movie1", m)}
+            initialValue={movie1Label}
+          />
+          <SearchComponent
+            placeholder="Search Second Movie"
+            onSelect={(m) => updateUrl("movie2", m)}
+            initialValue={movie2Label}
+          />
         </div>
 
-        <button
-          onClick={handleFetch}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          disabled={loading}
-        >
-          {loading ? "Fetching..." : "Fetch Shared Actors"}
-        </button>
+        {loading && (
+          <div className="flex justify-center mt-8">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
 
         {error && <p className="text-red-500 mt-4">Error fetching shared actors.</p>}
 
@@ -92,7 +98,7 @@ export default function SharedActorsFromMovies() {
           </div>
         )}
 
-        {sharedActors.length === 0 && !loading && isSearchActive && (
+        {sharedActors.length === 0 && !loading && movie1Id && movie2Id && (
           <p className="mt-4 text-gray-600">No shared actors found.</p>
         )}
       </div>

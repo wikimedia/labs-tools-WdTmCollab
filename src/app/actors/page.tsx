@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { useCoActors, Actor } from "@/src/hooks/api/useActors";
 
 export default function ActorsPage() {
-  const [actor, setActor] = useState<Actor | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isSearchActive, setIsSearchActive] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  const actorId = searchParams.get("actorId") || "";
+  const actorLabel = searchParams.get("label") || "";
+  const pageParam = searchParams.get("page");
+
+  const currentPage = pageParam ? parseInt(pageParam) : 1;
   const ITEMS_PER_PAGE = 9;
 
   const {
@@ -17,36 +21,43 @@ export default function ActorsPage() {
     isError,
     isPlaceholderData
   } = useCoActors(
-    actor?.id || "",
+    actorId,
     currentPage,
     ITEMS_PER_PAGE
   );
 
   const displayResults = results.slice(0, ITEMS_PER_PAGE);
 
-  const handleFetchClick = () => {
-    if (!actor) {
-      alert("Please select an actor first.");
-      return;
+  const handleSelectActor = (selectedActor: Actor | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (selectedActor) {
+      params.set("actorId", selectedActor.id);
+      params.set("label", selectedActor.label);
+      params.set("page", "1");
+    } else {
+      params.delete("actorId");
+      params.delete("label");
+      params.delete("page");
     }
-    setCurrentPage(1);
-    setIsSearchActive(true);
+
+    router.push(`?${params.toString()}`);
   };
 
-  const handleSelectActor = (selectedActor: Actor | null) => {
-    setActor(selectedActor);
-    setIsSearchActive(false);
-    setCurrentPage(1);
+  const updatePage = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`);
   };
 
   const handleNextPage = () => {
     if (!isPlaceholderData && results.length === ITEMS_PER_PAGE) {
-      setCurrentPage((prev) => prev + 1);
+      updatePage(currentPage + 1);
     }
   };
 
   const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
+    updatePage(Math.max(currentPage - 1, 1));
   };
 
   return (
@@ -61,36 +72,29 @@ export default function ActorsPage() {
           </p>
 
           <div className="space-y-4">
-            <SearchComponent onSelect={handleSelectActor} />
-
-            {actor && (
-              <div className="flex justify-center pt-2">
-                <button
-                  onClick={handleFetchClick}
-                  className="w-full max-w-md px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 disabled:opacity-60 disabled:scale-100"
-                  disabled={loading && !isPlaceholderData}
-                >
-                  {loading ? "Searching..." : `Find ${actor.label}'s Co-Actors`}
-                </button>
-              </div>
-            )}
+            {/* Pass initialValue from URL to hydrate the input */}
+            <SearchComponent
+              onSelect={handleSelectActor}
+              initialValue={actorLabel}
+            />
           </div>
         </div>
 
-        {loading && results.length === 0 && (
+        {loading && (
           <div className="mt-8 text-center">
             <p className="text-gray-600">Loading collaborations...</p>
           </div>
         )}
 
+        {/* Show results if we have them */}
         {displayResults.length > 0 && (
           <div className="w-full max-w-5xl mt-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               Collaborators of{" "}
-              <span className="text-blue-600">{actor?.label}</span>
+              <span className="text-blue-600">{actorLabel || "Selected Actor"}</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {results.map((coActor: any) => (
+              {displayResults.map((coActor: any) => (
                 <div
                   key={coActor.actorId}
                   className="flex flex-col items-center bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300"
@@ -144,7 +148,7 @@ export default function ActorsPage() {
           </div>
         )}
 
-        {!loading && results.length === 0 && isSearchActive && actor && (
+        {!loading && displayResults.length === 0 && actorId && (
           <p className="mt-8 text-center text-gray-600">
             No co-actors found on this page.
           </p>
