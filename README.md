@@ -20,7 +20,9 @@ _**WdTmCollab**_ (Wikidata Transmedia Collaboration Explorer) is a tool which le
   bun dev
   ```
 
-The application [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+To access the locally running development version, open http://localhost:3000 in your browser after starting the frontend server.
+
+To access the publicly deployed tool, visit https://wdtmcollab.toolforge.org.
 
 ## Developer Guide
 
