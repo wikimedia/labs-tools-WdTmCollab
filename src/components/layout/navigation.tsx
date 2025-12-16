@@ -10,7 +10,7 @@ export default function Navigation() {
             className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
             aria-label="View co-actors and collaborators"
           >
-            Co-Actors/Collabs
+            Find Collaborators
           </Link>
         </li>
         <li>
@@ -28,7 +28,7 @@ export default function Navigation() {
             className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
             aria-label="Compare cross-project actors"
           >
-            Cross-project Actors
+            Compare Actors
           </Link>
         </li>
       </ul>
