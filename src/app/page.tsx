@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter
 import { endpoints } from "@/utils/endpoints";
+import SearchComponent from "@/src/components/searchComponent"; // Import the Search Component
+import { Actor } from "@/src/hooks/api/useActors"; // Import Actor type for type safety
 
 export default function Home() {
+  const router = useRouter(); // Initialize router
+
   interface PopularActor {
     id: string;
     name: string;
@@ -33,6 +38,15 @@ export default function Home() {
 
     fetchPopular();
   }, []);
+
+  // Handle user selecting an actor from the dropdown
+  const handleActorSelect = (actor: Actor | null) => {
+    if (actor) {
+      // Navigate directly to the actor's detail/analytics page
+      router.push(`/actors/${actor.id}`);
+    }
+  };
+
   return (
     <main>
       <div className="container mx-auto px-4 py-12">
@@ -40,11 +54,20 @@ export default function Home() {
           <h1 className="text-4xl font-bold mb-4">
             Wikidata TransMedia Collaboration
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Explore the interconnected world of actors, discover frequent
             collaborators, and visualize the networks of the entertainment
             industry.
           </p>
+
+          {/* --- SEARCH COMPONENT INTEGRATION --- */}
+          <div className="max-w-xl mx-auto relative z-10">
+            <SearchComponent
+              onSelect={handleActorSelect}
+              placeholder="Search for an actor (e.g., Tom Hanks)..."
+            />
+          </div>
+          {/* ---------------------------------- */}
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
@@ -70,29 +93,25 @@ export default function Home() {
             title="Collaboration Clusters"
             description="Visualize groups of actors who frequently work together"
             icon={<ClusterIcon />}
-            link="/shared-castings"
+            link="/clusters"
           />
         </section>
 
         <section className="bg-white rounded-xl shadow-md p-8 mb-16">
           <h2 className="text-2xl font-bold mb-4">Popular Actors</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {loadingPopular ? (
-              <div className="col-span-4 text-center text-gray-500">
+              <div className="col-span-full text-center py-8 text-gray-500">
                 Loading popular actors...
               </div>
             ) : (
-              Array.from(
-                new Map(
-                  popularActors.map((prod: any) => [prod.name, prod])
-                ).values()
-              ).map((actor: any, idx: number) => (
+              popularActors.map((actor, idx) => (
                 <Link
                   key={actor.id ? actor.id : `${actor.name}-${idx}`}
                   href={`/actors/${actor.id}`}
-                  className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-4"
+                  className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors gap-3 group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
+                  <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100 group-hover:border-blue-200">
                     {actor.imageUrl ? (
                       <img
                         src={actor.imageUrl}
@@ -100,16 +119,17 @@ export default function Home() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-lg">
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold text-lg">
                         {actor.name.charAt(0)}
                       </div>
                     )}
                   </div>
-                  <div className="flex-grow">
-                    <div className="font-medium">{actor.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {actor.nominationCount} Nominations • {actor.awardCount}{" "}
-                      awards
+                  <div className="flex-grow min-w-0">
+                    <div className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                      {actor.name}
+                    </div>
+                    <div className="text-xs text-gray-500 truncate">
+                      {actor.awardCount} awards
                     </div>
                   </div>
                 </Link>
@@ -136,11 +156,13 @@ function FeatureCard({
   return (
     <Link
       href={link}
-      className="block bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+      className="block bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
     >
-      <div className="text-blue-600 mb-4">{icon}</div>
-      <h3 className="font-bold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <div className="text-blue-600 mb-4 bg-blue-50 w-12 h-12 flex items-center justify-center rounded-lg">
+        {icon}
+      </div>
+      <h3 className="font-bold text-lg mb-2 text-gray-800">{title}</h3>
+      <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
     </Link>
   );
 }
@@ -229,5 +251,3 @@ function ClusterIcon() {
     </svg>
   );
 }
-
-// Note: popular actors are loaded from backend /actors/popular

@@ -4,16 +4,14 @@ import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useActorDetails } from "@/src/hooks/api/useActors";
+import ActorAnalytics from "@/src/components/actors/ActorAnalytics";
 
 export default function ActorDetailPage() {
   const params = useParams();
   const actorId = (params?.id as string) ?? "";
 
-  // 1. USE THE HOOK
-  // This replaces all the manual fetch, setState, and try/catch logic
   const { data: actor, isLoading, error } = useActorDetails(actorId);
 
-  // Helper formatting function
   function formatDate(date?: string | null) {
     if (!date) return null;
     try {
@@ -29,7 +27,6 @@ export default function ActorDetailPage() {
     }
   }
 
-  // 2. RENDER LOADING/ERROR STATES
   if (isLoading) {
     return (
       <main className="container mx-auto px-4 py-8">
@@ -48,7 +45,6 @@ export default function ActorDetailPage() {
     );
   }
 
-  // 3. RENDER CONTENT (Exactly as before, but using 'actor' from hook)
   return (
     <main>
       <div className="container mx-auto px-4 py-8">
@@ -76,7 +72,8 @@ export default function ActorDetailPage() {
           </Link>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white overflow-hidden">
+          {/* Header Section */}
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-center gap-6">
               <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -97,7 +94,7 @@ export default function ActorDetailPage() {
 
               <div className="flex-1">
                 <h1 className="text-3xl font-bold mb-1">{actor.name}</h1>
-                <div className="text-sm text-gray-500 mb-2">id: {actor.id}</div>
+                <div className="text-sm text-gray-500 mb-2">{actor.id}</div>
 
                 {actor.bio && (
                   <p className="text-gray-700 mb-4">{actor.bio}</p>
@@ -272,6 +269,13 @@ export default function ActorDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* 2. INSERT ANALYTICS HERE */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Network & Analytics</h2>
+          <ActorAnalytics actorId={actorId} />
+        </div>
+
       </div>
     </main>
   );

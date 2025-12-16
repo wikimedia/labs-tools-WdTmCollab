@@ -64,4 +64,12 @@ export const endpoints = {
    * @returns A URL string for fetching popular actors
    */
   actorPopular: () => `${API_BASE_URL}/actors/popular`,
+
+  // --- NEW COLLABORATION ENDPOINTS ---
+  collabNetwork: (id: string) => `${API_BASE_URL}/collaborators/${id}/network`,
+  collabStats: (id: string) => `${API_BASE_URL}/collaborators/${id}/stats`,
+  collabTrends: (id: string) => `${API_BASE_URL}/collaborators/${id}/trends`,
+  collabClusters: (id: string) => `${API_BASE_URL}/collaborators/${id}/clusters`,
+  commonCollaborators: (id1: string, id2: string) =>
+    `${API_BASE_URL}/collaborators/common?actor1Id=${id1}&actor2Id=${id2}`,
 };
