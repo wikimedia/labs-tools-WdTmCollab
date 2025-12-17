@@ -26,12 +26,12 @@ export default function SearchComponent({
         {movie?.imageUrl ? (
           <img src={movie?.imageUrl} alt={movie?.label} className="w-full h-full object-cover" />
         ) : (
-          <span className="text-gray-500 font-semibold text-lg">{movie?.label?.charAt(0)}</span>
+          <span className="text-gray-600 font-semibold text-lg">{movie?.label?.charAt(0)}</span>
         )}
       </div>
       <div>
         <h3 className="font-semibold text-base text-gray-800">{movie?.label}</h3>
-        <p className="text-sm text-gray-500">ID: {movie?.id}</p>
+        <p className="text-sm text-gray-600">ID: {movie?.id}</p>
         {movie?.year && <p className="text-xs text-gray-400">{movie.year}</p>}
       </div>
     </li>

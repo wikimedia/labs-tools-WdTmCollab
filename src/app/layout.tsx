@@ -49,13 +49,11 @@ export default function RootLayout({
         <Loading />
         <ErrorBoundary>
           <ClientProviders>
-            <div className="flex flex-col min-h-full">
-              <Header />
-              <main id="main-content" className="flex-grow" role="main" tabIndex={-1}>
-                {children}
-              </main>
-              <Footer />
+            <Header />
+            <div id="main-content">
+              {children}
             </div>
+            <Footer />
           </ClientProviders>
         </ErrorBoundary>
       </body>

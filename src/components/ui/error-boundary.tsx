@@ -148,7 +148,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               </div>
 
               {/* Support Message */}
-              <p className="mt-6 text-sm text-gray-500">
+              <p className="mt-6 text-sm text-gray-600">
                 If this problem persists, please contact support or try again later.
               </p>
             </div>

@@ -48,7 +48,7 @@ export default function Home() {
   };
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <div className="container mx-auto px-4 py-12">
         <section className="mb-16 text-center">
           <h1 className="text-4xl font-bold mb-4">
@@ -101,7 +101,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold mb-4">Popular Actors</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {loadingPopular ? (
-              <div className="col-span-full text-center py-8 text-gray-500">
+              <div className="col-span-full text-center py-8 text-gray-600">
                 Loading popular actors...
               </div>
             ) : (
@@ -109,7 +109,7 @@ export default function Home() {
                 <Link
                   key={actor.id ? actor.id : `${actor.name}-${idx}`}
                   href={`/actors/${actor.id}`}
-                  className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors gap-3 group"
+                  className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors gap-3 group focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
                 >
                   <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100 group-hover:border-blue-200">
                     {actor.imageUrl ? (
@@ -128,7 +128,7 @@ export default function Home() {
                     <div className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                       {actor.name}
                     </div>
-                    <div className="text-xs text-gray-500 truncate">
+                    <div className="text-xs text-gray-600 truncate">
                       {actor.awardCount} awards
                     </div>
                   </div>
@@ -156,12 +156,12 @@ function FeatureCard({
   return (
     <Link
       href={link}
-      className="block bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+      className="block bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
     >
       <div className="text-blue-600 mb-4 bg-blue-50 w-12 h-12 flex items-center justify-center rounded-lg">
         {icon}
       </div>
-      <h3 className="font-bold text-lg mb-2 text-gray-800">{title}</h3>
+      <span className="font-bold text-lg mb-2 text-gray-800">{title}</span>
       <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
     </Link>
   );

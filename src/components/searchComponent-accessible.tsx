@@ -118,7 +118,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
           <button
             onClick={handleClearSelection}
             aria-label="Clear selected actor"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600 rounded p-1"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600 rounded p-1"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -210,7 +210,7 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-gray-500 font-semibold text-lg">
+                    <span className="text-gray-600 font-semibold text-lg">
                       {actor.label.charAt(0)}
                     </span>
                   )}
@@ -219,9 +219,9 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
                   <h3 className="font-semibold text-base text-gray-800">
                     {actor.label}
                   </h3>
-                  <p className="text-sm text-gray-500">ID: {actor.id}</p>
+                  <p className="text-sm text-gray-600">ID: {actor.id}</p>
                   {actor.description && (
-                    <p className="text-sm text-gray-500">{actor.description}</p>
+                    <p className="text-sm text-gray-600">{actor.description}</p>
                   )}
                 </div>
               </li>
@@ -233,9 +233,8 @@ export default function SearchComponent({ onSelect }: SearchComponentProps) {
                   aria-label={`Load ${Math.min(
                     5,
                     results.length - displayCount
-                  )} more results. ${
-                    results.length - displayCount
-                  } results remaining`}
+                  )} more results. ${results.length - displayCount
+                    } results remaining`}
                   className="text-blue-600 hover:underline font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 rounded px-2 py-1"
                 >
                   Load More ({results.length - displayCount} remaining)

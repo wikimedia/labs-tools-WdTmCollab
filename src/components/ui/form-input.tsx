@@ -87,7 +87,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         />
 
         {helperText && !error && (
-          <p id={`${inputId}-helper`} className="mt-1 text-sm text-gray-500">
+          <p id={`${inputId}-helper`} className="mt-1 text-sm text-gray-600">
             {helperText}
           </p>
         )}

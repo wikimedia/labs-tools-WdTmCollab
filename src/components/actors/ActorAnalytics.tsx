@@ -32,7 +32,7 @@ export default function ActorAnalytics({ actorId }: { actorId: string }) {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-gray-500 italic">No major ensembles found.</p>
+            <p className="text-sm text-gray-600 italic">No major ensembles found.</p>
           )}
         </div>
       </div>
@@ -54,7 +54,7 @@ export default function ActorAnalytics({ actorId }: { actorId: string }) {
               // Passing no height prop allows it to fill the flex container
               <CollaborationNetwork data={networkData} />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500 bg-gray-50">
+              <div className="absolute inset-0 flex items-center justify-center text-gray-600 bg-gray-50">
                 Not enough data to generate network.
               </div>
             )}

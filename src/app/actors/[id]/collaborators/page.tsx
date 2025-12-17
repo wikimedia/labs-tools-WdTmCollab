@@ -32,7 +32,7 @@ export default function ActorCollaboratorsPage() {
           Back to Profile
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">Full Collaboration History</h1>
-        <p className="text-gray-500 mt-2">
+        <p className="text-gray-600 mt-2">
           All actors who have worked with this person.
         </p>
       </div>

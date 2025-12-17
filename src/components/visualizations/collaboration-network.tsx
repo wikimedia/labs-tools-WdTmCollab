@@ -102,12 +102,22 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
       .join("circle")
       .attr("r", d => nodeRadiusScale(d.weight || 1))
       .attr("fill", d => {
-        if (d.id === nodes[0].id) return "#ef4444"; // Root = Red
-        return d.type === "production" ? "#f59e0b" : "#3b82f6"; // Prod=Orange, Actor=Blue
+        if (d.id === nodes[0].id) return "#ef4444";
+        return d.type === "production" ? "#f59e0b" : "#3b82f6";
       })
       .attr("stroke", "#fff")
       .attr("stroke-width", 2)
-      .attr("cursor", "pointer");
+      .attr("cursor", "pointer")
+      .attr("tabindex", 0) // Make focusable
+      .attr("role", "button") // Semantics
+      .attr("aria-label", d => `${d.name}, ${d.type}`) // Screen reader label
+      .on("keydown", (event, d) => {
+        // Enable keyboard navigation (Enter or Space)
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          router.push(d.type === "actor" ? `/actors/${d.id}` : `/productions/${d.id}`);
+        }
+      })
 
     const label = labelGroup.selectAll("text")
       .data(nodes)
@@ -266,7 +276,7 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
           <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500 border border-white shadow-sm"></span><span>Collaborator</span></div>
           <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500 border border-white shadow-sm"></span><span>Production</span></div>
         </div>
-        <div className="mt-3 pt-3 border-t border-gray-100 text-gray-500 italic">
+        <div className="mt-3 pt-3 border-t border-gray-100 text-gray-600 italic">
           Scroll to zoom. Labels hide automatically based on zoom level.
         </div>
       </div>
@@ -276,7 +286,11 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
         className="w-full h-full touch-none block"
         width="100%"
         height="100%"
-      />
+        role="graphics-document"
+        aria-label="Force directed graph showing actor collaborations"
+      >
+        <title>Collaboration Network Graph</title>
+      </svg>
 
       {tooltip.show && tooltip.data && (
         <div

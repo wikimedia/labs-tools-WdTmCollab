@@ -120,7 +120,7 @@ export default function GenericSearch<T extends SearchItem>({
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-gray-500 font-semibold text-lg">
+          <span className="text-gray-600 font-semibold text-lg">
             {item.label.charAt(0)}
           </span>
         )}
@@ -130,7 +130,7 @@ export default function GenericSearch<T extends SearchItem>({
           {item.label}
         </h3>
         {item.description && (
-          <p className="text-sm text-gray-500">{item.description}</p>
+          <p className="text-sm text-gray-600">{item.description}</p>
         )}
       </div>
     </li>
@@ -174,8 +174,9 @@ export default function GenericSearch<T extends SearchItem>({
         {query.length > 0 && (
           <button
             onClick={handleClearSelection}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 z-10"
+            className="absolute right-3 top-1/2 -translate-y-1/2 -mr-3 p-3 z-10 text-gray-600 hover:text-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-gray-100"
             type="button"
+            aria-label="Clear search query"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -201,7 +202,7 @@ export default function GenericSearch<T extends SearchItem>({
           className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto"
         >
           {isLoading && (
-            <li className="p-4 text-center text-gray-500">Searching...</li>
+            <li className="p-4 text-center text-gray-600">Searching...</li>
           )}
 
           {results.slice(0, displayCount).map((item) =>

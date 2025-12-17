@@ -26,8 +26,7 @@ export default function ProductionDetailPage() {
         <div className="mb-6">
           <Link
             href="/productions"
-            className="text-blue-600 hover:underline flex items-center"
-          >
+            className="text-blue-600 hover:underline flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded p-1"          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4 mr-1"
@@ -49,7 +48,7 @@ export default function ProductionDetailPage() {
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-start gap-6">
-              <div className="w-full md:w-1/3 lg:w-1/4 aspect-[2/3] bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+              <div className="w-full md:w-1/3 lg:w-1/4 aspect-[2/3] bg-gray-200 rounded-lg flex items-center justify-center text-gray-600">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-16 w-16"
@@ -99,7 +98,7 @@ export default function ProductionDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No cast information available.</p>
+                <p className="text-gray-600">No cast information available.</p>
               )}
             </div>
           </div>
@@ -116,7 +115,12 @@ export default function ProductionDetailPage() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <select className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                  <label htmlFor="production-compare" className="sr-only">Select a production to compare</label>
+                  <select
+                    id="production-compare"
+                    className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    aria-label="Select a production to find common actors"
+                  >
                     <option value="">Select a production</option>
                     {mockProductions
                       .filter((p) => p.id !== productionId)

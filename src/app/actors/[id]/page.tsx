@@ -30,15 +30,18 @@ export default function ActorDetailPage() {
   if (isLoading) {
     return (
       <main className="container mx-auto px-4 py-8">
-        <div className="text-center text-gray-500 mt-20">Loading actor details...</div>
+        <h1 className="sr-only">Loading Actor Details</h1>
+        <div role="status" aria-label="Loading actor details" className="text-center text-gray-600 mt-20">
+          Loading actor details...
+        </div>
       </main>
     );
   }
-
   if (error || !actor) {
     return (
       <main className="container mx-auto px-4 py-8">
-        <div className="text-center text-red-500 mt-20">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">Error Loading Profile</h1>
+        <div className="text-center text-red-500">
           Error loading actor. Please try again later.
         </div>
       </main>
@@ -51,8 +54,7 @@ export default function ActorDetailPage() {
         <div className="mb-6">
           <Link
             href="/actors"
-            className="text-blue-600 hover:underline flex items-center"
-          >
+            className="text-blue-600 hover:underline flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded p-1"          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4 mr-1"
@@ -86,7 +88,7 @@ export default function ActorDetailPage() {
                     height={128}
                   />
                 ) : (
-                  <div className="text-gray-500 text-4xl">
+                  <div className="text-gray-600 text-4xl">
                     {actor.name?.charAt(0) ?? "?"}
                   </div>
                 )}
@@ -94,7 +96,7 @@ export default function ActorDetailPage() {
 
               <div className="flex-1">
                 <h1 className="text-3xl font-bold mb-1">{actor.name}</h1>
-                <div className="text-sm text-gray-500 mb-2">{actor.id}</div>
+                <div className="text-sm text-gray-600 mb-2">{actor.id}</div>
 
                 {actor.bio && (
                   <p className="text-gray-700 mb-4">{actor.bio}</p>
@@ -167,7 +169,7 @@ export default function ActorDetailPage() {
                             <span>{a.label}</span>
                           )}
                           {a.description ? (
-                            <div className="text-gray-500 text-sm">
+                            <div className="text-gray-600 text-sm">
                               {a.description}
                             </div>
                           ) : null}
@@ -240,7 +242,7 @@ export default function ActorDetailPage() {
                                   height={40}
                                 />
                               ) : (
-                                <div className="text-gray-500 text-center">
+                                <div className="text-gray-600 text-center">
                                   {(c.name && c.name.charAt(0)) ?? "?"}
                                 </div>
                               )}
@@ -250,7 +252,7 @@ export default function ActorDetailPage() {
                                 {c.name ?? shortId ?? "Unknown"}
                               </div>
                               {c.sharedWorks ? (
-                                <div className="text-gray-500">
+                                <div className="text-gray-600">
                                   Shared: {String(c.sharedWorks)}
                                 </div>
                               ) : null}

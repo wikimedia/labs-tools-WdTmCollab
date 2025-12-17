@@ -24,7 +24,7 @@ export default function ClustersPage() {
               <p className="text-gray-600 mb-4">{cluster.description}</p>
 
               <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                <h3 className="text-sm font-medium text-gray-600 mb-2">
                   Top Actors:
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -41,7 +41,7 @@ export default function ClustersPage() {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                <h3 className="text-sm font-medium text-gray-600 mb-2">
                   Common Productions:
                 </h3>
                 <div className="flex flex-wrap gap-2">

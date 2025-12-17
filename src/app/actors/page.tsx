@@ -64,7 +64,7 @@ export default function ActorsPage() {
           <h1 className="text-4xl font-bold text-center text-gray-800">
             Find Actor Collaborations
           </h1>
-          <p className="text-center text-gray-500 text-lg">
+          <p className="text-center text-gray-600 text-lg">
             Start by searching for an actor to see who they frequently work
             with.
           </p>
@@ -114,7 +114,7 @@ export default function ActorsPage() {
                     {coActor.name}
                   </h3>
                   {coActor.description && (
-                    <p className="text-sm text-gray-500 text-center mt-1">
+                    <p className="text-sm text-gray-600 text-center mt-1">
                       {coActor.description}
                     </p>
                   )}

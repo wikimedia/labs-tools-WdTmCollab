@@ -30,7 +30,7 @@ export default function ActorCard({
           {imageUrl ? (
             <img src={imageUrl} alt={name} />
           ) : (
-            <div className="flex items-center justify-center w-full h-full text-gray-500">
+            <div className="flex items-center justify-center w-full h-full text-gray-600">
               {name}
               {id}
             </div>
