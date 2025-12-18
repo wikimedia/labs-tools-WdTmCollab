@@ -81,8 +81,8 @@ export default function ActorsPage() {
         </div>
 
         {loading && (
-          <div className="mt-8 text-center">
-            <p className="text-gray-600">Loading collaborations...</p>
+          <div className="w-full max-w-5xl mt-12">
+            <SkeletonLoader type="actor" count={8} />
           </div>
         )}
 
