@@ -1,28 +1,20 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import FormInput from "@/src/components/ui/form-input";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
+import { Search, X, AlertCircle } from "lucide-react";
+import { useDebouncedValue } from "@/utils/debounce";
+import { SkeletonRepeat, SkeletonRow } from "../ui/skeleton-loader";
+import { Button } from "../ui/button";
 
-// Helper for debouncing
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debouncedValue;
-}
-
-// Generic search item interface
 export interface SearchItem {
   id: string;
   label: string;
   imageUrl?: string;
   description?: string;
-  [key: string]: any; // Allow additional properties
+  [key: string]: unknown;
 }
 
-// Generic search hook result interface
 export interface SearchHookResult<T> {
   data?: T[];
   isLoading: boolean;
@@ -32,195 +24,188 @@ export interface SearchHookResult<T> {
 interface GenericSearchProps<T extends SearchItem> {
   onSelect: (item: T | null) => void;
   placeholder?: string;
-  initialValue?: string;
   useSearchHook: (query: string) => SearchHookResult<T>;
   renderItem?: (item: T) => React.ReactNode;
-  getItemKey?: (item: T) => string;
-  ariaLabel?: string;
-  errorMessage?: string;
 }
 
 export default function GenericSearch<T extends SearchItem>({
   onSelect,
   placeholder = "Search...",
-  initialValue = "",
   useSearchHook,
   renderItem,
-  getItemKey,
-  ariaLabel = "Search",
-  errorMessage = "Error fetching results",
 }: GenericSearchProps<T>) {
-  const [query, setQuery] = useState<string>(initialValue);
-  const [selectedItem, setSelectedItem] = useState<T | null>(null);
-  const [displayCount, setDisplayCount] = useState<number>(5);
-  const [isFocused, setIsFocused] = useState(false);
-  const listRef = useRef<HTMLUListElement>(null);
+  const [query, setQuery] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
 
-  useEffect(() => {
-    if (initialValue && !selectedItem) {
-      setQuery(initialValue);
-    }
-  }, [initialValue]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const debouncedQuery = useDebounce(query, 300);
-
-  const shouldSearch =
-    debouncedQuery.length > 2 &&
-    (!selectedItem || debouncedQuery !== selectedItem.label);
+  const debouncedQuery = useDebouncedValue(query, 300);
+  const shouldFetch = debouncedQuery.length > 2;
 
   const {
     data: results = [],
     isLoading,
     isError,
-  } = useSearchHook(shouldSearch ? debouncedQuery : "");
+  } = useSearchHook(shouldFetch ? debouncedQuery : "");
 
+  /** Ensure portal only renders on client */
   useEffect(() => {
-    setDisplayCount(5);
-  }, [debouncedQuery]);
+    setMounted(true);
+  }, []);
 
-  const handleLoadMore = () => {
-    setDisplayCount((prev) => Math.min(prev + 5, results.length));
-  };
+  /** Close on outside click */
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
 
-  const handleSelection = (item: T) => {
-    setSelectedItem(item);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /** Position dropdown under input */
+  useLayoutEffect(() => {
+    if (!isOpen || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+
+    setDropdownStyle({
+      position: "fixed",
+      top: rect.bottom + 8,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 9999,
+    });
+  }, [isOpen, query]);
+
+  const handleSelect = (item: T) => {
     setQuery(item.label);
+    setIsOpen(false);
     onSelect(item);
-    setIsFocused(false);
   };
 
-  const handleClearSelection = () => {
-    setSelectedItem(null);
+  const handleClear = () => {
     setQuery("");
+    setIsOpen(false);
     onSelect(null);
-    setDisplayCount(5);
   };
-
-  const handleBlur = () => {
-    setTimeout(() => {
-      setIsFocused(false);
-    }, 200);
-  };
-
-  const showDropdown =
-    isFocused && !selectedItem && results.length > 0 && query.length > 2;
-
-  // Default item renderer
-  const defaultRenderItem = (item: T) => (
-    <li
-      key={getItemKey ? getItemKey(item) : item.id}
-      className="p-4 border-b border-gray-100 last:border-none flex items-center space-x-4 cursor-pointer hover:bg-blue-50 transition-colors"
-      onClick={() => handleSelection(item)}
-    >
-      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
-        {item.imageUrl ? (
-          <img
-            src={item.imageUrl}
-            alt={item.label}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-gray-600 font-semibold text-lg">
-            {item.label.charAt(0)}
-          </span>
-        )}
-      </div>
-      <div>
-        <h3 className="font-semibold text-base text-gray-800">
-          {item.label}
-        </h3>
-        {item.description && (
-          <p className="text-sm text-gray-600">{item.description}</p>
-        )}
-      </div>
-    </li>
-  );
 
   return (
-    <div className="w-full max-w-md mx-auto relative">
-      <div className="relative">
-        {/* Search Icon */}
-        <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    <>
+      <div
+        ref={containerRef}
+        className="relative w-full max-w-2xl mx-auto"
+      >
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setIsOpen(true);
+            }}
+            onFocus={() => setIsOpen(true)}
+            placeholder={placeholder}
+            className="w-full h-14 pl-12 pr-12 rounded-xl border border-input bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-ring text-lg"
+            aria-expanded={isOpen}
           />
-        </svg>
 
-        <FormInput
-          type="text"
-          value={query}
-          onFocus={() => setIsFocused(true)}
-          onBlur={handleBlur}
-          onChange={(e) => {
-            if (selectedItem) setSelectedItem(null);
-            setQuery(e.target.value);
-            setIsFocused(true);
-          }}
-          placeholder={placeholder}
-          aria-label={ariaLabel}
-          className="pl-10"
-          error={isError ? errorMessage : undefined}
-        />
-
-        {query.length > 0 && (
-          <button
-            onClick={handleClearSelection}
-            className="absolute right-3 top-1/2 -translate-y-1/2 -mr-3 p-3 z-10 text-gray-600 hover:text-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-gray-100"
-            type="button"
-            aria-label="Clear search query"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          {query && (
+            <Button
+              onClick={handleClear}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        )}
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
-      {showDropdown && (
-        <ul
-          ref={listRef}
-          className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto"
-        >
-          {isLoading && (
-            <li className="p-4 text-center text-gray-600">Searching...</li>
-          )}
+      {mounted && isOpen && query.length > 0 &&
+        createPortal(
+          <div
+            style={dropdownStyle}
+            className="bg-popover text-popover-foreground rounded-xl border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95"
+          >
+            {query.length < 3 && (
+              <div className="p-4 text-sm text-muted-foreground text-center">
+                Type at least 3 characters...
+              </div>
+            )}
 
-          {results.slice(0, displayCount).map((item) =>
-            renderItem ? renderItem(item) : defaultRenderItem(item)
-          )}
+            {shouldFetch && isLoading &&
+              <SkeletonRepeat count={3}>
+                <SkeletonRow />
+              </SkeletonRepeat>
+            }
 
-          {results.length > displayCount && (
-            <li className="p-4 text-center">
-              <button
-                onClick={handleLoadMore}
-                className="text-blue-600 hover:underline font-medium"
-              >
-                Load More ({results.length - displayCount} remaining)
-              </button>
-            </li>
-          )}
-        </ul>
-      )}
-    </div>
+            {shouldFetch && isError && !isLoading && (
+              <div className="p-6 text-center text-destructive flex flex-col items-center">
+                <AlertCircle className="h-8 w-8 mb-2" />
+                <p>Failed to load results.</p>
+              </div>
+            )}
+
+            {shouldFetch && !isLoading && !isError && results.length === 0 && (
+              <div className="p-6 text-center text-muted-foreground">
+                No results found for "{query}"
+              </div>
+            )}
+
+            {shouldFetch && !isLoading && results.length > 0 && (
+              <ul className="max-h-[300px] overflow-y-auto py-2">
+                {results.map((item) => (
+                  <li key={item.id}>
+                    {renderItem ? (
+                      <div onClick={() => handleSelect(item)}>
+                        {renderItem(item)}
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={() => handleSelect(item)}
+                        className="w-full flex items-center p-3 hover:bg-muted/50 transition-colors text-left"
+                      >
+                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0 border">
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt=""
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span className="font-medium text-muted-foreground uppercase">
+                              {item.label.charAt(0)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="ml-4 min-w-0">
+                          <p className="font-medium truncate">
+                            {item.label}
+                          </p>
+                          {item.description && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>,
+          document.body
+        )}
+    </>
   );
 }

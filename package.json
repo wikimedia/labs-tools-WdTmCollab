@@ -13,13 +13,16 @@
     "@tanstack/react-query": "^5.71.1",
     "@types/d3": "^7.4.3",
     "axios": "^1.8.4",
+    "clsx": "^2.1.1",
     "d3": "^7.9.0",
+    "lucide-react": "^0.562.0",
     "neo4j-driver": "^5.28.1",
     "next": "^15.2.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "sparql-http-client": "^3.0.1",
     "swr": "^2.3.3",
+    "tailwind-merge": "^3.4.0",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {

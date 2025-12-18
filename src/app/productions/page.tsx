@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { Actor } from "@/src/hooks/api/useActors";
 import { useSharedProductions } from "@/src/hooks/api/useProductSearch";
-import SkeletonLoader from "@/src/components/ui/skeleton-loader";
+import { Skeleton } from "@/src/components/ui/skeleton-loader";
 
 export default function ProductionsPage() {
   const router = useRouter();
@@ -103,7 +103,7 @@ export default function ProductionsPage() {
             <h2 className="text-xl font-bold text-center mb-6">
               Loading shared productions...
             </h2>
-            <SkeletonLoader type="production" count={8} />
+            <Skeleton />
           </div>
         </div>
       )}

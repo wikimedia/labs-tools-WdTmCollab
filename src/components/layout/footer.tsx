@@ -1,67 +1,51 @@
-// import Link from "next/link";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-white shadow-sm">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex md:flex-row justify-between items-center">
-          <div className="flex items-center mt-4">
-            <a
+    <footer className="border-t bg-muted/40">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center">
+            <Link
               href="https://www.wikidata.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mr-4"
+              className="opacity-80 hover:opacity-100 transition-opacity"
             >
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/f/f4/Wikidata_logo_Spanish_vertical_in_colour.svg"
                 alt="Wikidata logo"
-                className="h-10 w-10"
+                className="h-8 w-auto"
               />
-            </a>
+            </Link>
           </div>
-          <div className="justify-center items-center">
-            <p className="text-sm text-gray-800 justify-cente">
-              &copy; {new Date().getFullYear()} WDTMCollab. License for content:
-              CC0 for data, CC-BY-SA for text and media.
+
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              &copy; {new Date().getFullYear()} WDTMCollab.
+              <span className="block sm:inline sm:ml-1">
+                CC0 for data, CC-BY-SA for text.
+              </span>
             </p>
           </div>
-          <div className="justify-end">
-            <a
+
+          <div className="flex items-center">
+            <Link
               href="https://www.mediawiki.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-4"
+              className="opacity-80 hover:opacity-100 transition-opacity"
             >
-              <img
+              <Image
                 src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Wikimedia_logo_Spanish_vertical_in_colour.svg"
                 alt="MediaWiki logo"
-                className="h-10 w-10"
+                width={40}
+                height={40}
+                className="h-8 w-auto"
               />
-            </a>
+            </Link>
           </div>
-          {/* <div className="flex space-x-4">
-            <Link
-              href="/about"
-              className="text-sm text-black"
-            >
-              About
-            </Link>
-            <Link
-              href="/privacy"
-              className="text-sm text-black"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/contact"
-              className="text-sm text-black"
-            >
-              Contact
-            </Link>
-            <a href="#" className="text-sm text-black">
-              GitLab
-            </a>
-          </div> */}
         </div>
       </div>
     </footer>

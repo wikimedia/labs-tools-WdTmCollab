@@ -79,4 +79,7 @@ export const endpoints = {
   commonCollaborators: (id1: string, id2: string) =>
     `${API_BASE_URL}/api/${API_VERSION}/collaborators/common?actor1Id=${id1}&actor2Id=${id2}`,
 
+  productionDetails: (id: string) =>
+    `${API_BASE_URL}/api/${API_VERSION}/productions/details/${encodeURIComponent(id)}`,
+
 };

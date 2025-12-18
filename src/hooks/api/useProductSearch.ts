@@ -138,3 +138,15 @@ export function useSharedActorsFromMovies(movie1Id: string | undefined, movie2Id
     rateLimitStatus,
   };
 }
+
+export function useProductionDetails(id: string) {
+  return useQuery({
+    queryKey: ["productionDetails", id],
+    queryFn: async () => {
+      const res = await fetch(endpoints.productionDetails(id));
+      if (!res.ok) throw new Error("Failed to fetch details");
+      return res.json();
+    },
+    enabled: !!id,
+  });
+}
