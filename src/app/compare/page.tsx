@@ -7,6 +7,7 @@ import {
   useSharedActorsFromMovies
 } from "@/src/hooks/api/useProductSearch";
 import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
+import { Button } from "@/src/components/ui/button";
 
 export default function SharedActorsFromMovies() {
   const router = useRouter();
@@ -21,7 +22,8 @@ export default function SharedActorsFromMovies() {
   const {
     data: sharedActors = [],
     isLoading: loading,
-    error
+    error,
+    refetch,
   } = useSharedActorsFromMovies(movie1Id, movie2Id);
 
   const updateUrl = (key: "movie1" | "movie2", movie: Movie | null) => {
@@ -73,7 +75,13 @@ export default function SharedActorsFromMovies() {
         )}
 
         {error && (
-          <p className='text-red-500 mt-4'>Error fetching shared actors.</p>
+          <div className="mt-6 flex justify-center">
+            <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">We couldn’t load shared actors</h3>
+              <p className="text-gray-600 mb-4">Check your connection and try again.</p>
+              <Button onClick={() => refetch()} className="bg-blue-600 hover:bg-blue-700 text-white">Retry</Button>
+            </div>
+          </div>
         )}
 
         {sharedActors.length > 0 && (

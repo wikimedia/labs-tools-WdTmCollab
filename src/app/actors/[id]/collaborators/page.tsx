@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useCoActors } from "@/src/hooks/api/useActors"; // Using the paginated hook!
 import Link from "next/link";
 import { useState } from "react";
+import { Button } from "@/src/components/ui/button";
 
 export default function ActorCollaboratorsPage() {
   const params = useParams();
@@ -16,7 +17,8 @@ export default function ActorCollaboratorsPage() {
     data: coActors = [],
     isLoading,
     isError,
-    isPlaceholderData
+    isPlaceholderData,
+    refetch
   } = useCoActors(actorId, page, ITEMS_PER_PAGE);
 
   return (
@@ -44,8 +46,12 @@ export default function ActorCollaboratorsPage() {
       )}
 
       {isError && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-lg">
-          Failed to load collaborators.
+        <div className="mt-6 flex justify-center">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 text-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">We couldn’t load collaborators</h3>
+            <p className="text-gray-600 mb-4">Check your connection and try again.</p>
+            <Button onClick={() => refetch()} className="bg-blue-600 hover:bg-blue-700 text-white">Retry</Button>
+          </div>
         </div>
       )}
 

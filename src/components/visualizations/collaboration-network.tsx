@@ -117,7 +117,7 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
           event.preventDefault();
           router.push(d.type === "actor" ? `/actors/${d.id}` : `/productions/${d.id}`);
         }
-      })
+      });
 
     const label = labelGroup.selectAll("text")
       .data(nodes)

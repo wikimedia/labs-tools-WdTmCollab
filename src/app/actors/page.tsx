@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { useCoActors, Actor } from "@/src/hooks/api/useActors";
 import SkeletonLoader from "@/src/components/ui/skeleton-loader";
+import { Button } from "@/src/components/ui/button";
 
 export default function ActorsPage() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function ActorsPage() {
     isLoading: loading,
     isError,
     isPlaceholderData,
+    refetch,
   } = useCoActors(actorId, currentPage, ITEMS_PER_PAGE);
 
   const displayResults = results.slice(0, ITEMS_PER_PAGE);
@@ -158,9 +160,13 @@ export default function ActorsPage() {
         )}
 
         {isError && (
-          <p className="mt-8 text-center text-red-600 bg-red-100 p-4 rounded-lg">
-            Error fetching actors.
-          </p>
+          <div className="mt-8 flex justify-center">
+            <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">We couldn’t load collaborators</h3>
+              <p className="text-gray-600 mb-4">Check your connection and try again.</p>
+              <Button onClick={() => refetch()} className="bg-blue-600 hover:bg-blue-700 text-white">Retry</Button>
+            </div>
+          </div>
         )}
       </div>
     </main>
