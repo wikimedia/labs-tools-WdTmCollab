@@ -6,7 +6,12 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://wdtmcollab-api.toolforge.org";
 
 /**
- * A centralized list of API endpoints
+ * API Version - targeting v2 endpoints with rate limiting and better features
+ */
+const API_VERSION = "v2";
+
+/**
+ * A centralized list of API endpoints using v2 versioned paths
  */
 export const endpoints = {
   /**
@@ -16,7 +21,7 @@ export const endpoints = {
    * @returns A URL string for fetching shared productions
    */
   productionsShared: (actor1Id: string, actor2Id: string) =>
-    `${API_BASE_URL}/productions/shared?actor1Id=${encodeURIComponent(actor1Id)}&actor2Id=${encodeURIComponent(actor2Id)}`,
+    `${API_BASE_URL}/api/${API_VERSION}/productions/shared?actor1Id=${encodeURIComponent(actor1Id)}&actor2Id=${encodeURIComponent(actor2Id)}`,
 
   /**
    * Search for actors by name.
@@ -24,7 +29,7 @@ export const endpoints = {
    * @returns A URL string for the actor search API
    */
   actorSearch: (name: string) =>
-    `${API_BASE_URL}/actors/search?name=${encodeURIComponent(name)}`,
+    `${API_BASE_URL}/api/${API_VERSION}/actors/search?name=${encodeURIComponent(name)}`,
 
   /**
    * Get a list of co-actors for a given actor.
@@ -32,7 +37,7 @@ export const endpoints = {
    * @returns A URL string for fetching co-actors
    */
   co_ActorSearch: (actorId: string) =>
-    `${API_BASE_URL}/actors/co-actors?actorId=${encodeURIComponent(actorId)}`,
+    `${API_BASE_URL}/api/${API_VERSION}/actors/co-actors?actorId=${encodeURIComponent(actorId)}`,
 
   /**
    * Get shared actors between two movies.
@@ -41,7 +46,7 @@ export const endpoints = {
    * @returns A URL string for fetching shared actors between two movies
    */
   sharedActors: (movie1Id: string, movie2Id: string) =>
-    `${API_BASE_URL}/productions/shared-actors?movie1=${encodeURIComponent(movie1Id)}&movie2=${encodeURIComponent(movie2Id)}`,
+    `${API_BASE_URL}/api/${API_VERSION}/productions/shared-actors?movie1=${encodeURIComponent(movie1Id)}&movie2=${encodeURIComponent(movie2Id)}`,
 
   /**
    * Get actor details (label, description, image) proxied through the backend.
@@ -49,7 +54,7 @@ export const endpoints = {
    * @returns A URL string for fetching actor details
    */
   actorDetails: (id: string) =>
-    `${API_BASE_URL}/actors/details/${encodeURIComponent(id)}`,
+    `${API_BASE_URL}/api/${API_VERSION}/actors/details/${encodeURIComponent(id)}`,
 
   /**
    * Search for productions (movies/TV) by title.
@@ -57,19 +62,21 @@ export const endpoints = {
    * @returns A URL string for the media search API
    */
   movieSearch: (title: string) =>
-    `${API_BASE_URL}/productions/search?title=${encodeURIComponent(title)}`,
+    `${API_BASE_URL}/api/${API_VERSION}/productions/search?title=${encodeURIComponent(title)}`,
 
   /**
    * Get a list of popular actors from the backend.
    * @returns A URL string for fetching popular actors
    */
-  actorPopular: () => `${API_BASE_URL}/actors/popular`,
+  actorPopular: () => `${API_BASE_URL}/api/${API_VERSION}/actors/popular`,
 
   // --- NEW COLLABORATION ENDPOINTS ---
-  collabNetwork: (id: string) => `${API_BASE_URL}/collaborators/${id}/network`,
-  collabStats: (id: string) => `${API_BASE_URL}/collaborators/${id}/stats`,
-  collabTrends: (id: string) => `${API_BASE_URL}/collaborators/${id}/trends`,
-  collabClusters: (id: string) => `${API_BASE_URL}/collaborators/${id}/clusters`,
+  collabNetwork: (id: string) => `${API_BASE_URL}/api/${API_VERSION}/collaborators/${id}/network`,
+  collabStats: (id: string) => `${API_BASE_URL}/api/${API_VERSION}/collaborators/${id}/stats`,
+  collabTrends: (id: string) => `${API_BASE_URL}/api/${API_VERSION}/collaborators/${id}/trends`,
+  collabClusters: (id: string) => `${API_BASE_URL}/api/${API_VERSION}/collaborators/${id}/clusters`,
+
   commonCollaborators: (id1: string, id2: string) =>
-    `${API_BASE_URL}/collaborators/common?actor1Id=${id1}&actor2Id=${id2}`,
+    `${API_BASE_URL}/api/${API_VERSION}/collaborators/common?actor1Id=${id1}&actor2Id=${id2}`,
+
 };

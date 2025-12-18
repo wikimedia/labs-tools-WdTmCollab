@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import React, { useState, useCallback } from "react";
 import { endpoints } from "@/utils/endpoints";
+import { fetchWithContext, formatRateLimitStatus, RateLimitStatus } from "@/utils/rateLimit";
+import { useDebounce } from "@/utils/debounce";
 import { ReactNode } from "react";
 
 // --- Types ---
@@ -36,46 +39,102 @@ export interface SharedActor {
 
 // 1. Search Movies/TV (for the Compare Page)
 export function useMovieSearch(query: string) {
-  return useQuery<Movie[]>({
-    queryKey: ["movieSearch", query],
-    queryFn: async () => {
-      const res = await fetch(endpoints.movieSearch(query));
-      if (!res.ok) throw new Error("Failed to search movies");
-      return res.json();
-    },
-    enabled: query.length > 2,
-    staleTime: 5 * 60 * 1000,
-  });
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const [debouncedCallback] = useDebounce(
+    useCallback((q: string) => {
+      setDebouncedQuery(q);
+    }, []),
+    300 // 300ms debounce delay for search
+  );
+
+  React.useEffect(() => {
+    debouncedCallback(query);
+  }, [query, debouncedCallback]);
+
+  return {
+    ...useQuery<Movie[]>({
+      queryKey: ["movieSearch", debouncedQuery],
+      queryFn: async () => {
+        const result = await fetchWithContext<Movie[]>(
+          endpoints.movieSearch(debouncedQuery),
+          {},
+          3
+        );
+
+        // Update rate limit status
+        if (result.rateLimitInfo.limit > 0) {
+          setRateLimitStatus(formatRateLimitStatus(result.rateLimitInfo));
+        }
+
+        if (result.error) throw result.error;
+        return result.data || [];
+      },
+      enabled: debouncedQuery.length > 2,
+      staleTime: 5 * 60 * 1000,
+    }),
+    rateLimitStatus,
+  };
 }
 
 // 2. Shared Productions (For Productions Page)
 // "Find all movies shared between Actor A and Actor B"
 export function useSharedProductions(actor1Id: string | undefined, actor2Id: string | undefined) {
-  return useQuery<Production[]>({
-    queryKey: ["sharedProductions", actor1Id, actor2Id],
-    queryFn: async () => {
-      if (!actor1Id || !actor2Id) return [];
-      const res = await fetch(endpoints.productionsShared(actor1Id, actor2Id));
-      if (!res.ok) throw new Error("Failed to fetch shared productions");
-      return res.json();
-    },
-    enabled: !!actor1Id && !!actor2Id, // Auto-fetch when both IDs exist
-    staleTime: 5 * 60 * 1000,
-  });
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
+
+  return {
+    ...useQuery<Production[]>({
+      queryKey: ["sharedProductions", actor1Id, actor2Id],
+      queryFn: async () => {
+        if (!actor1Id || !actor2Id) return [];
+        const result = await fetchWithContext<Production[]>(
+          endpoints.productionsShared(actor1Id, actor2Id),
+          {},
+          3
+        );
+
+        // Update rate limit status
+        if (result.rateLimitInfo.limit > 0) {
+          setRateLimitStatus(formatRateLimitStatus(result.rateLimitInfo));
+        }
+
+        if (result.error) throw result.error;
+        return result.data || [];
+      },
+      enabled: !!actor1Id && !!actor2Id,
+      staleTime: 5 * 60 * 1000,
+    }),
+    rateLimitStatus,
+  };
 }
 
 // 3. Shared Actors (For Compare Page)
 // "Find all actors shared between Movie A and Movie B"
 export function useSharedActorsFromMovies(movie1Id: string | undefined, movie2Id: string | undefined) {
-  return useQuery<SharedActor[]>({
-    queryKey: ["sharedActorsMovies", movie1Id, movie2Id],
-    queryFn: async () => {
-      if (!movie1Id || !movie2Id) return [];
-      const res = await fetch(endpoints.sharedActors(movie1Id, movie2Id));
-      if (!res.ok) throw new Error("Failed to fetch shared actors");
-      return res.json();
-    },
-    enabled: !!movie1Id && !!movie2Id, // Auto-fetch when both IDs exist
-    staleTime: 5 * 60 * 1000,
-  });
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
+
+  return {
+    ...useQuery<SharedActor[]>({
+      queryKey: ["sharedActorsMovies", movie1Id, movie2Id],
+      queryFn: async () => {
+        if (!movie1Id || !movie2Id) return [];
+        const result = await fetchWithContext<SharedActor[]>(
+          endpoints.sharedActors(movie1Id, movie2Id),
+          {},
+          3
+        );
+
+        // Update rate limit status
+        if (result.rateLimitInfo.limit > 0) {
+          setRateLimitStatus(formatRateLimitStatus(result.rateLimitInfo));
+        }
+
+        if (result.error) throw result.error;
+        return result.data || [];
+      },
+      enabled: !!movie1Id && !!movie2Id,
+      staleTime: 5 * 60 * 1000,
+    }),
+    rateLimitStatus,
+  };
 }

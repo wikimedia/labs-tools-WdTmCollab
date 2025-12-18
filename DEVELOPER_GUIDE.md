@@ -183,22 +183,219 @@ export function useActorSearch(query: string) {
 import { useActorSearch } from "@/hooks/api/useActors";
 
 export default function SearchComponent() {
-  const { data: actors = [], isLoading, isError } = useActorSearch(searchQuery);
+  const query = useActorSearch(searchQuery);
+  const { data: actors = [], isLoading, isError, rateLimitStatus } = query;
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading actors</div>;
 
   return (
-    <ul>
-      {actors.map((actor) => (
-        <li key={actor.id}>{actor.label}</li>
-      ))}
-    </ul>
+    <>
+      {rateLimitStatus && <RateLimitIndicator status={rateLimitStatus} />}
+      <ul>
+        {actors.map((actor) => (
+          <li key={actor.id}>{actor.label}</li>
+        ))}
+      </ul>
+    </>
   );
 }
 ```
 
-### How to Add a New Search Page
+### API v2 Migration Guide
+
+As of the latest update, all frontend API calls have been migrated to use the **v2 versioned endpoints** with rate limiting support, automatic retry logic, and enhanced error handling.
+
+#### Key Changes in v2 API Integration
+
+1. **Versioned Endpoints**: All endpoints now use `/api/v2/` prefix
+   - Before: `/api/actors/search?name=query`
+   - After: `/api/v2/actors/search?name=query`
+
+2. **Rate Limiting Support**: The v2 API includes rate limiting with proper headers
+   - `X-RateLimit-Limit`: Total requests allowed
+   - `X-RateLimit-Remaining`: Requests remaining
+   - `X-RateLimit-Reset`: Unix timestamp of rate limit reset
+   - `Retry-After`: Seconds to wait before retrying
+
+3. **Enhanced Error Handling**: Automatic exponential backoff retry logic for rate-limited requests (HTTP 429)
+
+4. **Deprecation Warnings**: Proper handling of deprecation headers from the backend
+
+#### Rate Limiting Utilities (`utils/rateLimit.ts`)
+
+New utilities provide comprehensive rate limit handling:
+
+```typescript
+// Parse rate limit information from response headers
+import { parseRateLimitHeaders, formatRateLimitStatus } from "@/utils/rateLimit";
+
+const response = await fetch(url);
+const rateLimitInfo = parseRateLimitHeaders(response);
+const status = formatRateLimitStatus(rateLimitInfo);
+
+console.log(status.message); // User-friendly message
+console.log(status.remaining); // Requests left
+console.log(status.resetIn); // Milliseconds until reset
+```
+
+#### Updated API Hooks Return Pattern
+
+All API hooks now return an enhanced response object with rate limit status:
+
+```typescript
+// Example: useActorSearch now returns rate limit info
+const query = useActorSearch(searchQuery);
+const {
+  data: actors,
+  isLoading,
+  isError,
+  rateLimitStatus,  // NEW: Rate limit information
+} = query;
+
+// Access rate limit status
+if (rateLimitStatus?.isLimited) {
+  console.log("Rate limited:", rateLimitStatus.message);
+}
+```
+
+#### Using Rate Limit Indicator Component
+
+Display rate limiting status to users with the new `RateLimitIndicator` component:
+
+```typescript
+"use client";
+
+import { RateLimitIndicator } from "@/components/ui/rateLimit-indicator";
+import { useActorSearch } from "@/hooks/api/useActors";
+
+export default function SearchPage() {
+  const query = useActorSearch(searchQuery);
+  const { data: actors = [], rateLimitStatus } = query;
+
+  return (
+    <div>
+      {/* Display rate limit warning to user */}
+      <RateLimitIndicator status={rateLimitStatus} />
+      
+      {/* Your search results */}
+      {actors.map((actor) => (
+        <ActorCard key={actor.id} actor={actor} />
+      ))}
+    </div>
+  );
+}
+```
+
+#### Request Debouncing for Search Inputs
+
+Search hooks automatically implement debouncing to reduce API requests:
+
+```typescript
+// useActorSearch automatically debounces with 300ms delay
+// Multiple rapid updates only trigger one API call
+import { useActorSearch } from "@/hooks/api/useActorSearch";
+
+export function SearchComponent() {
+  const [query, setQuery] = React.useState("");
+  
+  // This hook handles debouncing internally
+  const { data: results } = useActorSearch(query);
+
+  return (
+    <input
+      value={query}
+      onChange={(e) => setQuery(e.target.value)} // Debounced automatically
+      placeholder="Search (debounced)"
+    />
+  );
+}
+```
+
+#### Exponential Backoff Retry Logic
+
+Rate-limited requests automatically retry with exponential backoff:
+
+```typescript
+// Automatic retry on rate limit (HTTP 429)
+import { fetchWithRetry } from "@/utils/rateLimit";
+
+const { response, rateLimitInfo } = await fetchWithRetry(
+  url,
+  options,
+  3  // Maximum 3 retries
+);
+
+// Backoff delays: 1s, 2s, 4s, 8s... (with jitter)
+// Respects server's Retry-After header if present
+// Capped at 30 seconds maximum delay
+```
+
+#### Environment Configuration
+
+Update `.env.local` to use v2 API endpoints:
+
+```env
+# Backend API Base URL (v2 endpoints are auto-suffixed)
+NEXT_PUBLIC_API_BASE_URL=https://wdtmcollab-api.toolforge.org
+```
+
+#### Migration Checklist for Adding New Endpoints
+
+When adding a new API endpoint, follow this checklist:
+
+1. **Update endpoints.ts**: Add new endpoint with `/api/v2/` prefix
+
+   ```typescript
+   newEndpoint: (param: string) =>
+     `${API_BASE_URL}/api/v2/path/endpoint?param=${encodeURIComponent(param)}`
+   ```
+
+2. **Create/Update Hook**: Use `fetchWithContext` for automatic rate limit handling
+
+   ```typescript
+   const result = await fetchWithContext<DataType>(
+     endpoints.newEndpoint(param),
+     {},
+     3  // maxRetries
+   );
+   ```
+
+3. **Return Rate Limit Status**: Include rate limit status in hook return
+
+   ```typescript
+   export function useNewEndpoint(param: string) {
+     const [rateLimitStatus, setRateLimitStatus] = useState(null);
+     return {
+       ...useQuery({...}),
+       rateLimitStatus,
+     };
+   }
+   ```
+
+4. **Display UI Feedback**: Show rate limit indicator in consuming components
+
+   ```typescript
+   <RateLimitIndicator status={rateLimitStatus} />
+   ```
+
+#### Performance Considerations
+
+- **Caching**: React Query caches results for 5-10 minutes depending on endpoint
+- **Debouncing**: Search inputs debounce at 300ms to reduce requests
+- **Stale While Revalidate**: Old data shown while fresh data is fetched
+- **Rate Limit Awareness**: UI warns users before hitting rate limits
+
+#### Known Rate Limits
+
+| Endpoint Category | Limit | Window |
+|-------------------|-------|--------|
+| Search Operations | 100 | 1 minute |
+| Popular Lists | 50 | 1 minute |
+| Details Lookups | 150 | 1 minute |
+| Comparisons | 75 | 1 minute |
+
+---
 
 Follow these steps to add a new search page:
 
@@ -688,21 +885,19 @@ npm run build
 5. Test locally with `npm run dev`
 6. Submit for review on Gerrit
 
-### Performance Considerations
-
-#### 1. **React Query Optimization**
+##### 1. **React Query Optimization**
 
 - Uses 5-minute stale time for API responses
 - Automatic background refetching
 - Optimistic updates for better UX
 
-#### 2. **Component Optimization**
+##### 2. **Component Optimization**
 
 - Lazy loading for large lists
 - Memoization for expensive calculations
 - Proper dependency arrays in hooks
 
-#### 3. **Bundle Optimization**
+##### 3. **Bundle Optimization**
 
 - Tree shaking for unused code
 - Dynamic imports for route-based code splitting

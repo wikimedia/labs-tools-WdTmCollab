@@ -1,5 +1,7 @@
 import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { endpoints } from "@/utils/endpoints";
+import { fetchWithContext, RateLimitInfo, formatRateLimitStatus, RateLimitStatus } from "@/utils/rateLimit";
 
 export interface Actor {
   id: string;
@@ -26,59 +28,119 @@ export interface ActorDetail {
 }
 
 export function useActorSearch(query: string) {
-  return useQuery<Actor[]>({
-    queryKey: ["actorSearch", query],
-    queryFn: async () => {
-      const res = await fetch(endpoints.actorSearch(query));
-      if (!res.ok) throw new Error("Failed to search actors");
-      return res.json();
-    },
-    enabled: query.length > 2, // Only fetch if query has 3+ chars
-  });
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
+
+  return {
+    ...useQuery<Actor[]>({
+      queryKey: ["actorSearch", query],
+      queryFn: async () => {
+        const result = await fetchWithContext<Actor[]>(
+          endpoints.actorSearch(query),
+          {},
+          3
+        );
+
+        // Update rate limit status
+        if (result.rateLimitInfo.limit > 0) {
+          setRateLimitStatus(formatRateLimitStatus(result.rateLimitInfo));
+        }
+
+        // Log deprecation warnings
+        if (result.deprecationWarning) {
+          console.warn("Deprecation Notice:", result.deprecationWarning);
+        }
+
+        if (result.error) throw result.error;
+        return result.data || [];
+      },
+      enabled: query.length > 2,
+      staleTime: 5 * 60 * 1000,
+    }),
+    rateLimitStatus,
+  };
 }
 
 //  Get Actor Details
 export function useActorDetails(actorId: string) {
-  return useQuery<ActorDetail>({
-    queryKey: ["actorDetails", actorId],
-    queryFn: async () => {
-      const res = await fetch(endpoints.actorDetails(actorId));
-      if (!res.ok) throw new Error("Failed to fetch actor details");
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
 
-      const raw: any = await res.json();
-      // Normalize single object vs array response
-      return Array.isArray(raw) ? raw[0] : raw;
-    },
-    enabled: !!actorId,
-  });
+  return {
+    ...useQuery<ActorDetail>({
+      queryKey: ["actorDetails", actorId],
+      queryFn: async () => {
+        const result = await fetchWithContext<any>(
+          endpoints.actorDetails(actorId),
+          {},
+          3
+        );
+
+        // Update rate limit status
+        if (result.rateLimitInfo.limit > 0) {
+          setRateLimitStatus(formatRateLimitStatus(result.rateLimitInfo));
+        }
+
+        if (result.error) throw result.error;
+
+        const raw = result.data;
+        // Normalize single object vs array response
+        return Array.isArray(raw) ? raw[0] : raw;
+      },
+      enabled: !!actorId,
+    }),
+    rateLimitStatus,
+  };
 }
 
 export function useCoActors(actorId: string, page: number, limit: number) {
   const offset = (page - 1) * limit;
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
 
-  return useQuery({
-    queryKey: ["coActors", actorId, page, limit],
-    queryFn: async () => {
-      // It passes 'limit=8' to the API because you passed 8 from the page component
-      const url = `${endpoints.co_ActorSearch(actorId)}&limit=${limit}&offset=${offset}`;
-      const res = await fetch(url);
+  return {
+    ...useQuery({
+      queryKey: ["coActors", actorId, page, limit],
+      queryFn: async () => {
+        const url = `${endpoints.co_ActorSearch(actorId)}&limit=${limit}&offset=${offset}`;
+        const result = await fetchWithContext(url, {}, 3);
 
-      if (!res.ok) throw new Error("Failed to fetch co-actors");
-      return res.json();
-    },
-    enabled: !!actorId,
-    placeholderData: keepPreviousData,
-    staleTime: 5 * 60 * 1000,
-  });
+        // Update rate limit status
+        if (result.rateLimitInfo.limit > 0) {
+          setRateLimitStatus(formatRateLimitStatus(result.rateLimitInfo));
+        }
+
+        if (result.error) throw result.error;
+        return result.data || [];
+      },
+      enabled: !!actorId,
+      placeholderData: keepPreviousData,
+      staleTime: 5 * 60 * 1000,
+    }),
+    rateLimitStatus,
+  };
 }
 //  Get Popular Actors
 export function usePopularActors() {
-  return useQuery({
-    queryKey: ["popularActors"],
-    queryFn: async () => {
-      const res = await fetch(endpoints.actorPopular());
-      if (!res.ok) throw new Error("Failed to fetch popular actors");
-      return res.json();
-    },
-  });
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
+
+  return {
+    ...useQuery({
+      queryKey: ["popularActors"],
+      queryFn: async () => {
+        const result = await fetchWithContext(
+          endpoints.actorPopular(),
+          {},
+          3
+        );
+
+        // Update rate limit status
+        if (result.rateLimitInfo.limit > 0) {
+          setRateLimitStatus(formatRateLimitStatus(result.rateLimitInfo));
+        }
+
+        if (result.error) throw result.error;
+        return result.data || [];
+      },
+      staleTime: 10 * 60 * 1000, // Cache popular actors longer
+    }),
+    rateLimitStatus,
+  };
 }
