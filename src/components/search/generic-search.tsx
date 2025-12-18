@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
-import { createPortal } from "react-dom";
-import { Search, X, AlertCircle } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Search, X, Loader2, AlertCircle } from "lucide-react";
 import { useDebouncedValue } from "@/utils/debounce";
-import { SkeletonRepeat, SkeletonRow } from "../ui/skeleton-loader";
-import { Button } from "../ui/button";
 
+// --- Types ---
 export interface SearchItem {
   id: string;
   label: string;
@@ -36,11 +34,9 @@ export default function GenericSearch<T extends SearchItem>({
 }: GenericSearchProps<T>) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
-
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Debounce the input for the API call
   const debouncedQuery = useDebouncedValue(query, 300);
   const shouldFetch = debouncedQuery.length > 2;
 
@@ -50,40 +46,16 @@ export default function GenericSearch<T extends SearchItem>({
     isError,
   } = useSearchHook(shouldFetch ? debouncedQuery : "");
 
-  /** Ensure portal only renders on client */
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  /** Close on outside click */
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  /** Position dropdown under input */
-  useLayoutEffect(() => {
-    if (!isOpen || !containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-
-    setDropdownStyle({
-      position: "fixed",
-      top: rect.bottom + 8,
-      left: rect.left,
-      width: rect.width,
-      zIndex: 9999,
-    });
-  }, [isOpen, query]);
 
   const handleSelect = (item: T) => {
     setQuery(item.label);
@@ -98,114 +70,115 @@ export default function GenericSearch<T extends SearchItem>({
   };
 
   return (
-    <>
-      <div
-        ref={containerRef}
-        className="relative w-full max-w-2xl mx-auto"
-      >
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setIsOpen(true);
-            }}
-            onFocus={() => setIsOpen(true)}
-            placeholder={placeholder}
-            className="w-full h-14 pl-12 pr-12 rounded-xl border border-input bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-ring text-lg"
-            aria-expanded={isOpen}
-          />
-
-          {query && (
-            <Button
-              onClick={handleClear}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+    <div ref={containerRef} className="relative w-full max-w-2xl mx-auto z-50">
+      {/* Search Input Bar */}
+      <div className="relative flex items-center w-full h-14 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md focus-within:shadow-md transition-shadow overflow-hidden">
+        <div className="pl-5 pr-3 text-gray-400">
+          <Search className="w-5 h-5" />
         </div>
+
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
+          placeholder={placeholder}
+          className="flex-grow h-full outline-none text-gray-900 placeholder:text-gray-400 text-lg bg-transparent"
+        />
+
+        {query && (
+          <button
+            onClick={handleClear}
+            className="p-3 mr-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
-      {mounted && isOpen && query.length > 0 &&
-        createPortal(
-          <div
-            style={dropdownStyle}
-            className="bg-popover text-popover-foreground rounded-xl border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95"
-          >
-            {query.length < 3 && (
-              <div className="p-4 text-sm text-muted-foreground text-center">
-                Type at least 3 characters...
-              </div>
-            )}
+      {/* Dropdown Results */}
+      {isOpen && query.length > 0 && (
+        <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
 
-            {shouldFetch && isLoading &&
-              <SkeletonRepeat count={3}>
-                <SkeletonRow />
-              </SkeletonRepeat>
-            }
+          {/* Helper Text */}
+          {query.length < 3 && (
+            <div className="p-4 text-sm text-gray-500 text-center">
+              Type at least 3 characters...
+            </div>
+          )}
 
-            {shouldFetch && isError && !isLoading && (
-              <div className="p-6 text-center text-destructive flex flex-col items-center">
-                <AlertCircle className="h-8 w-8 mb-2" />
-                <p>Failed to load results.</p>
-              </div>
-            )}
+          {/* Loading State */}
+          {shouldFetch && isLoading && (
+            <div className="p-4 flex justify-center items-center text-gray-500">
+              <Loader2 className="w-5 h-5 animate-spin mr-2" />
+              <span>Searching...</span>
+            </div>
+          )}
 
-            {shouldFetch && !isLoading && !isError && results.length === 0 && (
-              <div className="p-6 text-center text-muted-foreground">
-                No results found for "{query}"
-              </div>
-            )}
+          {/* Error State */}
+          {shouldFetch && isError && !isLoading && (
+            <div className="p-4 text-center text-red-500 flex flex-col items-center">
+              <AlertCircle className="w-6 h-6 mb-1" />
+              <span className="text-sm">Unable to load results.</span>
+            </div>
+          )}
 
-            {shouldFetch && !isLoading && results.length > 0 && (
-              <ul className="max-h-[300px] overflow-y-auto py-2">
-                {results.map((item) => (
-                  <li key={item.id}>
-                    {renderItem ? (
-                      <div onClick={() => handleSelect(item)}>
-                        {renderItem(item)}
+          {/* No Results */}
+          {shouldFetch && !isLoading && !isError && results.length === 0 && (
+            <div className="p-4 text-center text-gray-500">
+              No results found for "{query}"
+            </div>
+          )}
+
+          {/* Results List */}
+          {shouldFetch && !isLoading && results.length > 0 && (
+            <ul className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+              {results.map((item) => (
+                <li key={item.id}>
+                  {renderItem ? (
+                    <div onClick={() => handleSelect(item)}>
+                      {renderItem(item)}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleSelect(item)}
+                      className="w-full flex items-center px-5 py-3 hover:bg-gray-50 transition-colors text-left group"
+                    >
+                      {/* Icon/Image */}
+                      <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200">
+                        {item.imageUrl ? (
+                          <img
+                            src={item.imageUrl}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <Search className="w-5 h-5 text-gray-400" />
+                        )}
                       </div>
-                    ) : (
-                      <Button
-                        onClick={() => handleSelect(item)}
-                        className="w-full flex items-center p-3 hover:bg-muted/50 transition-colors text-left"
-                      >
-                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0 border">
-                          {item.imageUrl ? (
-                            <img
-                              src={item.imageUrl}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <span className="font-medium text-muted-foreground uppercase">
-                              {item.label.charAt(0)}
-                            </span>
-                          )}
-                        </div>
-                        <div className="ml-4 min-w-0">
-                          <p className="font-medium truncate">
-                            {item.label}
+
+                      {/* Text */}
+                      <div className="ml-4 flex-grow min-w-0">
+                        <p className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                          {item.label}
+                        </p>
+                        {item.description && (
+                          <p className="text-sm text-gray-500 truncate">
+                            {item.description}
                           </p>
-                          {item.description && (
-                            <p className="text-xs text-muted-foreground truncate">
-                              {item.description}
-                            </p>
-                          )}
-                        </div>
-                      </Button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>,
-          document.body
-        )}
-    </>
+                        )}
+                      </div>
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

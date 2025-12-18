@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { usePopularActors, Actor } from "@/src/hooks/api/useActors";
-import { Clapperboard, GitMerge, Network, Users } from "lucide-react";
+import { Clapperboard, GitMerge, Network, Users, AlertTriangle } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -69,7 +69,9 @@ export default function Home() {
             communities of the entertainment industry.
           </p>
 
-          <div className="max-w-2xl mx-auto relative z-10 shadow-xl rounded-2xl bg-white">
+          {/* FIX IS HERE: Changed z-10 to z-50 */}
+          {/* This ensures the parent container sits ABOVE the features section (z-20) */}
+          <div className="max-w-2xl mx-auto relative z-50 shadow-xl rounded-2xl bg-white">
             <SearchComponent
               onSelect={handleActorSelect}
               placeholder="Search for an actor (e.g., Tom Hanks)..."
@@ -78,8 +80,8 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Features Grid - This has z-20. Since 50 > 20, the search will now float over this. */}
       <div className="container mx-auto px-4 -mt-16 relative z-20 pb-16">
-        {/* Features Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
           {features.map((feature, index) => (
             <Link
@@ -122,9 +124,9 @@ export default function Home() {
             >
               <SkeletonCard />
             </SkeletonRepeat>
-
           ) : error ? (
-            <div className="p-8 text-center bg-destructive/10 rounded-xl text-destructive">
+            <div className="p-8 text-center bg-destructive/10 rounded-xl text-destructive flex flex-col items-center">
+              <AlertTriangle className="h-6 w-6 mb-2" />
               Unable to load popular actors at this time.
             </div>
           ) : (

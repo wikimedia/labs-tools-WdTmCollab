@@ -1,130 +1,163 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
-import { Actor } from "@/src/hooks/api/useActors";
-import { useSharedProductions } from "@/src/hooks/api/useProductSearch";
-import { Skeleton } from "@/src/components/ui/skeleton-loader";
+import { usePopularActors, Actor } from "@/src/hooks/api/useActors";
+import { Clapperboard, GitMerge, Network, Users } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 
-export default function ProductionsPage() {
+
+const features = [
+  {
+    title: "Frequent Collaborators",
+    description: "Discover which actors work together most often",
+    icon: <Users className="w-6 h-6" />,
+    link: "/actors",
+  },
+  {
+    title: "Shared Productions",
+    description: "Find all movies and TV shows shared between actors",
+    icon: <Clapperboard className="w-6 h-6" />,
+    link: "/compare",
+  },
+  {
+    title: "Cross-Project Actors",
+    description: "Identify actors who appeared in multiple productions",
+    icon: <GitMerge className="w-6 h-6" />,
+    link: "/productions",
+  },
+  {
+    title: "Collaboration Clusters",
+    description: "Visualize groups of actors who frequently work together",
+    icon: <Network className="w-6 h-6" />,
+    link: "/clusters",
+  },
+];
+
+export default function Home() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { data: popularActors = [], isLoading, error } = usePopularActors();
 
-  const actor1Id = searchParams.get("actor1") || undefined;
-  const actor2Id = searchParams.get("actor2") || undefined;
-  const actor1Label = searchParams.get("label1") || "";
-  const actor2Label = searchParams.get("label2") || "";
-
-  const {
-    data: sharedCastings = [],
-    isLoading: loading,
-    error,
-  } = useSharedProductions(actor1Id, actor2Id);
-
-  const updateUrl = (key: "actor1" | "actor2", actor: Actor | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    const idKey = key;
-    const labelKey = key === "actor1" ? "label1" : "label2";
-
+  const handleActorSelect = (actor: Actor | null) => {
     if (actor) {
-      params.set(idKey, actor.id);
-      params.set(labelKey, actor.label);
-    } else {
-      params.delete(idKey);
-      params.delete(labelKey);
+      router.push(`/actors/${actor.id}`);
     }
-    router.push(`?${params.toString()}`);
   };
 
   return (
-    <main className="flex-grow">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center w-full">
-          <h1 className="text-3xl font-bold mb-6 text-center">
-            Shared Productions
+    <div className="w-full">
+      <section className="relative bg-gradient-to-b from-blue-50/50 to-white pt-20 pb-32 px-4">
+        <div className="container mx-auto text-center">
+          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8">
+            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2"></span>
+            v1.0 Public Beta
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
+            Wikidata <span className="text-primary">TransMedia</span> Collaboration
           </h1>
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
+            Explore the interconnected world of cinema. Discover frequent
+            collaborators, visualize actor networks, and uncover the hidden
+            communities of the entertainment industry.
+          </p>
+
+          {/* FIX: Changed z-10 to z-30 so it sits ABOVE the cards below */}
+          <div className="max-w-2xl mx-auto relative z-30 shadow-xl rounded-2xl bg-white">
             <SearchComponent
-              placeholder="Select First Actor"
-              onSelect={(a) => updateUrl("actor1", a)}
-              initialValue={actor1Label}
-            />
-            <SearchComponent
-              placeholder="Select Second Actor"
-              onSelect={(a) => updateUrl("actor2", a)}
-              initialValue={actor2Label}
+              onSelect={handleActorSelect}
+              placeholder="Search for an actor (e.g., Tom Hanks)..."
             />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Render Logic */}
-      {sharedCastings.length > 0 && (
-        <>
-          <h2 className="text-xl font-bold text-center">Shared Productions</h2>
-          <div className="flex items-center justify-center w-full mt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4">
-              {sharedCastings.map((production, idx) => (
-                <div
-                  key={production.id || `${production.title}-${idx}`}
-                  className="p-4 border rounded-lg shadow-md bg-white flex flex-col"
+      {/* Features Grid - This has z-20, so search bar (z-30) will now cover it */}
+      <div className="container mx-auto px-4 -mt-16 relative z-20 pb-16">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+          {features.map((feature, index) => (
+            <Link
+              key={index}
+              href={feature.link}
+              className="block group outline-none h-full"
+            >
+              <Card className="h-full bg-white/80 backdrop-blur border-white/20 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <CardHeader>
+                  <div className="text-primary mb-4 bg-primary/10 w-12 h-12 flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="group-hover:text-primary transition-colors">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </section>
+
+        {/* Popular Actors Section */}
+        <section className="space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-bold tracking-tight">Popular Actors</h2>
+            <Link href="/actors" className="text-primary hover:underline font-medium">
+              View all
+            </Link>
+          </div>
+
+          {isLoading ? (
+            <SkeletonRepeat
+              count={8}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+            >
+              <SkeletonCard />
+            </SkeletonRepeat>
+          ) : error ? (
+            <div className="p-8 text-center bg-destructive/10 rounded-xl text-destructive">
+              Unable to load popular actors at this time.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {popularActors.map((actor: any, idx: number) => (
+                <Link
+                  key={actor.id ? actor.id : `actor-${idx}`}
+                  href={`/actors/${actor.id}`}
+                  className="flex items-center p-3 bg-white border rounded-xl hover:shadow-md hover:border-primary/50 transition-all gap-4 group"
                 >
-                  <img
-                    src={production.image || production.logo || ""}
-                    alt={production.title}
-                    className="w-full h-48 object-cover rounded"
-                  />
-                  <div className="flex flex-col flex-grow mt-2">
-                    <h3 className="text-lg font-medium">{production.title}</h3>
-                    <p className="text-sm text-gray-600 flex-grow">
-                      {production.description}
-                    </p>
-                    {production.wikipedia && (
-                      <a
-                        href={production.wikipedia}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 mt-2 block"
-                      >
-                        Wikipedia
-                      </a>
+                  <div className="w-14 h-14 rounded-full bg-muted flex-shrink-0 overflow-hidden border-2 border-transparent group-hover:border-primary transition-colors">
+                    {actor.imageUrl ? (
+                      <img
+                        src={actor.imageUrl}
+                        alt={actor.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground font-bold text-xl">
+                        {actor.name?.charAt(0) || "?"}
+                      </div>
                     )}
                   </div>
-                </div>
+                  <div className="flex-grow min-w-0">
+                    <div className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                      {actor.name}
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate font-medium">
+                      {actor.awardCount !== undefined
+                        ? `${actor.awardCount} awards`
+                        : "View details"}
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
-          </div>
-        </>
-      )}
-
-      {loading && (
-        <div className="flex items-center justify-center w-full mt-6">
-          <div className="w-full max-w-6xl">
-            <h2 className="text-xl font-bold text-center mb-6">
-              Loading shared productions...
-            </h2>
-            <Skeleton />
-          </div>
-        </div>
-      )}
-
-      {loading && (
-        <div className="flex justify-center mt-8">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
-
-      {sharedCastings.length === 0 && !loading && actor1Id && actor2Id && (
-        <p className="mt-4 text-center text-gray-600">
-          No shared productions found between these actors.
-        </p>
-      )}
-
-      {error && (
-        <p className="text-red-500 mt-4 text-center">
-          Error fetching shared castings.
-        </p>
-      )}
-    </main>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

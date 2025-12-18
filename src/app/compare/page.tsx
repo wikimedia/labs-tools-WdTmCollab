@@ -1,13 +1,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import SearchComponent from "@/src/components/compare/searchComponent"; // Assuming this handles Movie searching
+import SearchComponent from "@/src/components/compare/searchComponent";
 import {
   Movie,
   useSharedActorsFromMovies
 } from "@/src/hooks/api/useProductSearch";
-import SkeletonLoader  from "@/src/components/ui/skeleton-loader";
+import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 
 export default function SharedActorsFromMovies() {
   const router = useRouter();
@@ -65,7 +64,12 @@ export default function SharedActorsFromMovies() {
 
         {/* Small loading spinner when search is active but data not yet loaded */}
         {loading && sharedActors.length === 0 && (
-          <SkeletonLoader type="actor" count={8} />
+          <SkeletonRepeat
+            count={8}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            <SkeletonCard />
+          </SkeletonRepeat>
         )}
 
         {error && (
