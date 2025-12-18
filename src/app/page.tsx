@@ -51,6 +51,24 @@ export default function Home() {
     }
   };
 
+  // This defensive logic prevents render-time exceptions (which would
+  // trigger any global error boundary / monitoring) when the data is
+  // malformed or temporarily unavailable.
+  const safeUniqueActors = (() => {
+    try {
+      if (!Array.isArray(popularActors)) return [];
+      // use prod.name when available, fall back to id or stringified object
+      return Array.from(
+        new Map(
+          (popularActors as any[]).map((prod: any) => [prod?.name ?? prod?.id ?? JSON.stringify(prod), prod])
+        ).values()
+      );
+    } catch (err) {
+      // Do not rethrow — swallow and log so error boundary is not notified
+      console.warn("Skipping popular actors render due to malformed data", err);
+      return [];
+    }
+  })();
   return (
     <div className="w-full">
       {/* Hero Section */}

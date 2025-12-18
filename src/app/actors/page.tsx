@@ -1,10 +1,11 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchComponent from "@/src/components/searchComponent";
 import { useCoActors, Actor } from "@/src/hooks/api/useActors";
-import SkeletonLoader from "@/src/components/ui/skeleton-loader";
 import { Button } from "@/src/components/ui/button";
+import { Skeleton } from "@/src/components/ui/skeleton-loader";
 
 export default function ActorsPage() {
   const router = useRouter();
@@ -25,39 +26,61 @@ export default function ActorsPage() {
     refetch,
   } = useCoActors(actorId, currentPage, ITEMS_PER_PAGE);
 
-  const displayResults = results.slice(0, ITEMS_PER_PAGE);
+  const [visibleCount, setVisibleCount] = useState<number>(ITEMS_PER_PAGE);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const handleSelectActor = (selectedActor: Actor | null) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const resultsArray = Array.isArray(results) ? results : [];
+  const uniqueResults = Array.from(
+    new Map(
+      resultsArray.map((prod: any) => [
+        prod?.id ??
+          prod?.actorId ??
+          prod?.label ??
+          prod?.name ??
+          JSON.stringify(prod),
+        prod,
+      ])
+    ).values()
+  );
 
-    if (selectedActor) {
-      params.set("actorId", selectedActor.id);
-      params.set("label", selectedActor.label);
-      params.set("page", "1");
-    } else {
-      params.delete("actorId");
-      params.delete("label");
-      params.delete("page");
-    }
+  const displayedResults = uniqueResults.slice(0, visibleCount);
+  const hasMoreLocal = visibleCount < uniqueResults.length;
 
+  const handleLoadMore = () => {
+    setVisibleCount((v) => Math.min(v + ITEMS_PER_PAGE, uniqueResults.length));
+  };
+
+  const handleSelectActor = (actor: Actor | null) => {
+    if (!actor) return;
+    const params = new URLSearchParams();
+    params.set("actorId", actor.id);
+    params.set("label", actor.label);
     router.push(`?${params.toString()}`);
   };
 
-  const updatePage = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", newPage.toString());
-    router.push(`?${params.toString()}`);
-  };
+  // Reset visible count when actor changes
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [actorId]);
 
-  const handleNextPage = () => {
-    if (!isPlaceholderData && results.length === ITEMS_PER_PAGE) {
-      updatePage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    updatePage(Math.max(currentPage - 1, 1));
-  };
+  // IntersectionObserver for infinite scroll
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+    const el = loadMoreRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0];
+        if (e.isIntersecting && hasMoreLocal) {
+          setVisibleCount((v) =>
+            Math.min(v + ITEMS_PER_PAGE, uniqueResults.length)
+          );
+        }
+      },
+      { root: null, rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMoreLocal, uniqueResults.length]);
 
   return (
     <main className="flex-grow">
@@ -82,12 +105,11 @@ export default function ActorsPage() {
 
         {loading && (
           <div className="w-full max-w-5xl mt-12">
-            <SkeletonLoader type="actor" count={8} />
+            <Skeleton />
           </div>
         )}
 
-        {/* Show results if we have them */}
-        {displayResults.length > 0 && (
+        {displayedResults.length > 0 && (
           <div className="w-full max-w-5xl mt-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               Collaborators of{" "}
@@ -96,64 +118,67 @@ export default function ActorsPage() {
               </span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayResults.map((coActor: any) => (
-                <div
-                  key={coActor.actorId}
-                  className="flex flex-col items-center bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300"
-                >
-                  <img
-                    src={
-                      coActor.image ||
-                      `https://ui-avatars.com/api/?name=${coActor.name.replace(
-                        /\s/g,
-                        "+"
-                      )}&background=random`
-                    }
-                    alt={coActor.name}
-                    className="w-28 h-28 object-cover rounded-full border-4 border-white shadow-lg mb-4"
-                  />
-                  <h3 className="text-lg font-bold text-gray-900 text-center">
-                    {coActor.name}
-                  </h3>
-                  {coActor.description && (
-                    <p className="text-sm text-gray-600 text-center mt-1">
-                      {coActor.description}
-                    </p>
-                  )}
-                  {coActor.sharedWorks !== undefined && (
-                    <span className="mt-4 inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
-                      {coActor.sharedWorks} Collaborations
-                    </span>
-                  )}
-                </div>
-              ))}
+              {displayedResults.map((coActor: any) => {
+                const safeId = coActor?.id ?? coActor?.actorId ?? null;
+                const safeName = coActor?.name ?? coActor?.label ?? "Unknown";
+                const img = coActor?.image ?? coActor?.imageUrl ?? null;
+                const description =
+                  coActor?.description ?? coActor?.label ?? "";
+                const sharedWorks =
+                  coActor?.sharedWorks ?? coActor?.collaborations ?? null;
+                return (
+                  <div
+                    key={safeId ?? safeName}
+                    className="flex flex-col items-center bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <img
+                      src={
+                        img ||
+                        `https://ui-avatars.com/api/?name=${String(
+                          safeName
+                        ).replace(/\s/g, "+")}&background=random`
+                      }
+                      alt={safeName}
+                      className="w-28 h-28 object-cover rounded-full border-4 border-white shadow-lg mb-4"
+                    />
+                    <h3 className="text-lg font-bold text-gray-900 text-center">
+                      {safeName}
+                    </h3>
+                    {description && (
+                      <p className="text-sm text-gray-500 text-center mt-1">
+                        {description}
+                      </p>
+                    )}
+                    {sharedWorks !== null && (
+                      <span className="mt-4 inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                        {sharedWorks} Collaborations
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-
-            <div className="flex justify-center items-center space-x-6 mt-8">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 1 || loading}
-                className="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-
-              <span className="text-gray-700 font-medium">
-                Page {currentPage}
-              </span>
-
-              <button
-                onClick={handleNextPage}
-                disabled={results.length < ITEMS_PER_PAGE || loading}
-                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+            {/* infinite scroll sentinel / load-more fallback */}
+            <div className="flex justify-center items-center mt-8">
+              {hasMoreLocal ? (
+                <div className="space-y-2">
+                  <div ref={loadMoreRef} className="h-2 w-full" />
+                  <div className="text-center">
+                    <button
+                      onClick={handleLoadMore}
+                      className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700"
+                      disabled={!hasMoreLocal}
+                    >
+                      Load more
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         )}
 
-        {!loading && displayResults.length === 0 && actorId && (
+        {!loading && displayedResults.length === 0 && actorId && (
           <p className="mt-8 text-center text-gray-600">
             No co-actors found on this page.
           </p>
