@@ -11,13 +11,13 @@ export default function ProductionDetailPage() {
   const productionId = params.id as string;
   const { data: production, isLoading, isError } = useProductionDetails(productionId);
 
-  if (isLoading) return
+  if (isLoading) return;
   <SkeletonRepeat
     count={8}
     className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
   >
     <SkeletonCard />
-  </SkeletonRepeat>
+  </SkeletonRepeat>;
   if (isError || !production) return <div className="text-center py-12">Production not found</div>;
 
   return (
@@ -38,7 +38,7 @@ export default function ProductionDetailPage() {
         <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">{production.title}</h1>
           <div className="text-lg text-gray-600 mb-6">
-            {production.year} • {production.type === 'movie' ? 'Movie' : 'TV Show'}
+            {production.year} • {production.type === "movie" ? "Movie" : "TV Show"}
           </div>
           <p className="text-gray-700 leading-relaxed text-lg max-w-2xl mb-6">
             {production.description}

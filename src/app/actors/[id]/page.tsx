@@ -35,7 +35,7 @@ export default function ActorDetailPage() {
       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
     >
       <SkeletonCard />
-    </SkeletonRepeat>
+    </SkeletonRepeat>;
   }
 
   if (error || !actor) {

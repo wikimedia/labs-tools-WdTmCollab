@@ -1,9 +1,16 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Movie, useMovieSearch, useSharedActorsFromMovies } from "@/src/hooks/api/useProductSearch";
+import {
+  Movie,
+  useMovieSearch,
+  useSharedActorsFromMovies,
+} from "@/src/hooks/api/useProductSearch";
 import { Clapperboard } from "lucide-react";
-import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
+import {
+  SkeletonCard,
+  SkeletonRepeat,
+} from "@/src/components/ui/skeleton-loader";
 import GenericSearch from "@/src/components/ui/generic-search";
 import { Card } from "@/src/components/ui/card";
 import Image from "next/image";
@@ -18,7 +25,11 @@ export default function SharedActorsFromMovies() {
   const movie1Label = searchParams.get("label1") || "";
   const movie2Label = searchParams.get("label2") || "";
 
-  const { data: sharedActors = [], isLoading: loading, error } = useSharedActorsFromMovies(movie1Id, movie2Id);
+  const {
+    data: sharedActors = [],
+    isLoading: loading,
+    error,
+  } = useSharedActorsFromMovies(movie1Id, movie2Id);
 
   const updateUrl = (key: "movie1" | "movie2", movie: Movie | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -38,11 +49,17 @@ export default function SharedActorsFromMovies() {
   const renderMovieItem = (movie: Movie) => (
     <Button
       className="w-full flex items-center px-5 py-3 hover:bg-gray-50 transition-colors text-left group"
-      onClick={() => { /* Handled by GenericSearch parent */ }}
+      onClick={() => {
+        /* Handled by GenericSearch parent */
+      }}
     >
       <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-blue-100 text-blue-500">
         {movie.imageUrl ? (
-          <img src={movie.imageUrl} alt="" className="h-full w-full object-cover" />
+          <img
+            src={movie.imageUrl}
+            alt=""
+            className="h-full w-full object-cover"
+          />
         ) : (
           <Clapperboard className="w-5 h-5" />
         )}
@@ -61,7 +78,9 @@ export default function SharedActorsFromMovies() {
   return (
     <main className="flex-grow">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Shared Actors from Movies</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          Shared Actors from Movies
+        </h1>
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto relative z-50">
           <GenericSearch<Movie>
             placeholder="Search First Movie"
@@ -80,29 +99,42 @@ export default function SharedActorsFromMovies() {
         </div>
 
         {/* Results */}
-        {loading &&
+        {loading && (
           <SkeletonRepeat
             count={8}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
           >
             <SkeletonCard />
           </SkeletonRepeat>
-        }
+        )}
 
         {sharedActors.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sharedActors.map((actor) => (
-              <Card key={actor.id} className="p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
+              <Card
+                key={actor.id}
+                className="p-4 flex items-center gap-4 hover:shadow-md transition-shadow"
+              >
                 <div className="h-16 w-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                  <img src={actor.image || ""} alt={actor.name} className="w-full h-full object-cover" />
+                  <img
+                    src={actor.image || ""}
+                    alt={actor.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900">{actor.name}</h3>
-                  <span className="text-blue-600 text-sm font-medium">{actor.sharedWorks} shared works</span>
+                  <span className="text-blue-600 text-sm font-medium">
+                    {actor.sharedWorks} shared works.
+                  </span>
                 </div>
               </Card>
             ))}
           </div>
+        )}
+
+        {sharedActors.length === 0 && !loading && movie1Id && movie2Id && (
+          <p className="mt-4 text-gray-600">No Shared Actors Found.</p>
         )}
       </div>
     </main>
