@@ -9,32 +9,32 @@ import ErrorBoundary from "../components/ui/error-boundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin"]
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin"]
 });
 
 export const metadata: Metadata = {
-  title: "WDTMCollab",
+  title: "WdTmCollab",
   description: "Discover Actor Collaborations through Wikidata",
   openGraph: {
-    title: "WDTMCollab",
+    title: "WdTmCollab",
     description: "Discover Actor Collaborations through Wikidata",
     url: "https://wdtmcollab.toolforge.org",
-    siteName: "WDTMCollab",
-  },
+    siteName: "WdTmCollab"
+  }
 };
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang='en' className='h-full'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
@@ -42,7 +42,7 @@ export default function RootLayout({
         {/* <ErrorBoundary> */}
         <ClientProviders>
           <Header />
-          <main id="main-content" className="flex-grow">
+          <main id='main-content' className='flex-grow'>
             {children}
           </main>
           <Footer />
