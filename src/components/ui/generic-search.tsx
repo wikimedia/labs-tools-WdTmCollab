@@ -56,11 +56,11 @@ export default function GenericSearch<T extends SearchItem>({
   // Conditionally use paginated or regular search
   const searchResult = enablePagination
     ? usePaginatedSearch({
-        query: shouldFetch ? debouncedQuery : "",
-        endpoint: endpoint!,
-        queryKey,
-        enabled: shouldFetch,
-      })
+      query: shouldFetch ? debouncedQuery : "",
+      endpoint: endpoint!,
+      queryKey,
+      enabled: shouldFetch,
+    })
     : useSearchHook!(shouldFetch ? debouncedQuery : "");
 
   let results: T[] = [];
@@ -68,7 +68,7 @@ export default function GenericSearch<T extends SearchItem>({
   let isError = false;
   let hasNextPage = false;
   let isFetchingNextPage = false;
-  let fetchNextPage: () => void = () => {};
+  let fetchNextPage: () => void = () => { };
 
   if (enablePagination) {
     const paginatedResult = searchResult as ReturnType<typeof usePaginatedSearch>;

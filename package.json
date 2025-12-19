@@ -26,6 +26,7 @@
     "lucide-react": "^0.562.0",
     "neo4j-driver": "^5.28.1",
     "next": "^15.2.4",
+    "next-intl": "^4.6.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "sparql-http-client": "^3.0.1",

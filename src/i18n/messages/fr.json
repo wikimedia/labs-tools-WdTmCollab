@@ -1,0 +1,54 @@
+{
+  "HomePage": {
+    "title": "Collaboration TransMédia Wikidata",
+    "subtitle": "Explorez le monde interconnecté du cinéma.",
+    "searchPlaceholder": "Rechercher un acteur (ex: Tom Hanks)...",
+    "betaLabel": "v1.0 Bêta Publique",
+    "features": {
+      "collaborators": "Collaborateurs Fréquents",
+      "collaboratorsDesc": "Découvrez quels acteurs travaillent le plus souvent ensemble",
+      "shared": "Productions Partagées",
+      "sharedDesc": "Trouvez tous les films et séries partagés entre acteurs",
+      "crossProject": "Acteurs Inter-Projets",
+      "crossProjectDesc": "Identifiez les acteurs apparus dans plusieurs productions",
+      "clusters": "Groupes de Collaboration",
+      "clustersDesc": "Visualisez les groupes d'acteurs qui travaillent souvent ensemble"
+    },
+    "popularActors": "Acteurs Populaires",
+    "viewAll": "Voir tout"
+  },
+  "NotFound": {
+    "title": "Page non trouvée",
+    "description": "Désolé, nous n'avons pas trouvé la page que vous cherchez.",
+    "goBack": "Retour",
+    "home": "Accueil",
+    "popularDestinations": "Destinations Populaires"
+  },
+  "ActorsPage": {
+    "title": "Trouver des Collaborations",
+    "subtitle": "Commencez par rechercher un acteur pour voir avec qui il travaille.",
+    "searchPlaceholder": "Rechercher un acteur...",
+    "collaboratorsOf": "Collaborateurs de",
+    "collaborationsCount": "{count} Collaborations",
+    "loading": "Chargement des collaborateurs...",
+    "errorTitle": "Impossible de charger les collaborateurs",
+    "errorDesc": "Vérifiez votre connexion et réessayez.",
+    "errorGeneric": "Erreur lors de la récupération."
+  },
+  "ClustersPage": {
+    "title": "Groupes de Collaboration",
+    "subtitle": "Trouvez quelles productions ont servi de \"hub\" pour le réseau d'un acteur.",
+    "searchPlaceholder": "Recherchez d'abord un acteur...",
+    "emptyState": "Aucun ensemble significatif trouvé pour cet acteur.",
+    "topEnsembles": "Meilleurs Ensembles pour",
+    "cardDesc": "{actor} a travaillé avec {count} acteurs suivis dans cette production.",
+    "viewCast": "Voir le Casting Complet"
+  },
+  "Navigation": {
+    "home": "Accueil",
+    "actors": "Acteurs",
+    "compare": "Comparer",
+    "clusters": "Groupes",
+    "productions": "Productions"
+  }
+}

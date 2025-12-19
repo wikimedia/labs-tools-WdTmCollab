@@ -1,10 +1,9 @@
 "use client";
 
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Clapperboard, GitMerge, Network, Users, AlertTriangle } from "lucide-react";
-
+import { useTranslations } from 'next-intl';
 
 import GenericSearch from "@/src/components/ui/generic-search";
 import {
@@ -13,45 +12,41 @@ import {
   CardTitle,
   CardContent,
   CardDescription,
-} from "../components/ui/card";
-import { SkeletonCard, SkeletonRepeat } from "../components/ui/skeleton-loader";
-
-
+} from "@/src/components/ui/card";
+import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 import { usePopularActors, Actor, useActorSearch } from "@/src/hooks/api/useActors";
-
-
-const features = [
-  {
-    title: "Frequent Collaborators",
-    description: "Discover which actors work together most often",
-    icon: <Users className="w-6 h-6" />,
-    link: "/actors",
-  },
-  {
-    title: "Shared Productions",
-    description: "Find all movies and TV shows shared between actors",
-    icon: <Clapperboard className="w-6 h-6" />,
-    link: "/compare",
-  },
-  {
-    title: "Cross-Project Actors",
-    description: "Identify actors who appeared in multiple productions",
-    icon: <GitMerge className="w-6 h-6" />,
-    link: "/productions",
-  },
-  {
-    title: "Collaboration Clusters",
-    description: "Visualize groups of actors who frequently work together",
-    icon: <Network className="w-6 h-6" />,
-    link: "/clusters",
-  },
-];
-
 
 export default function Home() {
   const router = useRouter();
+  const t = useTranslations('HomePage');
   const { data: popularActors = [], isLoading, error } = usePopularActors();
 
+  const features = [
+    {
+      title: t('features.collaborators'),
+      description: t('features.collaboratorsDesc'),
+      icon: <Users className="w-6 h-6" />,
+      link: "/actors",
+    },
+    {
+      title: t('features.shared'),
+      description: t('features.sharedDesc'),
+      icon: <Clapperboard className="w-6 h-6" />,
+      link: "/compare",
+    },
+    {
+      title: t('features.crossProject'),
+      description: t('features.crossProjectDesc'),
+      icon: <GitMerge className="w-6 h-6" />,
+      link: "/productions",
+    },
+    {
+      title: t('features.clusters'),
+      description: t('features.clustersDesc'),
+      icon: <Network className="w-6 h-6" />,
+      link: "/clusters",
+    },
+  ];
 
   const handleActorSelect = (actor: Actor | null) => {
     if (actor) {
@@ -59,25 +54,6 @@ export default function Home() {
     }
   };
 
-
-  // This defensive logic prevents render-time exceptions (which would
-  // trigger any global error boundary / monitoring) when the data is
-  // malformed or temporarily unavailable.
-  const safeUniqueActors = (() => {
-    try {
-      if (!Array.isArray(popularActors)) return [];
-      // use prod.name when available, fall back to id or stringified object
-      return Array.from(
-        new Map(
-          (popularActors as any[]).map((prod: any) => [prod?.name ?? prod?.id ?? JSON.stringify(prod), prod])
-        ).values()
-      );
-    } catch (err) {
-      // Do not rethrow — swallow and log so error boundary is not notified
-      console.warn("Skipping popular actors render due to malformed data", err);
-      return [];
-    }
-  })();
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -85,31 +61,26 @@ export default function Home() {
         <div className="container mx-auto text-center">
           <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8">
             <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-            v1.0 Public Beta
+            {t('betaLabel')}
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
             Wikidata <span className="text-primary">TransMedia</span> Collaboration
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
-            Explore the interconnected world of cinema. Discover frequent
-            collaborators, visualize actor networks, and uncover the hidden
-            communities of the entertainment industry.
+            {t('subtitle')}
           </p>
 
-
-          {/* FIX: z-50 ensures the search bar sits ABOVE the features grid below */}
           <div className="max-w-2xl mx-auto relative z-50 shadow-xl rounded-2xl bg-white">
             <GenericSearch<Actor>
               onSelect={handleActorSelect}
               useSearchHook={useActorSearch}
-              placeholder="Search for an actor (e.g., Tom Hanks)..."
+              placeholder={t('searchPlaceholder')}
             />
           </div>
         </div>
       </section>
 
-
-      {/* Features Grid - This has z-20. Since 50 > 20, the search will now float over this. */}
+      {/* Features Grid */}
       <div className="container mx-auto px-4 -mt-16 relative z-20 pb-16">
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
           {features.map((feature, index) => (
@@ -137,22 +108,17 @@ export default function Home() {
           ))}
         </section>
 
-
         {/* Popular Actors Section */}
         <section className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold tracking-tight">Popular Actors</h2>
+            <h2 className="text-3xl font-bold tracking-tight">{t('popularActors')}</h2>
             <Link href="/actors" className="text-primary hover:underline font-medium">
-              View all
+              {t('viewAll')}
             </Link>
           </div>
 
-
           {isLoading ? (
-            <SkeletonRepeat
-              count={8}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-            >
+            <SkeletonRepeat count={8} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <SkeletonCard />
             </SkeletonRepeat>
           ) : error ? (
@@ -188,7 +154,7 @@ export default function Home() {
                     <div className="text-xs text-muted-foreground truncate font-medium">
                       {actor.awardCount !== undefined
                         ? `${actor.awardCount} awards`
-                        : "View details"}
+                        : t('viewAll')}
                     </div>
                   </div>
                 </Link>

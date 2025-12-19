@@ -1,0 +1,26 @@
+{
+  "HomePage": {
+    "title": "Wikidata TransMedia Collaboration",
+    "subtitle": "Explore the interconnected world of cinema.",
+    "searchPlaceholder": "Search for an actor (e.g., Tom Hanks)...",
+    "betaLabel": "v1.0 Public Beta",
+    "features": {
+      "collaborators": "Frequent Collaborators",
+      "collaboratorsDesc": "Discover which actors work together most often",
+      "shared": "Shared Productions",
+      "sharedDesc": "Find all movies and TV shows shared between actors",
+      "crossProject": "Cross-Project Actors",
+      "crossProjectDesc": "Identify actors who appeared in multiple productions",
+      "clusters": "Collaboration Clusters",
+      "clustersDesc": "Visualize groups of actors who frequently work together"
+    },
+    "popularActors": "Popular Actors",
+    "viewAll": "View all"
+  },
+  "Navigation": {
+    "home": "Home",
+    "actors": "Actors",
+    "compare": "Compare",
+    "productions": "Productions"
+  }
+}

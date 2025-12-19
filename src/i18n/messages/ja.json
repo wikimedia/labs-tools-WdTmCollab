@@ -1,0 +1,54 @@
+{
+  "HomePage": {
+    "title": "ウィキデータ・トランスメディア・コラボレーション",
+    "subtitle": "映画の相互接続された世界を探索しましょう。",
+    "searchPlaceholder": "俳優を検索 (例: トム・ハンクス)...",
+    "betaLabel": "v1.0 パブリックベータ",
+    "features": {
+      "collaborators": "頻繁な共演者",
+      "collaboratorsDesc": "最も頻繁に共演している俳優を発見",
+      "shared": "共有作品",
+      "sharedDesc": "俳優間の共有された映画やテレビ番組を検索",
+      "crossProject": "クロスプロジェクト俳優",
+      "crossProjectDesc": "複数の制作に出演した俳優を特定",
+      "clusters": "コラボレーションクラスター",
+      "clustersDesc": "頻繁に共演する俳優グループを視覚化"
+    },
+    "popularActors": "人気の俳優",
+    "viewAll": "すべて見る"
+  },
+  "NotFound": {
+    "title": "ページが見つかりません",
+    "description": "お探しのページは見つかりませんでした。移動または削除された可能性があります。",
+    "goBack": "戻る",
+    "home": "ホームに戻る",
+    "popularDestinations": "人気のページ"
+  },
+  "ActorsPage": {
+    "title": "俳優の共演関係を探す",
+    "subtitle": "俳優を検索して、頻繁に共演している人を確認しましょう。",
+    "searchPlaceholder": "俳優を検索...",
+    "collaboratorsOf": "共演者: ",
+    "collaborationsCount": "共演数: {count}",
+    "loading": "共演者を読み込み中...",
+    "errorTitle": "共演者を読み込めませんでした",
+    "errorDesc": "接続を確認して再試行してください。",
+    "errorGeneric": "俳優の取得エラー。"
+  },
+  "ClustersPage": {
+    "title": "コラボレーションクラスター",
+    "subtitle": "俳優のネットワークの「ハブ」となった作品を見つけます。",
+    "searchPlaceholder": "まずは俳優を検索してください...",
+    "emptyState": "この俳優の重要なアンサンブルは見つかりませんでした。",
+    "topEnsembles": "主なアンサンブル: ",
+    "cardDesc": "{actor} はこの作品で {count} 人の追跡対象俳優と共演しました。",
+    "viewCast": "全キャストを見る"
+  },
+  "Navigation": {
+    "home": "ホーム",
+    "actors": "俳優",
+    "compare": "比較",
+    "clusters": "クラスター",
+    "productions": "作品"
+  }
+}

@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import BundleAnalyzer from "@next/bundle-analyzer";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 let nextConfig: NextConfig = {
   webpack: (config, { dev }) => {
@@ -8,8 +11,6 @@ let nextConfig: NextConfig = {
         type: "memory",
       });
     }
-
-    // Important: return the modified config
     return config;
   },
 
@@ -19,15 +20,15 @@ let nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+
   images: {
     unoptimized: false,
   },
+
   turbopack: {
-    rules: {
-      // "*.lottie": ["@noxfed/lottie-webpack-loader"],
-      // '*.svg': ['@svgr/webpack']
-    },
+    rules: {},
   },
+
   experimental: {
     webpackMemoryOptimizations: true,
     webpackBuildWorker: true,
@@ -43,8 +44,7 @@ const WithBundleAnalyzer = BundleAnalyzer({
   analyzerMode: "static",
   logLevel: "info",
 });
+
 nextConfig = WithBundleAnalyzer(nextConfig);
 
-
-// export default next
-export default nextConfig;
+export default withNextIntl(nextConfig);
