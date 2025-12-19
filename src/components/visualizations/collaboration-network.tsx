@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { NetworkData, CollaborationNode } from "@/src/hooks/api/useCollaboration";
 
 // --- Modular D3 Imports ---
@@ -47,6 +48,7 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const router = useRouter();
+  const t = useTranslations("common");
 
   // Dimensions state
   const [dimensions, setDimensions] = useState({ width: 0, height: height });
@@ -278,19 +280,19 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
           className="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-          Export SVG
+          {t("exportSvg")}
         </button>
       </div>
 
       <div className="absolute bottom-4 left-4 z-10 bg-white/95 p-4 rounded-xl shadow-md border border-gray-200 text-xs pointer-events-none backdrop-blur-sm w-48">
-        <div className="font-bold text-gray-900 mb-3 text-sm">Legend</div>
+        <div className="font-bold text-gray-900 mb-3 text-sm">{t("legend")}</div>
         <div className="space-y-2">
-          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500 border border-white shadow-sm"></span><span>Focal Actor</span></div>
-          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500 border border-white shadow-sm"></span><span>Collaborator</span></div>
-          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500 border border-white shadow-sm"></span><span>Production</span></div>
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500 border border-white shadow-sm"></span><span>{t("focalActor")}</span></div>
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500 border border-white shadow-sm"></span><span>{t("collaborator")}</span></div>
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500 border border-white shadow-sm"></span><span>{t("production")}</span></div>
         </div>
         <div className="mt-3 pt-3 border-t border-gray-100 text-gray-600 italic">
-          Scroll to zoom. Labels hide automatically based on zoom level.
+          {t("zoomInstructions")}
         </div>
       </div>
 
@@ -302,7 +304,7 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
         role="graphics-document"
         aria-label="Force directed graph showing actor collaborations"
       >
-        <title>Collaboration Network Graph</title>
+        <title>{t("collaborationNetworkGraph")}</title>
       </svg>
 
       {tooltip.show && tooltip.data && (

@@ -6,10 +6,12 @@ import Link from "next/link";
 import { useActorDetails } from "@/src/hooks/api/useActors";
 import ActorAnalytics from "@/src/components/actors/ActorAnalytics";
 import { ActorProfileSkeleton } from "@/src/components/ui/skeleton-loader";
+import { useTranslations } from "next-intl";
 
 export default function ActorDetailPage() {
   const params = useParams();
   const actorId = (params?.id as string) ?? "";
+  const t = useTranslations("actorDetail");
 
   const { data: actor, isLoading, error } = useActorDetails(actorId);
 
@@ -34,9 +36,9 @@ export default function ActorDetailPage() {
   if (error || !actor) {
     return (
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">Error Loading Profile</h1>
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">{t("errorTitle")}</h1>
         <div className="text-center text-red-500">
-          Error loading actor. Please try again later.
+          {t("errorMessage")}
         </div>
       </main>
     );
@@ -64,7 +66,7 @@ export default function ActorDetailPage() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Back to Actors
+            {t("backToActors")}
           </Link>
         </div>
 
@@ -75,7 +77,7 @@ export default function ActorDetailPage() {
                 {actor.imageUrl ? (
                   <img
                     src={actor.imageUrl}
-                    alt={actor.name ?? "actor image"}
+                    alt={actor.name ?? t("actorImageAlt")}
                     className="w-full h-full object-cover"
                     width={128}
                     height={128}
@@ -104,7 +106,7 @@ export default function ActorDetailPage() {
 
                   {actor.dateOfBirth && (
                     <div className="text-gray-600">
-                      Born: {formatDate(actor.dateOfBirth)}
+                      {t("born")} {formatDate(actor.dateOfBirth)}
                     </div>
                   )}
 
@@ -125,7 +127,7 @@ export default function ActorDetailPage() {
           <div className="border-t">
             <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
               <section className="lg:col-span-2">
-                <h2 className="text-xl font-semibold mb-4">Productions</h2>
+                <h2 className="text-xl font-semibold mb-4">{t("productions")}</h2>
                 {actor.productions && actor.productions.length > 0 ? (
                   <ul className="list-disc pl-5 space-y-2">
                     {actor.productions.map((p: any) => (
@@ -140,11 +142,11 @@ export default function ActorDetailPage() {
                     ))}
                   </ul>
                 ) : (
-                  <div className="text-gray-600">No productions found.</div>
+                  <div className="text-gray-600">{t("noProductions")}</div>
                 )}
 
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-2">Awards</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t("awards")}</h3>
                   {actor.awards && actor.awards.length > 0 ? (
                     <ul className="space-y-2">
                       {actor.awards.map((a: any) => (
@@ -170,14 +172,14 @@ export default function ActorDetailPage() {
                       ))}
                     </ul>
                   ) : (
-                    <div className="text-gray-600">No awards listed.</div>
+                    <div className="text-gray-600">{t("noAwards")}</div>
                   )}
                 </div>
               </section>
 
               <aside className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Occupations</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t("occupations")}</h3>
                   {actor.occupations && actor.occupations.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {actor.occupations.map((oc: string, i: number) => (
@@ -191,13 +193,13 @@ export default function ActorDetailPage() {
                     </div>
                   ) : (
                     <div className="text-gray-600">
-                      Occupations not available.
+                      {t("noOccupations")}
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Website</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t("website")}</h3>
                   {actor.website ? (
                     <Link
                       href={actor.website}
@@ -208,12 +210,12 @@ export default function ActorDetailPage() {
                       {actor.website}
                     </Link>
                   ) : (
-                    <div className="text-gray-600">No website listed.</div>
+                    <div className="text-gray-600">{t("noWebsite")}</div>
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Co-actors</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t("coActors")}</h3>
                   {actor.coActors && actor.coActors.length > 0 ? (
                     <div className="grid grid-cols-2 gap-3 max-h-94 overflow-auto overscroll-contain pr-2">
                       {actor.coActors.map((c: any, i: number) => {
@@ -229,7 +231,7 @@ export default function ActorDetailPage() {
                               {c.image ? (
                                 <img
                                   src={c.image}
-                                  alt={c.name ?? "co-actor"}
+                                  alt={c.name ?? t("coActorImageAlt")}
                                   className="w-full h-full object-cover"
                                   width={40}
                                   height={40}
@@ -246,7 +248,7 @@ export default function ActorDetailPage() {
                               </div>
                               {c.sharedWorks ? (
                                 <div className="text-gray-600">
-                                  Shared: {String(c.sharedWorks)}
+                                  {t("shared")} {String(c.sharedWorks)}
                                 </div>
                               ) : null}
                             </div>
@@ -256,7 +258,7 @@ export default function ActorDetailPage() {
                     </div>
                   ) : (
                     <div className="text-gray-600">
-                      No collaborators listed.
+                      {t("noCollaborators")}
                     </div>
                   )}
                 </div>
@@ -266,7 +268,7 @@ export default function ActorDetailPage() {
         </div>
 
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Network & Analytics</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("networkAnalytics")}</h2>
           <ActorAnalytics actorId={actorId} />
         </div>
 

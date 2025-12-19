@@ -5,17 +5,19 @@ import Link from "next/link";
 import { useProductionDetails } from "@/src/hooks/api/useProductSearch";
 import { ProductionProfileSkeleton, SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function ProductionDetailPage() {
   const params = useParams();
   const productionId = params.id as string;
   const { data: production, isLoading, isError } = useProductionDetails(productionId);
+  const t = useTranslations("productionDetail");
 
   if (isLoading) {
     return <ProductionProfileSkeleton />;
   }
 
-  if (isError || !production) return <div className="text-center py-12">Production not found</div>;
+  if (isError || !production) return <div className="text-center py-12">{t("notFound")}</div>;
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -35,20 +37,20 @@ export default function ProductionDetailPage() {
         <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">{production.title}</h1>
           <div className="text-lg text-gray-600 mb-6">
-            {production.year} • {production.type === "movie" ? "Movie" : "TV Show"}
+            {production.year} • {production.type === "movie" ? t("movie") : t("tvShow")}
           </div>
           <p className="text-gray-700 leading-relaxed text-lg max-w-2xl mb-6">
             {production.description}
           </p>
 
           <div className="text-sm text-gray-500">
-            Source: <Link href={`https://www.wikidata.org/wiki/${production.id}`} target="_blank" className="text-blue-600 hover:underline">Wikidata</Link>
+            {t("source")} <Link href={`https://www.wikidata.org/wiki/${production.id}`} target="_blank" className="text-blue-600 hover:underline">{t("wikidata")}</Link>
           </div>
         </div>
       </div>
 
       <section>
-        <h2 className="text-2xl font-bold mb-6 border-b pb-2">Cast & Characters</h2>
+        <h2 className="text-2xl font-bold mb-6 border-b pb-2">{t("castTitle")}</h2>
 
         {production.cast && production.cast.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -80,7 +82,7 @@ export default function ProductionDetailPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 italic">No cast information available.</p>
+          <p className="text-gray-500 italic">{t("noCast")}</p>
         )}
       </section>
     </main>

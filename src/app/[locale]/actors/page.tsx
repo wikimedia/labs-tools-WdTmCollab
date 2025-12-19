@@ -8,10 +8,12 @@ import { Button } from "@/src/components/ui/button";
 import { Skeleton, SkeletonCard, SkeletonCollaboratorCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 import { usePaginatedSearch } from "@/src/hooks/usePaginatedSearch";
 import { endpoints } from "@/utils/endpoints";
+import { useTranslations } from "next-intl";
 
 export default function ActorsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("actors");
 
   const actorId = searchParams.get("actorId") || "";
   const actorLabel = searchParams.get("label") || "";
@@ -67,10 +69,11 @@ export default function ActorsPage() {
     <main className='flex-grow'>
       <div className='min-h-screen bg-slate-50 flex flex-col items-center pt-16 px-4 pb-12'>
         <div className='w-full max-w-5xl p-8 space-y-6'>
-          <h2>Find Actor Collaborations</h2>
-          <p className='content-text'>
-            Start by searching for an actor to see who they frequently work
-            with.
+          <h1 className="text-4xl font-bold text-center text-gray-800">
+            {t("pageTitle")}
+          </h1>
+          <p className="text-center text-gray-600 text-lg">
+            {t("pageDescription")}
           </p>
 
           <div className='relative z-50'>
@@ -78,7 +81,7 @@ export default function ActorsPage() {
               onSelect={handleSelectActor}
               useSearchHook={useActorSearch}
               initialValue={actorLabel}
-              placeholder='Search for an actor...'
+              placeholder={t("searchPlaceholder")}
             />
           </div>
         </div>
@@ -88,7 +91,7 @@ export default function ActorsPage() {
         {allCoActors.length > 0 && (
           <div className="w-full max-w-5xl mt-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              Collaborators of <span className="text-blue-600">{actorLabel}</span>
+              {t("collaboratorsTitle", { actorName: actorLabel })}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {allCoActors.map((coActor: any) => (
@@ -105,7 +108,7 @@ export default function ActorsPage() {
                     {coActor.name}
                   </h3>
                   <span className='mt-4 inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full'>
-                    {coActor.sharedWorks} Collaborations
+                    {coActor.sharedWorks} {t("collaborationsLabel")}
                   </span>
                 </div>
             ))}
@@ -118,20 +121,20 @@ export default function ActorsPage() {
         )}
         {!loading && allCoActors.length === 0 && actorId && (
           <p className="mt-8 text-center text-gray-600">
-            Loading collaborators...
+            {t("loadingCollaborators")}
           </p>
         )}
     
         {isError && (
           <div className="mt-8 flex justify-center">
             <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">We couldn't load collaborators</h3>
-              <p className="text-gray-600 mb-4">Check your connection and try again.</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("errorLoadingCollaborators")}</h3>
+              <p className="text-gray-600 mb-4">{t("errorDescription")}</p>
             </div>
           </div>
         )}
 
-        {isError && <p className='mt-8 text-red-600'>Error fetching actors.</p>}
+        {isError && <p className='mt-8 text-red-600'>{t("errorFetchingActors")}</p>}
       </div>
     </main>
   );

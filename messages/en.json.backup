@@ -89,9 +89,13 @@
     "exportSvg": "Export SVG",
     "legend": "Legend",
     "focalActor": "Focal Actor",
+    "collaborator": "Collaborator",
     "production": "Production",
     "zoomInstructions": "Scroll to zoom. Labels hide automatically based on zoom level.",
     "collaborationNetworkGraph": "Collaboration Network Graph"
+    "collaborationNetwork": "Collaboration Network",
+    "buildingNetworkGraph": "Building Network Graph...",
+    "notEnoughDataToGenerateNetwork": "Not enough data to generate network."
   },
   "compare": {
     "pageTitle": "Shared Actors from Movies",

@@ -9,11 +9,13 @@ import { ProductionProfileSkeleton } from "@/src/components/ui/skeleton-loader";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useGridColumns } from "@/src/hooks/api/use-grid-columns";
+import { useTranslations } from "next-intl";
 
 export default function ActorCollaboratorsPage() {
   const params = useParams();
   const actorId = params.id as string;
   const listRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations("actorCollaborators");
 
   const { columns, isClient } = useGridColumns();
 
@@ -74,7 +76,7 @@ export default function ActorCollaboratorsPage() {
     return (
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Full Collaboration History</h1>
+          <h1 className="text-3xl font-bold">{t("pageTitle")}</h1>
         </div>
         <ProductionProfileSkeleton />
       </main>
@@ -89,18 +91,18 @@ export default function ActorCollaboratorsPage() {
           className="text-muted-foreground hover:text-primary flex items-center mb-4 transition-colors w-fit"
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Back to Profile
+          {t("backToProfile")}
         </Link>
-        <h1 className="text-3xl font-bold text-foreground">Full Collaboration History</h1>
+        <h1 className="text-3xl font-bold text-foreground">{t("pageTitle")}</h1>
         <p className="text-muted-foreground mt-2">
-          All actors who have worked with this person.
+          {t("pageDescription")}
         </p>
       </div>
 
       {isError && allActors.length === 0 ? (
         <div className="p-8 text-center bg-destructive/10 border border-destructive/20 rounded-xl text-destructive flex flex-col items-center gap-2">
           <AlertTriangle className="h-6 w-6" />
-          <span>Failed to load collaborators. Please try again later.</span>
+          <span>{t("errorLoading")}</span>
         </div>
       ) : (
         <div ref={listRef}>
@@ -152,7 +154,7 @@ export default function ActorCollaboratorsPage() {
                           <div className="mt-3 flex items-center text-sm">
                             <span className="inline-flex items-center bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium text-xs">
                               <Users className="w-3 h-3 mr-1.5" />
-                              {actor.sharedWorks} collaborations
+                              {actor.sharedWorks} {t("collaborations")}
                             </span>
                           </div>
                         </CardContent>
@@ -172,7 +174,7 @@ export default function ActorCollaboratorsPage() {
 
           {!isLoading && allActors.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
-              No collaboration history found.
+              {t("noHistoryFound")}
             </div>
           )}
         </div>

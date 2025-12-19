@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import CollaborationStatsCard from "@/src/components/visualizations/CollaborationStatsCard";
 import CollaborationNetwork from "../visualizations/collaboration-network";
 import { useCollaborationNetwork, useProductionClusters } from "@/src/hooks/api/useCollaboration";
@@ -7,6 +8,7 @@ import { useCollaborationNetwork, useProductionClusters } from "@/src/hooks/api/
 export default function ActorAnalytics({ actorId }: { actorId: string }) {
   const { data: networkData, isLoading: isNetworkLoading } = useCollaborationNetwork(actorId);
   const { data: clusters } = useProductionClusters(actorId);
+  const t = useTranslations("common");
 
   return (
     // FIX: Using grid with 'auto-rows' or explicit heights to manage layout
@@ -17,7 +19,7 @@ export default function ActorAnalytics({ actorId }: { actorId: string }) {
         <CollaborationStatsCard actorId={actorId} />
 
         <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Top Ensembles</h3>
+          <h3 className="text-lg font-bold text-gray-800 mb-4">{t("topEnsembles")}</h3>
           {clusters?.length ? (
             <ul className="space-y-3">
               {clusters.map((cluster) => (
@@ -26,13 +28,13 @@ export default function ActorAnalytics({ actorId }: { actorId: string }) {
                     {cluster.label}
                   </span>
                   <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap">
-                    Cast: {cluster.size}
+                    {t("cast")}: {cluster.size}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-gray-600 italic">No major ensembles found.</p>
+            <p className="text-sm text-gray-600 italic">{t("noMajorEnsemblesFound")}</p>
           )}
         </div>
       </div>
@@ -42,20 +44,20 @@ export default function ActorAnalytics({ actorId }: { actorId: string }) {
       <div className="lg:col-span-2 w-full min-w-0">
         <div className="bg-white p-1 rounded-xl shadow-md border border-gray-100 h-[500px] lg:h-[600px] flex flex-col relative z-0">
           <div className="p-4 border-b border-gray-100 flex-shrink-0">
-            <h3 className="text-lg font-bold text-gray-800">Collaboration Network</h3>
+            <h3 className="text-lg font-bold text-gray-800">{t("collaborationNetwork")}</h3>
           </div>
 
           <div className="flex-grow relative overflow-hidden w-full">
             {isNetworkLoading ? (
               <div className="absolute inset-0 bg-gray-50 animate-pulse flex items-center justify-center text-gray-400">
-                Building Network Graph...
+                {t("buildingNetworkGraph")}
               </div>
             ) : networkData && networkData.nodes.length > 0 ? (
               // Passing no height prop allows it to fill the flex container
               <CollaborationNetwork data={networkData} />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-gray-600 bg-gray-50">
-                Not enough data to generate network.
+                {t("notEnoughDataToGenerateNetwork")}
               </div>
             )}
           </div>

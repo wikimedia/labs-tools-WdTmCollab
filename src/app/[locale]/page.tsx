@@ -31,35 +31,36 @@ import {
 
 export default function Home() {
   const router = useRouter();
-  const t = useTranslations("HomePage");
-  const { data: popularActors = [], isLoading, error } = usePopularActors();
+  const t = useTranslations("home");
+  const tCommon = useTranslations("common");
 
   const features = [
     {
-      title: t("features.collaborators"),
-      description: t("features.collaboratorsDesc"),
+      title: t("features.frequentCollaborators.title"),
+      description: t("features.frequentCollaborators.description"),
       icon: <Users className="w-6 h-6" />,
       link: "/actors",
     },
     {
-      title: t("features.shared"),
-      description: t("features.sharedDesc"),
+      title: t("features.sharedProductions.title"),
+      description: t("features.sharedProductions.description"),
       icon: <Clapperboard className="w-6 h-6" />,
       link: "/compare",
     },
     {
-      title: t("features.crossProject"),
-      description: t("features.crossProjectDesc"),
+      title: t("features.crossProjectActors.title"),
+      description: t("features.crossProjectActors.description"),
       icon: <GitMerge className="w-6 h-6" />,
       link: "/productions",
     },
     {
-      title: t("features.clusters"),
-      description: t("features.clustersDesc"),
+      title: t("features.collaborationClusters.title"),
+      description: t("features.collaborationClusters.description"),
       icon: <Network className="w-6 h-6" />,
       link: "/clusters",
     },
   ];
+  const { data: popularActors = [], isLoading, error } = usePopularActors();
 
   const handleActorSelect = (actor: Actor | null) => {
     if (actor) {
@@ -74,15 +75,13 @@ export default function Home() {
         <div className="container mx-auto text-center">
           <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300">
             <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-            {t("betaLabel")}
+            {t("versionBadge")}
           </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground drop-shadow-sm">
-            <span className="gradient-text">Wikidata</span>{" "}
-            <span className="text-primary">TransMedia</span>{" "}
-            <span className="gradient-text">Collaboration</span>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
+            {t("heroTitle")}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
-            {t("subtitle")}
+            {t("heroDescription")}
           </p>
 
           <div className="max-w-2xl mx-auto relative z-50 shadow-xl rounded-2xl bg-white">
@@ -127,13 +126,13 @@ export default function Home() {
         <section className="space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-bold tracking-tight">
-              {t("popularActors")}
+              {t("popularActors.title")}
             </h2>
             <Link
-              href="/actors"
+              href="[locale]/actors"
               className="text-primary hover:underline font-medium"
             >
-              {t("viewAll")}
+              {t("popularActors.viewAll")}
             </Link>
           </div>
 
@@ -147,7 +146,7 @@ export default function Home() {
           ) : error ? (
             <div className="p-8 text-center bg-destructive/10 rounded-xl text-destructive flex flex-col items-center">
               <AlertTriangle className="h-6 w-6 mb-2" />
-              Unable to load popular actors at this time.
+              {t("popularActors.errorMessage")}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -176,8 +175,8 @@ export default function Home() {
                     </div>
                     <div className="text-xs text-muted-foreground truncate font-medium">
                       {actor.awardCount !== undefined
-                        ? `${actor.awardCount} awards`
-                        : t("viewAll")}
+                        ? `${actor.awardCount} ${t("popularActors.awards")}`
+                        : t("popularActors.viewDetails")}
                     </div>
                   </div>
                 </Link>

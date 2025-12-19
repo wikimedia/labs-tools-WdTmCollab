@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Button } from "@/src/components/ui/button";
 import { AlertCircle, RefreshCw, Home } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -10,6 +11,8 @@ interface ErrorPageProps {
 }
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
+  const t = useTranslations("error");
+
   useEffect(() => {
     // Log the error to an error reporting service
     console.error("Application error:", error);
@@ -29,12 +32,11 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
             {/* Content */}
             <div className="space-y-4">
               <h1 className="text-3xl font-bold text-gray-900">
-                Oops! Something went wrong
+                {t("pageTitle")}
               </h1>
 
               <p className="text-gray-600 leading-relaxed">
-                We encountered an unexpected error while loading this page.
-                This might be a temporary issue. Please try again or return to the homepage.
+                {t("pageDescription")}
               </p>
 
               {/* Action Buttons */}
@@ -45,7 +47,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
                   size="lg"
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Try Again
+                  {t("tryAgain")}
                 </Button>
 
                 <Button
@@ -55,7 +57,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
                   size="lg"
                 >
                   <Home className="mr-2 h-4 w-4" />
-                  Go Home
+                  {t("goHome")}
                 </Button>
               </div>
             </div>
@@ -65,7 +67,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           {process.env.NODE_ENV === "development" && (
             <details className="mt-6 bg-gray-900 text-gray-100 rounded-lg overflow-hidden">
               <summary className="cursor-pointer p-4 bg-gray-800 hover:bg-gray-700 transition-colors font-medium">
-                🔧 Error Details (Development Only)
+                🔧 {t("errorDetails")}
               </summary>
               <div className="p-4 border-t border-gray-700">
                 <pre className="text-xs overflow-auto whitespace-pre-wrap text-red-300">
@@ -76,16 +78,9 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
             </details>
           )}
 
-          {/* Additional Help Text */}
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">
-              If this problem persists, please{" "}
-              <a
-                href="mailto:support@example.com"
-                className="text-blue-600 hover:text-blue-700 underline"
-              >
-                contact support
-              </a>
+              {t("contactSupport")}
             </p>
           </div>
         </div>

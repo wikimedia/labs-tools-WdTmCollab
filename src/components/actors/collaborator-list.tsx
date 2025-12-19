@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface CoActor {
   actorId: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function CollaboratorList({ actorId }: Props) {
+  const t = useTranslations("common");
   const [results, setResults] = useState<CoActor[]>([]);
   const [page, setPage] = useState<number>(1);
   const [perPage] = useState<number>(20);
@@ -49,7 +51,7 @@ export default function CollaboratorList({ actorId }: Props) {
       else setResults((prev) => [...prev, ...pageResults]);
     } catch (e: any) {
       console.error(e);
-      setError(e.message || "Unknown error");
+      setError(e.message || t("error"));
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,7 @@ export default function CollaboratorList({ actorId }: Props) {
       {hasMore && (
         <div className="text-center">
           <button onClick={handleLoadMore} disabled={loading} className="text-blue-600 hover:underline">
-            {loading ? "Loading…" : "Load more collaborators"}
+            {loading ? t("loading") : t("loadMoreCollaborators")}
           </button>
         </div>
       )}

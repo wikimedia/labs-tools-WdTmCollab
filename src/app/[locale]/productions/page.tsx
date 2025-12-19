@@ -4,10 +4,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useActorSearch, Actor } from "@/src/hooks/api/useActors";
 import { useSharedProductions } from "@/src/hooks/api/useProductSearch";
 import GenericSearch from "@/src/components/ui/generic-search";
+import { useTranslations } from "next-intl";
 
 export default function ProductionsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("productions");
 
   const actor1Id = searchParams.get("actor1") || undefined;
   const actor2Id = searchParams.get("actor2") || undefined;
@@ -39,16 +41,16 @@ export default function ProductionsPage() {
     <main className='flex-grow'>
       <div className='container mx-auto px-4 py-8'>
         <div className='flex flex-col items-center justify-center w-full'>
-          <h2>Shared Productions</h2>
+          <h2>{t("pageTitle")}</h2>
           <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl relative z-50'>
             <GenericSearch<Actor>
-              placeholder='Select First Actor'
+              placeholder={t("selectFirstActor")}
               useSearchHook={useActorSearch}
               onSelect={(a) => updateUrl("actor1", a)}
               initialValue={actor1Label}
             />
             <GenericSearch<Actor>
-              placeholder='Select Second Actor'
+              placeholder={t("selectSecondActor")}
               useSearchHook={useActorSearch}
               onSelect={(a) => updateUrl("actor2", a)}
               initialValue={actor2Label}
@@ -82,11 +84,11 @@ export default function ProductionsPage() {
       )}
 
       {loading && (
-        <div className='text-center mt-8'>Loading shared productions...</div>
+        <div className='text-center mt-8'>{t("loadingProductions")}</div>
       )}
       {error && (
         <p className='text-center text-red-500 mt-4'>
-          Error fetching shared productions.
+          {t("errorFetchingProductions")}
         </p>
       )}
     </main>

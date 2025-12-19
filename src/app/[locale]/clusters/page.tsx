@@ -11,11 +11,13 @@ import {
   SkeletonRepeat
 } from "@/src/components/ui/skeleton-loader";
 import { Card } from "@/src/components/ui/card";
+import { useTranslations } from "next-intl";
 
 export default function ClustersPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations("clusters");
 
   const actorId = searchParams.get("actorId") || "";
   const actorLabel = searchParams.get("label") || "";
@@ -39,14 +41,14 @@ export default function ClustersPage() {
   return (
     <main className='flex-grow container mx-auto px-4 py-8 min-h-screen'>
       <div className='max-w-4xl mx-auto mb-12 text-center'>
-        <h2>Collaboration Clusters</h2>
+        <h2>{t("pageTitle")}</h2>
         <p className='text-gray-600 mb-8'>
-          Find which productions served as "hubs" for an actor's network.
+          {t("pageDescription")}
         </p>
 
         <div className='max-w-xl mx-auto relative z-50'>
           <GenericSearch<Actor>
-            placeholder='Search for an actor first...'
+            placeholder={t("searchPlaceholder")}
             useSearchHook={useActorSearch}
             onSelect={handleSelectActor}
             initialValue={actorLabel}
@@ -66,7 +68,7 @@ export default function ClustersPage() {
       {!isLoading && actorId && clusters.length === 0 && (
         <div className='text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200'>
           <p className='text-gray-500'>
-            No significant ensembles found for this actor.
+            {t("noEnsembles")}
           </p>
         </div>
       )}
@@ -75,7 +77,7 @@ export default function ClustersPage() {
       {actorId && clusters.length > 0 && (
         <div className='animate-in fade-in slide-in-from-bottom-4 duration-500'>
           <h2 className='text-xl font-bold mb-6 flex items-center gap-2'>
-            Top Ensembles for{" "}
+            {t("topEnsemblesFor")}{" "}
             <span className='text-blue-600'>{actorLabel}</span>
           </h2>
 
@@ -103,13 +105,12 @@ export default function ClustersPage() {
                     </h3>
 
                     <p className='text-sm text-gray-500 leading-relaxed'>
-                      {actorLabel} worked with {cluster.size} tracked actors in
-                      this production.
+                      {actorLabel} {t("workedWithActors", { size: cluster.size })}
                     </p>
                   </div>
 
                   <div className='mt-4 pt-4 border-t border-gray-100 text-blue-600 text-sm font-medium flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
-                    View Full Cast &rarr;
+                    {t("viewFullCast")}
                   </div>
                 </Card>
               </Link>

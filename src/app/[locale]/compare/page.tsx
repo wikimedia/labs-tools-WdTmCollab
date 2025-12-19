@@ -9,10 +9,12 @@ import { Card } from "@/src/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
 import { endpoints } from "@/utils/endpoints";
+import { useTranslations } from "next-intl";
 
 export default function SharedActorsFromMovies() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("compare");
 
   const movie1Id = searchParams.get("movie1") || undefined;
   const movie2Id = searchParams.get("movie2") || undefined;
@@ -72,10 +74,10 @@ export default function SharedActorsFromMovies() {
   return (
     <main className='flex-grow'>
       <div className='container mx-auto px-4 py-8'>
-        <h2>Shared Actors from Movies</h2>
+        <h2>{t("pageTitle")}</h2>
         <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto relative z-50'>
           <GenericSearch<Movie>
-            placeholder="Search First Movie"
+            placeholder={t("searchFirstMovie")}
             onSelect={(m) => updateUrl("movie1", m)}
             initialValue={movie1Label}
             renderItem={renderMovieItem}
@@ -84,7 +86,7 @@ export default function SharedActorsFromMovies() {
             queryKey={["movieSearch"]}
           />
           <GenericSearch<Movie>
-            placeholder="Search Second Movie"
+            placeholder={t("searchSecondMovie")}
             onSelect={(m) => updateUrl("movie2", m)}
             initialValue={movie2Label}
             renderItem={renderMovieItem}
@@ -121,7 +123,7 @@ export default function SharedActorsFromMovies() {
                 <div>
                   <h3 className='font-bold text-gray-900'>{actor.name}</h3>
                   <span className='text-blue-600 text-sm font-medium'>
-                    {actor.sharedWorks} shared works.
+                    {actor.sharedWorks} {t("sharedWorks")}
                   </span>
                 </div>
               </Card>
@@ -130,7 +132,7 @@ export default function SharedActorsFromMovies() {
         )}
 
         {sharedActors.length === 0 && !loading && movie1Id && movie2Id && (
-          <p className='mt-4 text-gray-600'>No Shared Actors Found.</p>
+          <p className='mt-4 text-gray-600'>{t("noSharedActors")}</p>
         )}
       </div>
     </main>

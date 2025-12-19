@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { RateLimitStatus } from "@/utils/rateLimit";
+import { useTranslations } from "next-intl";
 
 interface RateLimitIndicatorProps {
   status: RateLimitStatus | null;
@@ -13,6 +14,7 @@ interface RateLimitIndicatorProps {
  * Shows warning when approaching limit or when rate limited
  */
 export function RateLimitIndicator({ status, visible = true }: RateLimitIndicatorProps) {
+  const t = useTranslations("common");
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export function RateLimitIndicator({ status, visible = true }: RateLimitIndicato
       aria-label={`Rate limit indicator: ${status.message}`}
     >
       <div className="flex-1">
-        <div className="font-semibold">{status.isLimited ? "Rate Limited" : "High Request Rate"}</div>
+        <div className="font-semibold">{status.isLimited ? t("rateLimited") : t("highRequestRate")}</div>
         <div className="text-sm mt-1">{status.message}</div>
       </div>
 
@@ -57,7 +59,7 @@ export function RateLimitIndicator({ status, visible = true }: RateLimitIndicato
           <button
             onClick={() => setIsVisible(false)}
             className={`${badgeBg} hover:opacity-75 transition-opacity p-1 rounded`}
-            aria-label="Dismiss rate limit notice"
+            aria-label={t("dismissRateLimitNotice")}
             type="button"
           >
             <svg
