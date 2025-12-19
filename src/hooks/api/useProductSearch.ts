@@ -4,16 +4,13 @@ import { endpoints } from "@/utils/endpoints";
 import { fetchWithContext, formatRateLimitStatus, RateLimitStatus } from "@/utils/rateLimit";
 import { useDebounce } from "@/utils/debounce";
 import { ReactNode } from "react";
+import { SearchItem } from "@/src/components/ui/generic-search";
 
 // --- Types ---
-export interface Movie {
+export interface Movie extends SearchItem {
   year: ReactNode;
-  id: string;
-  label: string;
-  description?: string;
   type: string;
   url: string;
-  imageUrl?: string;
 }
 
 export interface Production {

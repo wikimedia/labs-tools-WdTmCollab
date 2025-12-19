@@ -1,20 +1,14 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Movie,
-  useMovieSearch,
-  useSharedActorsFromMovies
-} from "@/src/hooks/api/useProductSearch";
+import { Movie, useSharedActorsFromMovies } from "@/src/hooks/api/useProductSearch";
 import { Clapperboard } from "lucide-react";
-import {
-  SkeletonCard,
-  SkeletonRepeat
-} from "@/src/components/ui/skeleton-loader";
+import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 import GenericSearch from "@/src/components/ui/generic-search";
 import { Card } from "@/src/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
+import { endpoints } from "@/utils/endpoints";
 
 export default function SharedActorsFromMovies() {
   const router = useRouter();
@@ -81,18 +75,22 @@ export default function SharedActorsFromMovies() {
         <h2>Shared Actors from Movies</h2>
         <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto relative z-50'>
           <GenericSearch<Movie>
-            placeholder='Search First Movie'
-            useSearchHook={useMovieSearch}
+            placeholder="Search First Movie"
             onSelect={(m) => updateUrl("movie1", m)}
             initialValue={movie1Label}
             renderItem={renderMovieItem}
+            enablePagination={true}
+            endpoint={endpoints.movieSearch}
+            queryKey={["movieSearch"]}
           />
           <GenericSearch<Movie>
-            placeholder='Search Second Movie'
-            useSearchHook={useMovieSearch}
+            placeholder="Search Second Movie"
             onSelect={(m) => updateUrl("movie2", m)}
             initialValue={movie2Label}
             renderItem={renderMovieItem}
+            enablePagination={true}
+            endpoint={endpoints.movieSearch}
+            queryKey={["movieSearch"]}
           />
         </div>
 

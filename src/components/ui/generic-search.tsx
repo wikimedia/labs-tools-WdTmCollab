@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Search, X, Loader2, AlertCircle } from "lucide-react";
 import { useDebouncedValue } from "@/utils/debounce";
+import { usePaginatedSearch } from "@/src/hooks/usePaginatedSearch";
 
 export interface SearchItem {
   id: string;
@@ -21,9 +22,12 @@ interface GenericSearchProps<T extends SearchItem> {
   onSelect: (item: T | null) => void;
   placeholder?: string;
   initialValue?: string;
-  useSearchHook: (query: string) => SearchHookResult<T>;
+  useSearchHook?: (query: string) => SearchHookResult<T>;
   renderItem?: (item: T) => React.ReactNode;
   className?: string;
+  enablePagination?: boolean;
+  endpoint?: (query: string) => string;
+  queryKey?: string[];
 }
 
 export default function GenericSearch<T extends SearchItem>({
@@ -33,10 +37,14 @@ export default function GenericSearch<T extends SearchItem>({
   useSearchHook,
   renderItem,
   className,
+  enablePagination = false,
+  endpoint,
+  queryKey = [],
 }: GenericSearchProps<T>) {
   const [query, setQuery] = useState(initialValue);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     setQuery(initialValue || "");
@@ -45,11 +53,46 @@ export default function GenericSearch<T extends SearchItem>({
   const debouncedQuery = useDebouncedValue(query, 300);
   const shouldFetch = debouncedQuery.length > 2;
 
-  const {
-    data: results = [],
-    isLoading,
-    isError,
-  } = useSearchHook(shouldFetch ? debouncedQuery : "");
+  // Conditionally use paginated or regular search
+  const searchResult = enablePagination
+    ? usePaginatedSearch({
+        query: shouldFetch ? debouncedQuery : "",
+        endpoint: endpoint!,
+        queryKey,
+        enabled: shouldFetch,
+      })
+    : useSearchHook!(shouldFetch ? debouncedQuery : "");
+
+  let results: T[] = [];
+  let isLoading = false;
+  let isError = false;
+  let hasNextPage = false;
+  let isFetchingNextPage = false;
+  let fetchNextPage: () => void = () => {};
+
+  if (enablePagination) {
+    const paginatedResult = searchResult as ReturnType<typeof usePaginatedSearch>;
+    results = paginatedResult.data?.pages.flatMap((page: any) => page.results) || [];
+    isLoading = paginatedResult.isLoading;
+    isError = paginatedResult.isError;
+    hasNextPage = paginatedResult.hasNextPage;
+    isFetchingNextPage = paginatedResult.isFetchingNextPage;
+    fetchNextPage = paginatedResult.fetchNextPage;
+  } else {
+    const regularResult = searchResult as SearchHookResult<T>;
+    results = regularResult.data || [];
+    isLoading = regularResult.isLoading;
+    isError = regularResult.isError;
+  }
+
+  const handleScroll = (e: React.UIEvent<HTMLUListElement>) => {
+    if (!enablePagination || !hasNextPage || isFetchingNextPage) return;
+    const target = e.currentTarget;
+    const remaining = target.scrollHeight - target.scrollTop - target.clientHeight;
+    if (remaining < 200) {
+      fetchNextPage();
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -139,7 +182,11 @@ export default function GenericSearch<T extends SearchItem>({
           )}
 
           {shouldFetch && !isLoading && results.length > 0 && (
-            <ul className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <ul
+              ref={listRef}
+              className="max-h-64 overflow-y-auto custom-scrollbar"
+              onScroll={handleScroll}
+            >
               {results.map((item) => (
                 <li key={item.id}>
                   {renderItem ? (
@@ -177,6 +224,9 @@ export default function GenericSearch<T extends SearchItem>({
                   )}
                 </li>
               ))}
+              {enablePagination && hasNextPage && (
+                <li className="h-4"></li>
+              )}
             </ul>
           )}
         </div>

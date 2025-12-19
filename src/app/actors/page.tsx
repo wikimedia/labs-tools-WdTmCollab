@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCoActors, Actor, useActorSearch } from "@/src/hooks/api/useActors";
 import GenericSearch from "@/src/components/ui/generic-search";
 import { Button } from "@/src/components/ui/button";
-import { SkeletonCollaboratorCard } from "@/src/components/ui/skeleton-loader";
+import { Skeleton, SkeletonCard, SkeletonCollaboratorCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
+import { usePaginatedSearch } from "@/src/hooks/usePaginatedSearch";
+import { endpoints } from "@/utils/endpoints";
 
 export default function ActorsPage() {
   const router = useRouter();
@@ -18,34 +20,48 @@ export default function ActorsPage() {
   const ITEMS_PER_PAGE = 20;
 
   const {
-    data: results = [],
+    data,
     isLoading: loading,
     isError,
-    isPlaceholderData,
-    refetch
-  } = useCoActors(actorId, currentPage, ITEMS_PER_PAGE);
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = usePaginatedSearch({
+    query: actorId,
+    endpoint: (id: string) => endpoints.co_ActorSearch(id),
+    queryKey: ["coActors"],
+    enabled: !!actorId,
+    perPage: ITEMS_PER_PAGE,
+    paramType: "offset",
+  });
 
-  const [visibleCount, setVisibleCount] = useState<number>(ITEMS_PER_PAGE);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const allCoActors = data?.pages.flatMap(page => page.results) || [];
 
-  const handleSelectActor = (selectedActor: Actor | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (selectedActor) {
-      params.set("actorId", selectedActor.id);
-      params.set("label", selectedActor.label);
-      params.set("page", "1");
-    } else {
-      params.delete("actorId");
-      params.delete("label");
-      params.delete("page");
-    }
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // IntersectionObserver for infinite scroll
+  useEffect(() => {
+    if (!sentinelRef.current || !hasNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0];
+        if (e.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { root: null, rootMargin: "200px" }
+    );
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const handleSelectActor = (actor: Actor | null) => {
+    if (!actor) return;
+    const params = new URLSearchParams();
+    params.set("actorId", actor.id);
+    params.set("label", actor.label);
     router.push(`?${params.toString()}`);
   };
-
-  // Reset visible count when actor changes
-  useEffect(() => {
-    setVisibleCount(ITEMS_PER_PAGE);
-  }, [actorId]);
 
   return (
     <main className='flex-grow'>
@@ -69,18 +85,14 @@ export default function ActorsPage() {
 
         {loading && <SkeletonCollaboratorCard />}
 
-        {results.length > 0 && (
-          <div className='w-full max-w-5xl mt-12'>
-            <h2 className='section-title'>
-              Collaborators of{" "}
-              <span className='text-blue-600'>{actorLabel}</span>
+        {allCoActors.length > 0 && (
+          <div className="w-full max-w-5xl mt-12">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              Collaborators of <span className="text-blue-600">{actorLabel}</span>
             </h2>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {results.map((coActor: any) => (
-                <div
-                  key={coActor.actorId}
-                  className='flex flex-col items-center bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300'
-                >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {allCoActors.map((coActor: any) => (
+                <div key={coActor.actorId} className="flex flex-col items-center bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
                     src={
                       coActor.image ||
@@ -96,26 +108,25 @@ export default function ActorsPage() {
                     {coActor.sharedWorks} Collaborations
                   </span>
                 </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            <div className='flex justify-center items-center space-x-6 mt-8'>
-              <Button
-                onClick={() => updatePage(Math.max(currentPage - 1, 1))}
-                disabled={currentPage === 1 || loading}
-                className='px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50'
-              >
-                Previous
-              </Button>
-              <span className='text-gray-700'>Page {currentPage}</span>
-              <Button
-                onClick={() => updatePage(currentPage + 1)}
-                disabled={results.length < ITEMS_PER_PAGE || loading}
-                className='px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50'
-              >
-                Next
-              </Button>
+            ))}
+            {/* Sentinel for infinite scroll */}
+            {hasNextPage && (
+              <div ref={sentinelRef} className="h-4 col-span-full"></div>
+            )}
+          </div>
+        </div>
+        )}
+        {!loading && allCoActors.length === 0 && actorId && (
+          <p className="mt-8 text-center text-gray-600">
+            Loading collaborators...
+          </p>
+        )}
+    
+        {isError && (
+          <div className="mt-8 flex justify-center">
+            <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">We couldn't load collaborators</h3>
+              <p className="text-gray-600 mb-4">Check your connection and try again.</p>
             </div>
           </div>
         )}
