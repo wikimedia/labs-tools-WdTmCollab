@@ -1,34 +1,94 @@
 # WdTmCollab
 
-_**WdTmCollab**_ (Wikidata Transmedia Collaboration Explorer) is a tool which leverages Wikidata's structured film and television data to analyze their partnerships, identifying frequent collaborators and shared projects while extending insights to directors and producers for a comprehensive view of industry dynamics.
+**Wikidata Transmedia Collaboration Explorer**
 
-## Developer Set up
+_WdTmCollab_ is a tool which leverages Wikidata's structured film and television data to analyze their partnerships, identifying frequent collaborators and shared projects while extending insights to directors and producers for a comprehensive view of industry dynamics.
 
-- Clone the code from the [repository](https://gerrit.wikimedia.org/r/admin/repos/labs/tools/WdTmCollab) on gerrit.
+---
 
-- Run the `npm install` command
+## Table of Contents
 
-- Run the frontend locally :
+- [About the Project](#about-the-project)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running Locally](#running-locally)
+- [API Documentation](#api-documentation)
+  - [Base URL](#base-url)
+  - [Headers](#headers)
+  - [Response Format](#response-format)
+  - [Endpoints](#endpoints)
+    - [Actors](#actors)
+    - [Productions](#productions)
+  - [Errors & Rate Limiting](#errors--rate-limiting)
+- [Accessibility](#accessibility)
 
-  ```bash
-  npm run dev
-  # or
-  yarn dev
-  # or
-  pnpm dev
-  # or
-  bun dev
-  ```
+---
 
-To access the locally running development version, open <http://localhost:3000> in your browser after starting the frontend server.
+## About the Project
 
-To access the publicly deployed tool, visit <https://wdtmcollab.toolforge.org>.
+This tool visualizes connections in the film industry using data from Wikidata. It helps users explore:
+- **Actor Collaborations**: Who works with whom frequently?
+- **Shared Productions**: Which movies/shows feature specific pairings?
+- **Industry Dynamics**: Insights into directors and producers.
 
-## API Endpoints
+**Deployed Application:** [https://wdtmcollab.toolforge.org](https://wdtmcollab.toolforge.org)
 
-The WdTmCollab API provides endpoints for accessing Wikidata film and television data. All API requests are made to the base URL:
+## Tech Stack
 
-```https
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Data Visualization**: [D3.js](https://d3js.org/)
+- **State Management**: [TanStack Query](https://tanstack.com/query/latest)
+- **Testing**: [Playwright](https://playwright.dev/)
+
+## Getting Started
+
+Follow these instructions to set up the project locally.
+
+### Prerequisites
+
+- Node.js (v20 or higher recommended)
+- npm, yarn, pnpm, or bun
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://gerrit.wikimedia.org/r/admin/repos/labs/tools/WdTmCollab
+   cd WdTmCollab
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running Locally
+
+Start the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## API Documentation
+
+The WdTmCollab API provides endpoints for accessing Wikidata film and television data.
+
+### Base URL
+
+```
 https://wdtmcollab-api.toolforge.org
 ```
 
@@ -37,16 +97,17 @@ https://wdtmcollab-api.toolforge.org
 All API requests should include the following headers:
 
 ```json
-Content-Type: application/json
-Accept: application/json
+{
+  "Content-Type": "application/json",
+  "Accept": "application/json"
+}
 ```
 
 ### Response Format
 
-All successful responses return JSON data with the appropriate HTTP status codes. Error responses include a `message` field with details about the error.
+Success responses return JSON data. Errors return a standard error object.
 
-#### Error Response Format
-
+**Error Example:**
 ```json
 {
   "error": "Error description",
@@ -55,247 +116,119 @@ All successful responses return JSON data with the appropriate HTTP status codes
 }
 ```
 
----
+### Endpoints
 
-### GET /actors/search
+#### Actors
 
-Search for actors by name
+##### `GET /actors/search`
+Search for actors by name.
 
-**Query Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name`    | string | Yes    | The name of the actor to search for. |
 
-- `name` (required, string) - The name of the actor to search for
-
-**Example Request:**
-
+**Example:**
 ```bash
 curl -X GET "https://wdtmcollab-api.toolforge.org/actors/search?name=Tom%20Hanks"
 ```
 
-**Example Response:**
+##### `GET /actors/details/{id}`
+Get detailed information about a specific actor.
 
-```json
-[
-  {
-    "id": "Q2263",
-    "label": "Tom Hanks",
-    "description": "American actor and producer",
-    "url": "https://www.wikidata.org/wiki/Q2263",
-    "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Tom%20Hanks%202018.jpg"
-  }
-]
-```
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id`      | string | Yes    | The Wikidata ID of the actor (e.g., `Q2263`). |
 
----
-
-### GET /actors/details/{id}
-
-Get detailed information about a specific actor
-
-**Path Parameters:**
-
-- `id` (required, string) - The Wikidata ID of the actor (e.g., Q2263)
-
-**Example Request:**
-
+**Example:**
 ```bash
 curl -X GET "https://wdtmcollab-api.toolforge.org/actors/details/Q2263"
 ```
 
-**Example Response:**
+##### `GET /actors/co-actors`
+Get co-actors for a given actor.
 
-```json
-{
-  "id": "Q2263",
-  "name": "Tom Hanks",
-  "bio": "Thomas Jeffrey Hanks is an American actor and producer...",
-  "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Tom%20Hanks%202018.jpg",
-  "dateOfBirth": "1956-07-09",
-  "placeOfBirth": "Concord, California, U.S.",
-  "countryOfCitizenship": "United States of America",
-  "gender": "male",
-  "occupations": ["actor", "film producer", "screenwriter", "voice actor"],
-  "productions": [...],
-  "awards": [...],
-  "website": "https://tomhanks.com/",
-  "coActors": [...]
-}
-```
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `actor1Id` | string | Yes    | -       | The Wikidata ID of the actor. |
+| `limit`   | integer | No    | 20      | Number of results to return. |
+| `offset`  | integer | No    | 0       | Number of results to skip. |
 
----
-
-### GET /actors/co-actors
-
-Get co-actors for a given actor
-
-**Query Parameters:**
-
-- `actorId` (required, string) - The Wikidata ID of the actor
-- `limit` (optional, integer) - Number of results to return (default: 20)
-- `offset` (optional, integer) - Number of results to skip (default: 0)
-
-**Example Request:**
-
+**Example:**
 ```bash
-curl -X GET "https://wdtmcollab-api.toolforge.org/actors/co-actors?actorId=Q2263&limit=8&offset=0"
+curl -X GET "https://wdtmcollab-api.toolforge.org/actors/co-actors?actorId=Q2263&limit=8"
 ```
 
-**Example Response:**
+##### `GET /actors/popular`
+Get a list of popular actors.
 
-```json
-[
-  {
-    "id": "Q27205",
-    "label": "Meg Ryan",
-    "description": "American actress",
-    "url": "https://www.wikidata.org/wiki/Q27205",
-    "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Meg%20Ryan%202012.jpg"
-  }
-]
-```
-
----
-
-### GET /actors/popular
-
-Get a list of popular actors
-
-**Example Request:**
-
+**Example:**
 ```bash
 curl -X GET "https://wdtmcollab-api.toolforge.org/actors/popular"
 ```
 
-**Example Response:**
+#### Productions
 
-```json
-[
-  {
-    "id": "Q2263",
-    "label": "Tom Hanks",
-    "description": "American actor and producer",
-    "url": "https://www.wikidata.org/wiki/Q2263",
-    "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Tom%20Hanks%202018.jpg"
-  },
-  {
-    "id": "Q27205",
-    "label": "Meg Ryan",
-    "description": "American actress",
-    "url": "https://www.wikidata.org/wiki/Q27205",
-    "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Meg%20Ryan%202012.jpg"
-  }
-]
-```
+##### `GET /productions/search`
+Search for productions (movies/TV) by title.
 
----
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `title`   | string | Yes    | The title of the production to search for. |
 
-### GET /productions/search
-
-Search for productions (movies/TV) by title
-
-**Query Parameters:**
-
-- `title` (required, string) - The title of the production to search for
-
-**Example Request:**
-
+**Example:**
 ```bash
 curl -X GET "https://wdtmcollab-api.toolforge.org/productions/search?title=Forrest%20Gump"
 ```
 
-**Example Response:**
+##### `GET /productions/shared`
+Get productions shared between two actors.
 
-```json
-[
-  {
-    "id": "Q43274",
-    "label": "Forrest Gump",
-    "description": "1994 film by Robert Zemeckis",
-    "type": "film",
-    "url": "https://www.wikidata.org/wiki/Q43274",
-    "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Forrest%20Gump%20poster.jpg",
-    "year": 1994
-  }
-]
-```
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `actor1Id`| string | Yes    | The Wikidata ID of the first actor. |
+| `actor2Id`| string | Yes    | The Wikidata ID of the second actor. |
 
----
-
-### GET /productions/shared
-
-Get productions shared between two actors
-
-**Query Parameters:**
-
-- `actor1Id` (required, string) - The Wikidata ID of the first actor
-- `actor2Id` (required, string) - The Wikidata ID of the second actor
-
-**Example Request:**
-
+**Example:**
 ```bash
 curl -X GET "https://wdtmcollab-api.toolforge.org/productions/shared?actor1Id=Q2263&actor2Id=Q27205"
 ```
 
-**Example Response:**
+##### `GET /productions/shared-actors`
+Get shared actors between two movies.
 
-```json
-[
-  {
-    "id": "Q43274",
-    "title": "Forrest Gump",
-    "description": "1994 film by Robert Zemeckis",
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Forrest%20Gump%20poster.jpg",
-    "logo": null,
-    "wikipedia": "https://en.wikipedia.org/wiki/Forrest_Gump",
-    "publicationDate": "1994-07-23"
-  }
-]
-```
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `movie1`  | string | Yes    | The Wikidata ID of the first movie. |
+| `movie2`  | string | Yes    | The Wikidata ID of the second movie. |
 
----
-
-### GET /productions/shared-actors
-
-Get shared actors between two movies
-
-**Query Parameters:**
-
-- `movie1` (required, string) - The Wikidata ID of the first movie
-- `movie2` (required, string) - The Wikidata ID of the second movie
-
-**Example Request:**
-
+**Example:**
 ```bash
 curl -X GET "https://wdtmcollab-api.toolforge.org/productions/shared-actors?movie1=Q43274&movie2=Q223423"
 ```
 
-**Example Response:**
+### Errors & Rate Limiting
 
-```json
-[
-  {
-    "id": "Q2263",
-    "name": "Tom Hanks",
-    "description": "American actor and producer",
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Tom%20Hanks%202018.jpg",
-    "sharedWorks": "Forrest Gump, Cast Away",
-    "awardCount": "2"
-  }
-]
-```
+- **Status Codes**:
+  - `200 OK`: Request successful.
+  - `400 Bad Request`: Missing parameters or invalid format.
+  - `404 Not Found`: Resource not found.
+  - `429 Too Many Requests`: Rate limit exceeded.
+  - `500 Internal Server Error`: Server error.
 
----
-
-### HTTP Status Codes
-
-- **200 OK** - Request successful
-- **400 Bad Request** - Missing required parameters or invalid request format
-- **404 Not Found** - Resource not found
-- **500 Internal Server Error** - Server error
-
-### Rate Limiting
-
-The API may implement rate limiting to ensure fair usage. If you exceed the rate limit, you will receive a `429 Too Many Requests` response.
-
----
+- **Rate Limiting**: Fair usage policies apply. If exceeded, a `429` status is returned.
 
 ## Accessibility
+
+WdTmCollab is committed to digital accessibility.
+
+### Features
+- **Skip to Content**: Bypass navigation for keyboard users.
+- **Keyboard Navigation**: Full support for interactive elements.
+- **Semantic HTML**: Optimized for screen readers.
+
+### Testing
+Automated accessibility tests use `axe-playwright`.
+
+```bash
+npx playwright test src/tests/accessibility.spec.ts
+```
