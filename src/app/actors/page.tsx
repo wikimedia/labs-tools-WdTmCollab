@@ -5,10 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCoActors, Actor, useActorSearch } from "@/src/hooks/api/useActors";
 import GenericSearch from "@/src/components/ui/generic-search";
 import { Button } from "@/src/components/ui/button";
-import {
-  SkeletonCard,
-  SkeletonRepeat
-} from "@/src/components/ui/skeleton-loader";
+import { SkeletonCollaboratorCard } from "@/src/components/ui/skeleton-loader";
 
 export default function ActorsPage() {
   const router = useRouter();
@@ -70,14 +67,7 @@ export default function ActorsPage() {
           </div>
         </div>
 
-        {loading && (
-          <SkeletonRepeat
-            count={8}
-            className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4'
-          >
-            <SkeletonCard />
-          </SkeletonRepeat>
-        )}
+        {loading && <SkeletonCollaboratorCard />}
 
         {results.length > 0 && (
           <div className='w-full max-w-5xl mt-12'>

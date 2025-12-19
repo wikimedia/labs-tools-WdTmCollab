@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useActorDetails } from "@/src/hooks/api/useActors";
 import ActorAnalytics from "@/src/components/actors/ActorAnalytics";
-import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
+import { ActorProfileSkeleton } from "@/src/components/ui/skeleton-loader";
 
 export default function ActorDetailPage() {
   const params = useParams();
@@ -27,14 +27,8 @@ export default function ActorDetailPage() {
       return date;
     }
   }
-
   if (isLoading) {
-    return <SkeletonRepeat
-      count={8}
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-    >
-      <SkeletonCard />
-    </SkeletonRepeat>;
+    return <ActorProfileSkeleton />;
   }
 
   if (error || !actor) {

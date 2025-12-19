@@ -39,15 +39,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <SkipNav />
-        {/* <ErrorBoundary> */}
-        <ClientProviders>
-          <Header />
-          <main id='main-content' className='flex-grow'>
-            {children}
-          </main>
-          <Footer />
-        </ClientProviders>
-        {/* </ErrorBoundary> */}
+        <ErrorBoundary>
+          <ClientProviders>
+            <Header />
+            <main id='main-content' className='flex-grow'>
+              {children}
+            </main>
+            <Footer />
+          </ClientProviders>
+        </ErrorBoundary>
       </body>
     </html>
   );

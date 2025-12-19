@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useProductionDetails } from "@/src/hooks/api/useProductSearch";
-import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
+import { ProductionProfileSkeleton, SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 import Image from "next/image";
 
 export default function ProductionDetailPage() {
@@ -11,13 +11,10 @@ export default function ProductionDetailPage() {
   const productionId = params.id as string;
   const { data: production, isLoading, isError } = useProductionDetails(productionId);
 
-  if (isLoading) return;
-  <SkeletonRepeat
-    count={8}
-    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-  >
-    <SkeletonCard />
-  </SkeletonRepeat>;
+  if (isLoading) {
+    return <ProductionProfileSkeleton />;
+  }
+
   if (isError || !production) return <div className="text-center py-12">Production not found</div>;
 
   return (
