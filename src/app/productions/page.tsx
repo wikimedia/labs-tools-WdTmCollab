@@ -17,7 +17,7 @@ export default function ProductionsPage() {
   const {
     data: sharedCastings = [],
     isLoading: loading,
-    error,
+    error
   } = useSharedProductions(actor1Id, actor2Id);
 
   const updateUrl = (key: "actor1" | "actor2", actor: Actor | null) => {
@@ -36,19 +36,19 @@ export default function ProductionsPage() {
   };
 
   return (
-    <main className="flex-grow">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center w-full">
-          <h1 className="text-3xl font-bold mb-6 text-center">Shared Productions</h1>
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl relative z-50">
+    <main className='flex-grow'>
+      <div className='container mx-auto px-4 py-8'>
+        <div className='flex flex-col items-center justify-center w-full'>
+          <h2>Shared Productions</h2>
+          <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl relative z-50'>
             <GenericSearch<Actor>
-              placeholder="Select First Actor"
+              placeholder='Select First Actor'
               useSearchHook={useActorSearch}
               onSelect={(a) => updateUrl("actor1", a)}
               initialValue={actor1Label}
             />
             <GenericSearch<Actor>
-              placeholder="Select Second Actor"
+              placeholder='Select Second Actor'
               useSearchHook={useActorSearch}
               onSelect={(a) => updateUrl("actor2", a)}
               initialValue={actor2Label}
@@ -59,21 +59,36 @@ export default function ProductionsPage() {
 
       {/* Results Rendering */}
       {sharedCastings.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 container mx-auto">
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 container mx-auto'>
           {sharedCastings.map((production, idx) => (
-            <div key={production.id || idx} className="p-4 border rounded-lg shadow-md bg-white flex flex-col">
-              <img src={production.image || production.logo || ""} alt={production.title} className="w-full h-48 object-cover rounded" />
-              <div className="mt-2">
-                <h3 className="text-lg font-medium">{production.title}</h3>
-                <p className="text-sm text-gray-600 line-clamp-3">{production.description}</p>
+            <div
+              key={production.id || idx}
+              className='p-4 border rounded-lg shadow-md bg-white flex flex-col'
+            >
+              <img
+                src={production.image || production.logo || ""}
+                alt={production.title}
+                className='w-full h-48 object-cover rounded'
+              />
+              <div className='mt-2'>
+                <h3 className='text-lg font-medium'>{production.title}</h3>
+                <p className='text-sm text-gray-600 line-clamp-3'>
+                  {production.description}
+                </p>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {loading && <div className="text-center mt-8">Loading shared productions...</div>}
-      {error && <p className="text-center text-red-500 mt-4">Error fetching shared productions.</p>}
+      {loading && (
+        <div className='text-center mt-8'>Loading shared productions...</div>
+      )}
+      {error && (
+        <p className='text-center text-red-500 mt-4'>
+          Error fetching shared productions.
+        </p>
+      )}
     </main>
   );
 }
