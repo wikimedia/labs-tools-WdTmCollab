@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/src/i18n/routing";
 import { useActorDetails } from "@/src/hooks/api/useActors";
 import ActorAnalytics from "@/src/components/actors/ActorAnalytics";
 import { ActorProfileSkeleton } from "@/src/components/ui/skeleton-loader";
@@ -36,10 +36,10 @@ export default function ActorDetailPage() {
   if (error || !actor) {
     return (
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">{t("errorTitle")}</h1>
-        <div className="text-center text-red-500">
-          {t("errorMessage")}
-        </div>
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">
+          {t("errorTitle")}
+        </h1>
+        <div className="text-center text-red-500">{t("errorMessage")}</div>
       </main>
     );
   }
@@ -50,7 +50,8 @@ export default function ActorDetailPage() {
         <div className="mb-6">
           <Link
             href="/actors"
-            className="text-blue-600 hover:underline flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded p-1"          >
+            className="text-blue-600 hover:underline flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded p-1"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4 mr-1"
@@ -77,24 +78,24 @@ export default function ActorDetailPage() {
                 {actor.imageUrl ? (
                   <img
                     src={actor.imageUrl}
-                    alt={actor.name ?? t("actorImageAlt")}
+                    alt={actor.label ?? t("actorImageAlt")}
                     className="w-full h-full object-cover"
                     width={128}
                     height={128}
                   />
                 ) : (
                   <div className="text-gray-600 text-4xl">
-                    {actor.name?.charAt(0) ?? "?"}
+                    {actor.label?.charAt(0) ?? "?"}
                   </div>
                 )}
               </div>
 
               <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-1">{actor.name}</h1>
+                <h1 className="text-3xl font-bold mb-1">{actor.label}</h1>
                 <div className="text-sm text-gray-600 mb-2">{actor.id}</div>
 
-                {actor.bio && (
-                  <p className="text-gray-700 mb-4">{actor.bio}</p>
+                {actor.description && (
+                  <p className="text-gray-700 mb-4">{actor.description}</p>
                 )}
 
                 <div className="flex flex-wrap gap-3 items-center text-sm">
@@ -127,7 +128,9 @@ export default function ActorDetailPage() {
           <div className="border-t">
             <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
               <section className="lg:col-span-2">
-                <h2 className="text-xl font-semibold mb-4">{t("productions")}</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {t("productions")}
+                </h2>
                 {actor.productions && actor.productions.length > 0 ? (
                   <ul className="list-disc pl-5 space-y-2">
                     {actor.productions.map((p: any) => (
@@ -179,7 +182,9 @@ export default function ActorDetailPage() {
 
               <aside className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">{t("occupations")}</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {t("occupations")}
+                  </h3>
                   {actor.occupations && actor.occupations.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {actor.occupations.map((oc: string, i: number) => (
@@ -192,9 +197,7 @@ export default function ActorDetailPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-gray-600">
-                      {t("noOccupations")}
-                    </div>
+                    <div className="text-gray-600">{t("noOccupations")}</div>
                   )}
                 </div>
 
@@ -215,7 +218,9 @@ export default function ActorDetailPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">{t("coActors")}</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {t("coActors")}
+                  </h3>
                   {actor.coActors && actor.coActors.length > 0 ? (
                     <div className="grid grid-cols-2 gap-3 max-h-94 overflow-auto overscroll-contain pr-2">
                       {actor.coActors.map((c: any, i: number) => {
@@ -257,9 +262,7 @@ export default function ActorDetailPage() {
                       })}
                     </div>
                   ) : (
-                    <div className="text-gray-600">
-                      {t("noCollaborators")}
-                    </div>
+                    <div className="text-gray-600">{t("noCollaborators")}</div>
                   )}
                 </div>
               </aside>
@@ -268,11 +271,12 @@ export default function ActorDetailPage() {
         </div>
 
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("networkAnalytics")}</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            {t("networkAnalytics")}
+          </h2>
           <ActorAnalytics actorId={actorId} />
         </div>
-
       </div>
-    </main >
+    </main>
   );
 }

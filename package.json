@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest",
-    "lint": "eslint src --ext .ts,.tsx --fix"
+    "lint": "eslint src --ext .ts,.tsx,.spec.ts --fix"
   },
   "dependencies": {
     "@next/bundle-analyzer": "^15.5.0",

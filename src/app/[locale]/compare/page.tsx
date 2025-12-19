@@ -6,7 +6,6 @@ import { Clapperboard } from "lucide-react";
 import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 import GenericSearch from "@/src/components/ui/generic-search";
 import { Card } from "@/src/components/ui/card";
-import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
 import { endpoints } from "@/utils/endpoints";
 import { useTranslations } from "next-intl";
@@ -42,35 +41,6 @@ export default function SharedActorsFromMovies() {
     router.push(`?${params.toString()}`);
   };
 
-  const renderMovieItem = (movie: Movie) => (
-    <Button
-      className='w-full flex items-center px-5 py-3 hover:bg-gray-50 transition-colors text-left group'
-      onClick={() => {
-        /* Handled by GenericSearch parent */
-      }}
-    >
-      <div className='h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-blue-100 text-blue-500'>
-        {movie.imageUrl ? (
-          <img
-            src={movie.imageUrl}
-            alt=''
-            className='h-full w-full object-cover'
-          />
-        ) : (
-          <Clapperboard className='w-5 h-5' />
-        )}
-      </div>
-      <div className='ml-4 flex-grow min-w-0'>
-        <p className='font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate'>
-          {movie.label}
-        </p>
-        <p className='text-sm text-gray-500 truncate'>
-          {movie.year ? `(${movie.year})` : ""} {movie.description}
-        </p>
-      </div>
-    </Button>
-  );
-
   return (
     <main className='flex-grow'>
       <div className='container mx-auto px-4 py-8'>
@@ -80,7 +50,6 @@ export default function SharedActorsFromMovies() {
             placeholder={t("searchFirstMovie")}
             onSelect={(m) => updateUrl("movie1", m)}
             initialValue={movie1Label}
-            renderItem={renderMovieItem}
             enablePagination={true}
             endpoint={endpoints.movieSearch}
             queryKey={["movieSearch"]}
@@ -89,7 +58,6 @@ export default function SharedActorsFromMovies() {
             placeholder={t("searchSecondMovie")}
             onSelect={(m) => updateUrl("movie2", m)}
             initialValue={movie2Label}
-            renderItem={renderMovieItem}
             enablePagination={true}
             endpoint={endpoints.movieSearch}
             queryKey={["movieSearch"]}
@@ -115,7 +83,7 @@ export default function SharedActorsFromMovies() {
               >
                 <div className='h-16 w-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0'>
                   <img
-                    src={actor.image || ""}
+                    src={actor.imageUrl || ""}
                     alt={actor.name}
                     className='w-full h-full object-cover'
                   />

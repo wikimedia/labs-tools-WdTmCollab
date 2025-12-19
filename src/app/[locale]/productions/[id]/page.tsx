@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/src/i18n/routing";
 import { useProductionDetails } from "@/src/hooks/api/useProductSearch";
 import { ProductionProfileSkeleton, SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 import Image from "next/image";

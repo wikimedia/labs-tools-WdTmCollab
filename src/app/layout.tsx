@@ -1,15 +1,29 @@
-import React from "react";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { routing } from "@/src/i18n/routing";
 
-/**
- * This is the root layout that is required by Next.js.
- * Since all routes are handled by the `[locale]` segment, this layout is minimal.
- * The main layout of the application, including <html> and <body> tags,
- * is located in `src/app/[locale]/layout.tsx`.
- */
-export default function RootLayout({
+export default async function LocaleLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  return children;
+  // 1. Await the params
+  const { locale } = await params;
+
+  
+
+  // 3. Load messages for the server-side
+  const messages = await getMessages();
+
+  return (
+    <html lang={locale}>
+      <body>
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
 }

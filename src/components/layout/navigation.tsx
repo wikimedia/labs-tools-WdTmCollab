@@ -1,22 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import SkipNav from "./skip-nav";
+import { LanguageSwitcher } from "../layout/language-switcher";
+import { Link } from "../../i18n/routing";
+
 
 export default function Navigation() {
   const t = useTranslations("navigation");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
-  //close mobile menu on window resize if screen become larger
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,18 +20,12 @@ export default function Navigation() {
         setIsMobileMenuOpen(false);
       }
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [isMobileMenuOpen]);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -43,12 +33,13 @@ export default function Navigation() {
 
   return (
     <>
+      <SkipNav />
       <nav aria-label={t("mainNavigationAriaLabel")} className="hidden md:flex">
-        <ul className="flex space-x-6" role="list">
+        <ul className="flex space-x-4 align-end" role="list">
           <li>
             <Link
               href="/actors"
-              className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
+              className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-1 py-1"
               aria-label={t("findCollaboratorsAriaLabel")}
             >
               {t("findCollaborators")}
@@ -73,6 +64,7 @@ export default function Navigation() {
             </Link>
           </li>
         </ul>
+        
       </nav>
       {/* Mobile Nav */}
       <div className="md:hidden">
@@ -111,6 +103,7 @@ export default function Navigation() {
             )}
           </svg>
         </button>
+
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
           <div
@@ -187,6 +180,10 @@ export default function Navigation() {
                   </Link>
                 </li>
               </ul>
+              {/* Language Switcher Mobile */}
+              <div className="border-l border-gray-200 pl-6 ml-2">
+                <LanguageSwitcher />
+              </div>
             </nav>
           </div>
         )}

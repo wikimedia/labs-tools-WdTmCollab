@@ -1,14 +1,13 @@
-import { createNavigation } from 'next-intl/navigation'
-import { defineRouting } from 'next-intl/routing'
+import { defineRouting } from "next-intl/routing";
+import { createNavigation } from "next-intl/navigation";
 
 export const routing = defineRouting({
-  locales: ['ja', 'fr', 'en', 'zh-Hans', 'zh-Hant'] as const,
+  locales: ["en", "fr", "es", "de", "it"],
+  defaultLocale: "en",
+  localeDetection: true // This enables the auto-detection you asked for
+});
 
-  defaultLocale: 'en',
+export type Locale = (typeof routing.locales)[number];
 
-  localeDetection: true,
-})
-
-export type Locale = (typeof routing.locales)[number]
-
-export const { Link, redirect, usePathname, useRouter } = createNavigation(routing)
+// These are the wrappers we need for the Language Switcher
+export const { Link, redirect, usePathname, useRouter, getPathname } = createNavigation(routing);

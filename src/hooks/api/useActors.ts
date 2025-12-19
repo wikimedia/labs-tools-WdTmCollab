@@ -21,8 +21,8 @@ export interface Actor {
 
 export interface ActorDetail {
   id: string;
-  name: string;
-  bio?: string | null;
+  label: string;
+  description?: string | null;
   imageUrl?: string | null;
   dateOfBirth?: string | null;
   placeOfBirth?: string | null;

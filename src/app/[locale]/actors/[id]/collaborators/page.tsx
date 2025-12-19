@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/src/i18n/routing";
 import { useState, useEffect, useRef } from "react";
 import { useCoActors } from "@/src/hooks/api/useActors";
 import { ChevronLeft, Users, AlertTriangle } from "lucide-react";

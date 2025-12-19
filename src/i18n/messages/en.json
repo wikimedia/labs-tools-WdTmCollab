@@ -35,8 +35,36 @@
   },
   "home": {
     "versionBadge": "Beta",
-    "heroTitle": "Wikidata TransMedia Collaboration",
-    "heroDescription": "Explore actor collaborations across movies and TV shows using Wikidata. Discover hidden connections and patterns in the entertainment industry."
+    "heroTitle1": "Wikidata",
+    "heroTitle2": "TransMedia",
+    "heroTitle3": "Collaboration",
+    "heroDescription": "Explore actor collaborations across movies and TV shows using Wikidata. Discover hidden connections and patterns in the entertainment industry.",
+    "searchPlaceholder": "Search for an actor (e.g., Tom Hanks)...",
+    "features": {
+      "frequentCollaborators": {
+        "title": "Frequent Collaborators",
+        "description": "Discover which actors work together most often."
+      },
+      "sharedProductions": {
+        "title": "Shared Productions",
+        "description": "Find all movies and TV shows shared between actors."
+      },
+      "crossProjectActors": {
+        "title": "Cross-Project Actors",
+        "description": "Identify actors who appeared in multiple productions."
+      },
+      "collaborationClusters": {
+        "title": "Collaboration Clusters",
+        "description": "Visualize groups of actors who frequently work together."
+      }
+    },
+    "popularActors": {
+      "title": "Popular Actors",
+      "viewAll": "View all",
+      "errorMessage": "Error loading popular actors. Please try again.",
+      "awards": "awards",
+      "viewDetails": "View details"
+    }
   },
   "actors": {
     "pageTitle": "Find Actor Collaborations",
@@ -82,6 +110,7 @@
     "noneFound": "None found",
     "topEnsembles": "Top Ensembles",
     "cast": "Cast",
+    "collaborator": "Collaborator",
     "noMajorEnsemblesFound": "No major ensembles found.",
     "collaborationNetwork": "Collaboration Network",
     "buildingNetworkGraph": "Building Network Graph...",
@@ -170,5 +199,8 @@
     "errorLoading": "Failed to load collaborators. Please try again later.",
     "collaborations": "collaborations",
     "noHistoryFound": "No collaboration history found."
+  },
+  "LanguageSwitcher": {
+    "label": "Change language"
   }
 }

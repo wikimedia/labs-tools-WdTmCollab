@@ -1,6 +1,5 @@
 "use client";
-
-import Link from "next/link";
+import { Link, Locale } from "../../i18n/routing";
 import { useRouter } from "next/navigation";
 import {
   Clapperboard,
@@ -71,14 +70,16 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-blue-50/50 to-white pt-20 pb-32 px-4 dark:bg-gradient-to-b dark:from-slate-900/80 dark:to-slate-950/90">
+      <section className="relative bg-gradient-to-b from-blue-50/50 to-white pt-20 pb-32 px-4 dark:bg-secondary/50">
         <div className="container mx-auto text-center">
-          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300">
+          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8 dark:bg-secondary/50">
             <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
             {t("versionBadge")}
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
-            {t("heroTitle")}
+            <span className="gradient-text">{t("heroTitle1")}</span>{" "}
+            <span className="text-primary">{t("heroTitle2")}</span>{" "}
+            <span className="gradient-text">{t("heroTitle3")}</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
             {t("heroDescription")}
@@ -129,7 +130,7 @@ export default function Home() {
               {t("popularActors.title")}
             </h2>
             <Link
-              href="[locale]/actors"
+              href="/actors"
               className="text-primary hover:underline font-medium"
             >
               {t("popularActors.viewAll")}

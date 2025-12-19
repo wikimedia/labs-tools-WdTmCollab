@@ -43,57 +43,79 @@
   (These are the raw numbers: Hue Saturation Lightness)
 */
 :root {
+  /* Core surfaces */
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 222 15% 12%; /* near-black, soft */
 
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 222 15% 12%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
+  --popover-foreground: 222 15% 12%;
 
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
+  /* Primary (blue, restrained) */
+  --primary: 217 91% 52%; /* modern blue */
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* Secondary (soft gray-blue) */
+  --secondary: 220 14% 94%;
+  --secondary-foreground: 222 15% 18%;
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  /* Muted UI elements */
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
 
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
+  /* Accent (used for subtle emphasis) */
+  --accent: 220 14% 92%;
+  --accent-foreground: 222 15% 18%;
 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
+  /* Feedback */
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
 
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
+  /* Inputs & borders */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 217 91% 52%;
 
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 224 71.4% 4.1%;
-  --foreground: 210 20% 98%;
-  --card: 224 71.4% 4.1%;
-  --card-foreground: 210 20% 98%;
-  --popover: 224 71.4% 4.1%;
-  --popover-foreground: 210 20% 98%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 215 27.9% 16.9%;
-  --secondary-foreground: 210 20% 98%;
-  --muted: 215 27.9% 16.9%;
-  --muted-foreground: 217.9 10.6% 64.9%;
-  --accent: 215 27.9% 16.9%;
-  --accent-foreground: 210 20% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 215 27.9% 16.9%;
-  --input: 215 27.9% 16.9%;
-  --ring: 216 94% 68%;
+  /* Core surfaces */
+  --background: 222 16% 10%; /* deep charcoal */
+  --foreground: 220 14% 92%;
+
+  --card: 222 16% 13%;
+  --card-foreground: 220 14% 92%;
+
+  --popover: 222 16% 13%;
+  --popover-foreground: 220 14% 92%;
+
+  /* Primary (desaturated blue) */
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 16% 10%;
+
+  /* Secondary */
+  --secondary: 222 14% 20%;
+  --secondary-foreground: 220 14% 92%;
+
+  /* Muted */
+  --muted: 222 14% 18%;
+  --muted-foreground: 220 9% 60%;
+
+  /* Accent */
+  --accent: 222 14% 22%;
+  --accent-foreground: 220 14% 92%;
+
+  /* Feedback */
+  --destructive: 0 62% 42%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Borders & inputs */
+  --border: 222 14% 22%;
+  --input: 222 14% 22%;
+  --ring: 217 91% 60%;
 }
 
 /* 3. Base styles 
@@ -106,6 +128,24 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+.text-caption {
+  @apply text-xs text-muted-foreground;
+}
+
+.content-text {
+  @apply text-muted-foreground leading-relaxed;
+}
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--foreground)),
+    hsl(var(--primary))
+  );
+  background-clip: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 @layer base {

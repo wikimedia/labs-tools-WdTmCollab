@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/src/i18n/routing";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Clapperboard, Users } from "lucide-react";
 import GenericSearch from "@/src/components/ui/generic-search";

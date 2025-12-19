@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
-  const t = useTranslations('footer');
+  const t = useTranslations("footer");
 
   return (
     <footer className='border-t bg-muted/40'>
@@ -18,7 +18,7 @@ export default function Footer() {
             >
               <img
                 src='https://upload.wikimedia.org/wikipedia/commons/f/f4/Wikidata_logo_Spanish_vertical_in_colour.svg'
-                alt={t('wikidataLogoAlt')}
+                alt={t("wikidataLogoAlt")}
                 className='h-8 w-auto'
               />
             </Link>
@@ -26,7 +26,7 @@ export default function Footer() {
 
           <div className='text-center'>
             <p className='text-sm text-muted-foreground'>
-              {t('copyright', { year: new Date().getFullYear() })}
+              {t("copyright", { year: new Date().getFullYear() })}
             </p>
           </div>
 
@@ -39,7 +39,7 @@ export default function Footer() {
             >
               <Image
                 src='https://upload.wikimedia.org/wikipedia/commons/c/ca/Wikimedia_logo_Spanish_vertical_in_colour.svg'
-                alt={t('mediaWikiLogoAlt')}
+                alt={t("mediaWikiLogoAlt")}
                 width={40}
                 height={40}
                 className='h-8 w-auto'
