@@ -2,25 +2,84 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCoActors } from "@/src/hooks/api/useActors";
-import { ChevronLeft, Loader2, Users, AlertTriangle } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
+import { ChevronLeft, Users, AlertTriangle } from "lucide-react";
+import { ProductionProfileSkeleton } from "@/src/components/ui/skeleton-loader";
 import { Card, CardContent } from "@/src/components/ui/card";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { useGridColumns } from "@/src/hooks/api/use-grid-columns";
 
 export default function ActorCollaboratorsPage() {
   const params = useParams();
   const actorId = params.id as string;
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const { columns, isClient } = useGridColumns();
+
   const [page, setPage] = useState(1);
+  const [allActors, setAllActors] = useState<any[]>([]);
   const ITEMS_PER_PAGE = 20;
 
   const {
-    data: coActors = [],
+    data: newCoActors = [],
     isLoading,
     isError,
     isPlaceholderData
   } = useCoActors(actorId, page, ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    if (newCoActors.length > 0) {
+      setAllActors((prev) => {
+        const newIds = new Set(newCoActors.map((a: any) => a.actorId));
+        const filteredPrev = prev.filter((p) => !newIds.has(p.actorId));
+        return [...filteredPrev, ...newCoActors];
+      });
+    }
+  }, [newCoActors]);
+
+  const rowCount = Math.ceil(allActors.length / columns);
+
+  const virtualizer = useWindowVirtualizer({
+    count: rowCount,
+    estimateSize: () => 320,
+    overscan: 5,
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+    enabled: isClient,
+  });
+
+  useEffect(() => {
+    const [lastItem] = [...virtualizer.getVirtualItems()].reverse();
+
+    if (!lastItem) return;
+
+    if (
+      lastItem.index >= rowCount - 1 &&
+      !isLoading &&
+      !isPlaceholderData &&
+      newCoActors.length === ITEMS_PER_PAGE
+    ) {
+      setPage((prev) => prev + 1);
+    }
+  }, [
+    virtualizer.getVirtualItems(),
+    rowCount,
+    isLoading,
+    isPlaceholderData,
+    newCoActors.length
+  ]);
+
+
+  if (!isClient) {
+    return (
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Full Collaboration History</h1>
+        </div>
+        <ProductionProfileSkeleton />
+      </main>
+    );
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -38,95 +97,85 @@ export default function ActorCollaboratorsPage() {
         </p>
       </div>
 
-      {/* Loading State */}
-      {isLoading ? (
-        <SkeletonRepeat
-          count={8}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-        >
-          <SkeletonCard />
-        </SkeletonRepeat>
-      ) : isError ? (
+      {isError && allActors.length === 0 ? (
         <div className="p-8 text-center bg-destructive/10 border border-destructive/20 rounded-xl text-destructive flex flex-col items-center gap-2">
           <AlertTriangle className="h-6 w-6" />
           <span>Failed to load collaborators. Please try again later.</span>
         </div>
       ) : (
-        <>
-          {/* Grid of Actors */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {coActors.map((actor: any) => (
-              <Link
-                key={actor.actorId}
-                href={`/actors/${encodeURIComponent(actor.actorId)}`}
-                className="block group h-full"
-              >
-                <Card className="h-full overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all duration-300">
-                  <div className="aspect-square w-full bg-muted relative overflow-hidden">
-                    {actor.image ? (
-                      <img
-                        src={actor.image}
-                        alt={actor.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-muted-foreground/30">
-                        <Users className="h-20 w-20" />
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                      {actor.name}
-                    </h3>
-                    <div className="mt-3 flex items-center text-sm">
-                      <span className="inline-flex items-center bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium text-xs">
-                        <Users className="w-3 h-3 mr-1.5" />
-                        {actor.sharedWorks} collaborations
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+        <div ref={listRef}>
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const rowStart = virtualRow.index * columns;
+              const rowActors = allActors.slice(rowStart, rowStart + columns);
+
+              return (
+                <div
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 absolute top-0 left-0 w-full"
+                  style={{
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  {rowActors.map((actor: any) => (
+                    <Link
+                      key={actor.actorId}
+                      href={`/actors/${encodeURIComponent(actor.actorId)}`}
+                      className="block group h-full"
+                    >
+                      <Card className="h-full overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all duration-300">
+                        <div className="aspect-square w-full bg-muted relative overflow-hidden">
+                          {actor.image ? (
+                            <img
+                              src={actor.image}
+                              alt={actor.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-full text-muted-foreground/30">
+                              <Users className="h-20 w-20" />
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                            {actor.name}
+                          </h3>
+                          <div className="mt-3 flex items-center text-sm">
+                            <span className="inline-flex items-center bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium text-xs">
+                              <Users className="w-3 h-3 mr-1.5" />
+                              {actor.sharedWorks} collaborations
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              );
+            })}
           </div>
 
-          {/* Empty State */}
-          {coActors.length === 0 && (
+          {isLoading && (
+            <div className="mt-6">
+              <ProductionProfileSkeleton />
+            </div>
+          )}
+
+          {!isLoading && allActors.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
               No collaboration history found.
             </div>
           )}
-
-          {/* Pagination Controls */}
-          <div className="flex justify-center items-center space-x-4 mt-12 py-8 border-t border-border/40">
-            <Button
-              variant="outline"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1 || isLoading}
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-
-            <span className="text-sm font-medium text-muted-foreground min-w-[3rem] text-center">
-              Page {page}
-            </span>
-
-            <Button
-              variant="default"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={coActors.length < ITEMS_PER_PAGE || isPlaceholderData || isLoading}
-            >
-              Next
-              {isLoading && isPlaceholderData ? (
-                <Loader2 className="w-4 h-4 ml-2 animate-spin" />
-              ) : (
-                <ChevronLeft className="w-4 h-4 ml-2 rotate-180" />
-              )}
-            </Button>
-          </div>
-        </>
+        </div>
       )}
     </main>
   );
