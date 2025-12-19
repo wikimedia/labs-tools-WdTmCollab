@@ -2,11 +2,27 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import * as d3 from "d3";
 import { NetworkData, CollaborationNode } from "@/src/hooks/api/useCollaboration";
 
+// --- Modular D3 Imports ---
+import { select, pointer, Selection } from "d3-selection";
+import { max } from "d3-array";
+import { scaleSqrt } from "d3-scale";
+import {
+  forceSimulation,
+  forceLink,
+  forceManyBody,
+  forceCenter,
+  forceCollide,
+  SimulationLinkDatum,
+  SimulationNodeDatum
+} from "d3-force";
+import { zoom, zoomIdentity, ZoomBehavior } from "d3-zoom";
+import { drag, D3DragEvent } from "d3-drag";
+
 // --- Types ---
-interface D3Node extends CollaborationNode {
+// Extend SimulationNodeDatum to ensure compatibility with d3-force internals
+interface D3Node extends CollaborationNode, SimulationNodeDatum {
   index?: number;
   x?: number;
   y?: number;
@@ -16,7 +32,7 @@ interface D3Node extends CollaborationNode {
   fy?: number | null;
 }
 
-interface D3Link extends d3.SimulationLinkDatum<D3Node> {
+interface D3Link extends SimulationLinkDatum<D3Node> {
   source: string | D3Node;
   target: string | D3Node;
   value: number;
@@ -62,7 +78,7 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
     if (!data || !data.nodes.length || !svgRef.current || dimensions.width === 0) return;
 
     const { width, height } = dimensions;
-    const svg = d3.select(svgRef.current);
+    const svg = select(svgRef.current);
     svg.selectAll("*").remove(); // Clean slate
 
     // --- DATA PREP ---
@@ -70,8 +86,8 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
     const links: D3Link[] = data.links.map(d => ({ ...d }));
 
     // Scales
-    const maxWeight = d3.max(nodes, d => d.weight || 1) || 10;
-    const nodeRadiusScale = d3.scaleSqrt()
+    const maxWeight = max(nodes, d => d.weight || 1) || 10;
+    const nodeRadiusScale = scaleSqrt()
       .domain([0, maxWeight])
       .range([4, 25]);
 
@@ -82,22 +98,22 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
     const labelGroup = g.append("g").attr("class", "labels");
 
     // --- SIMULATION ---
-    const simulation = d3.forceSimulation<D3Node, D3Link>(nodes)
-      .force("link", d3.forceLink<D3Node, D3Link>(links).id(d => d.id).distance(100))
-      .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collide", d3.forceCollide().radius(d => nodeRadiusScale(d.weight || 1) + 10).iterations(2));
+    const simulation = forceSimulation<D3Node, D3Link>(nodes)
+      .force("link", forceLink<D3Node, D3Link>(links).id(d => d.id).distance(100))
+      .force("charge", forceManyBody().strength(-300))
+      .force("center", forceCenter(width / 2, height / 2))
+      .force("collide", forceCollide<D3Node>().radius(d => nodeRadiusScale(d.weight || 1) + 10).iterations(2));
 
     // --- DRAW ELEMENTS ---
-    const link = linkGroup.selectAll("line")
+    const linkSelection = linkGroup.selectAll("line")
       .data(links)
       .join("line")
       .attr("stroke", "#cbd5e1")
       .attr("stroke-opacity", 0.6)
       .attr("stroke-width", d => Math.sqrt(d.value));
 
-    //  Explicitly type the selection so it matches the DragBehavior
-    const node = nodeGroup.selectAll<SVGCircleElement, D3Node>("circle")
+    // Explicitly type the selection so it matches the DragBehavior
+    const nodeSelection = nodeGroup.selectAll<SVGCircleElement, D3Node>("circle")
       .data(nodes)
       .join("circle")
       .attr("r", d => nodeRadiusScale(d.weight || 1))
@@ -119,7 +135,7 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
         }
       });
 
-    const label = labelGroup.selectAll("text")
+    const labelSelection = labelGroup.selectAll("text")
       .data(nodes)
       .join("text")
       .text(d => d.name)
@@ -134,15 +150,16 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
       .style("paint-order", "stroke");
 
     // --- ZOOM BEHAVIOR ---
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
+    // Renamed variable to 'zoomBehavior' to avoid conflict with imported 'zoom' function
+    const zoomBehavior = zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 8])
       .on("zoom", (event) => {
         const { transform } = event;
-        g.attr("transform", transform);
+        g.attr("transform", transform.toString());
 
-        //  Hide labels when zoomed out
+        // Hide labels when zoomed out
         const k = transform.k;
-        label.attr("display", (d) => {
+        labelSelection.attr("display", (d) => {
           if (d.id === nodes[0].id) return "block";
           const importance = (d.weight || 1) / maxWeight;
           if (k < 0.4) return importance > 0.5 ? "block" : "none";
@@ -151,10 +168,9 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
         });
       });
 
-    svg.call(zoom).on("dblclick.zoom", null);
+    svg.call(zoomBehavior).on("dblclick.zoom", null);
 
     // --- ZOOM TO FIT ---
-    // Calculates bounding box after simulation settles slightly
     const zoomToFit = () => {
       setTimeout(() => {
         const bounds = g.node()?.getBBox();
@@ -176,16 +192,13 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
         svg.transition()
           .duration(750)
           .call(
-            zoom.transform as any,
-            d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+            zoomBehavior.transform as any,
+            zoomIdentity.translate(translate[0], translate[1]).scale(scale)
           );
       }, 300);
     };
 
-    // --- INTERACTIONS ---
-
-    // Drag Behavior typed correctly for SVGCircleElement
-    const drag = d3.drag<SVGCircleElement, D3Node>()
+    const dragBehavior = drag<SVGCircleElement, D3Node>()
       .on("start", (e, d) => {
         if (!e.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
@@ -202,40 +215,40 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
       });
 
     // Apply drag to the correctly typed selection
-    node.call(drag);
+    nodeSelection.call(dragBehavior);
 
-    node
+    nodeSelection
       .on("click", (e, d) => {
         e.stopPropagation();
         router.push(d.type === "actor" ? `/actors/${d.id}` : `/productions/${d.id}`);
       })
       .on("mouseover", (event, d) => {
-        link.attr("stroke", l => (l.source === d || l.target === d) ? "#ef4444" : "#e2e8f0")
+        linkSelection.attr("stroke", l => (l.source === d || l.target === d) ? "#ef4444" : "#e2e8f0")
           .attr("stroke-opacity", l => (l.source === d || l.target === d) ? 1 : 0.1);
 
-        d3.select(event.currentTarget).attr("stroke", "#1f2937").attr("stroke-width", 3);
-        label.filter(n => n === d).attr("display", "block").style("font-weight", "bold");
+        select(event.currentTarget).attr("stroke", "#1f2937").attr("stroke-width", 3);
+        labelSelection.filter(n => n === d).attr("display", "block").style("font-weight", "bold");
 
-        const [x, y] = d3.pointer(event, document.body);
+        const [x, y] = pointer(event, document.body);
         setTooltip({ show: true, x, y, data: d });
       })
       .on("mouseout", (event, d) => {
-        link.attr("stroke", "#cbd5e1").attr("stroke-opacity", 0.6);
-        d3.select(event.currentTarget).attr("stroke", "#fff").attr("stroke-width", 2);
-        label.filter(n => n === d).style("font-weight", "normal");
+        linkSelection.attr("stroke", "#cbd5e1").attr("stroke-opacity", 0.6);
+        select(event.currentTarget).attr("stroke", "#fff").attr("stroke-width", 2);
+        labelSelection.filter(n => n === d).style("font-weight", "normal");
         setTooltip(prev => ({ ...prev, show: false }));
       });
 
     // --- TICK ---
     simulation.on("tick", () => {
-      link
+      linkSelection
         .attr("x1", d => (d.source as D3Node).x!)
         .attr("y1", d => (d.source as D3Node).y!)
         .attr("x2", d => (d.target as D3Node).x!)
         .attr("y2", d => (d.target as D3Node).y!);
 
-      node.attr("cx", d => d.x!).attr("cy", d => d.y!);
-      label.attr("x", d => d.x!).attr("y", d => d.y!);
+      nodeSelection.attr("cx", d => d.x!).attr("cy", d => d.y!);
+      labelSelection.attr("x", d => d.x!).attr("y", d => d.y!);
     });
 
     zoomToFit();
@@ -258,7 +271,7 @@ export default function CollaborationNetwork({ data, height = 600 }: Props) {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-full min-h-[500px]  rounded-xl bg-slate-50 overflow-hidden shadow-sm">
+    <div ref={containerRef} className="relative w-full h-full min-h-[500px] rounded-xl bg-slate-50 overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <button
           onClick={handleExport}
