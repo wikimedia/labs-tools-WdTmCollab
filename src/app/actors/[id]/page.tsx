@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useActorDetails } from "@/src/hooks/api/useActors";
 import ActorAnalytics from "@/src/components/actors/ActorAnalytics";
-import Image from "next/image";
 import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 
 export default function ActorDetailPage() {
@@ -30,7 +29,7 @@ export default function ActorDetailPage() {
   }
 
   if (isLoading) {
-    <SkeletonRepeat
+    return <SkeletonRepeat
       count={8}
       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
     >
