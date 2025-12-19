@@ -95,16 +95,16 @@ Frontend (React/Next.js) ↔️ Backend API ↔️ Wikidata SPARQL Query Service
 
 ```md
 UI Components → Custom Hooks → TanStack React Query → API Endpoints → Backend
-     ↑                                                              ↓
-     ←───────── Cached Data ←───────── Query Results ←─────────────┘
+↑ ↓
+←───────── Cached Data ←───────── Query Results ←─────────────┘
 ```
 
 #### 3. **Component Data Flow**
 
 ```md
 Pages → Search Components → API Hooks → Results Display
-  ↑                                                  ↓
-  ←───────── URL Parameters ←────────────────────────┘
+↑ ↓
+←───────── URL Parameters ←────────────────────────┘
 ```
 
 ### API Integration Guide
@@ -141,7 +141,7 @@ export const endpoints = {
   sharedActors: (movie1Id: string, movie2Id: string) =>
     `${API_BASE_URL}/productions/shared-actors?movie1=${encodeURIComponent(
       movie1Id
-    )}&movie2=${encodeURIComponent(movie2Id)}`
+    )}&movie2=${encodeURIComponent(movie2Id)}`,
 };
 ```
 
@@ -209,10 +209,12 @@ As of the latest update, all frontend API calls have been migrated to use the **
 #### Key Changes in v2 API Integration
 
 1. **Versioned Endpoints**: All endpoints now use `/api/v2/` prefix
+
    - Before: `/api/actors/search?name=query`
    - After: `/api/v2/actors/search?name=query`
 
 2. **Rate Limiting Support**: The v2 API includes rate limiting with proper headers
+
    - `X-RateLimit-Limit`: Total requests allowed
    - `X-RateLimit-Remaining`: Requests remaining
    - `X-RateLimit-Reset`: Unix timestamp of rate limit reset
@@ -228,7 +230,10 @@ New utilities provide comprehensive rate limit handling:
 
 ```typescript
 // Parse rate limit information from response headers
-import { parseRateLimitHeaders, formatRateLimitStatus } from "@/utils/rateLimit";
+import {
+  parseRateLimitHeaders,
+  formatRateLimitStatus,
+} from "@/utils/rateLimit";
 
 const response = await fetch(url);
 const rateLimitInfo = parseRateLimitHeaders(response);
@@ -250,7 +255,7 @@ const {
   data: actors,
   isLoading,
   isError,
-  rateLimitStatus,  // NEW: Rate limit information
+  rateLimitStatus, // NEW: Rate limit information
 } = query;
 
 // Access rate limit status
@@ -277,7 +282,7 @@ export default function SearchPage() {
     <div>
       {/* Display rate limit warning to user */}
       <RateLimitIndicator status={rateLimitStatus} />
-      
+
       {/* Your search results */}
       {actors.map((actor) => (
         <ActorCard key={actor.id} actor={actor} />
@@ -298,7 +303,7 @@ import { useActorSearch } from "@/hooks/api/useActorSearch";
 
 export function SearchComponent() {
   const [query, setQuery] = React.useState("");
-  
+
   // This hook handles debouncing internally
   const { data: results } = useActorSearch(query);
 
@@ -323,7 +328,7 @@ import { fetchWithRetry } from "@/utils/rateLimit";
 const { response, rateLimitInfo } = await fetchWithRetry(
   url,
   options,
-  3  // Maximum 3 retries
+  3 // Maximum 3 retries
 );
 
 // Backoff delays: 1s, 2s, 4s, 8s... (with jitter)
@@ -348,7 +353,7 @@ When adding a new API endpoint, follow this checklist:
 
    ```typescript
    newEndpoint: (param: string) =>
-     `${API_BASE_URL}/api/v2/path/endpoint?param=${encodeURIComponent(param)}`
+     `${API_BASE_URL}/api/v2/path/endpoint?param=${encodeURIComponent(param)}`;
    ```
 
 2. **Create/Update Hook**: Use `fetchWithContext` for automatic rate limit handling
@@ -357,7 +362,7 @@ When adding a new API endpoint, follow this checklist:
    const result = await fetchWithContext<DataType>(
      endpoints.newEndpoint(param),
      {},
-     3  // maxRetries
+     3 // maxRetries
    );
    ```
 
@@ -388,12 +393,12 @@ When adding a new API endpoint, follow this checklist:
 
 #### Known Rate Limits
 
-| Endpoint Category | Limit | Window |
-|-------------------|-------|--------|
-| Search Operations | 100 | 1 minute |
-| Popular Lists | 50 | 1 minute |
-| Details Lookups | 150 | 1 minute |
-| Comparisons | 75 | 1 minute |
+| Endpoint Category | Limit | Window   |
+| ----------------- | ----- | -------- |
+| Search Operations | 100   | 1 minute |
+| Popular Lists     | 50    | 1 minute |
+| Details Lookups   | 150   | 1 minute |
+| Comparisons       | 75    | 1 minute |
 
 ---
 
@@ -437,7 +442,7 @@ export function useNewEntitySearch(query: string) {
       return res.json();
     },
     enabled: query.length > 2,
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
   });
 }
 ```
@@ -459,34 +464,34 @@ interface NewEntitySearchProps {
 
 export default function NewEntitySearch({
   onSelect,
-  placeholder = "Search entities..."
+  placeholder = "Search entities...",
 }: NewEntitySearchProps) {
   const [query, setQuery] = useState("");
   const { data: results = [], isLoading } = useNewEntitySearch(query);
 
   return (
-    <div className='w-full max-w-md mx-auto'>
+    <div className="w-full max-w-md mx-auto">
       <input
-        type='text'
+        type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
-        className='w-full p-3 border rounded-lg'
+        className="w-full p-3 border rounded-lg"
       />
 
       {isLoading && <div>Loading...</div>}
 
       {results.length > 0 && (
-        <ul className='mt-2 bg-white border rounded-lg shadow-lg'>
+        <ul className="mt-2 bg-white border rounded-lg shadow-lg">
           {results.map((entity) => (
             <li
               key={entity.id}
               onClick={() => onSelect(entity)}
-              className='p-3 hover:bg-gray-100 cursor-pointer'
+              className="p-3 hover:bg-gray-100 cursor-pointer"
             >
               {entity.label}
               {entity.description && (
-                <p className='text-sm text-gray-600'>{entity.description}</p>
+                <p className="text-sm text-gray-600">{entity.description}</p>
               )}
             </li>
           ))}
@@ -530,13 +535,13 @@ export default function NewEntitiesPage() {
   };
 
   return (
-    <main className='min-h-screen bg-slate-50 pt-16 px-4'>
-      <div className='container mx-auto max-w-4xl'>
-        <h1 className='text-4xl font-bold text-center mb-8'>
+    <main className="min-h-screen bg-slate-50 pt-16 px-4">
+      <div className="container mx-auto max-w-4xl">
+        <h1 className="text-4xl font-bold text-center mb-8">
           Search New Entities
         </h1>
 
-        <div className='bg-white rounded-xl shadow-lg p-8'>
+        <div className="bg-white rounded-xl shadow-lg p-8">
           <NewEntitySearch
             onSelect={handleSelectEntity}
             initialValue={entityLabel}
@@ -544,10 +549,10 @@ export default function NewEntitiesPage() {
 
           {/* Display results based on selected entity */}
           {entityId && (
-            <div className='mt-8'>
-              <h2 className='text-2xl font-bold'>
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold">
                 Details for:{" "}
-                <span className='text-blue-600'>{entityLabel}</span>
+                <span className="text-blue-600">{entityLabel}</span>
               </h2>
               {/* Add your entity details display here */}
             </div>
@@ -566,9 +571,9 @@ Update `src/components/layout/navigation.tsx`:
 ```typescript
 <li>
   <Link
-    href='/new-entities'
-    className='text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1'
-    aria-label='Search new entities'
+    href="/new-entities"
+    className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
+    aria-label="Search new entities"
   >
     New Entities
   </Link>
@@ -598,16 +603,16 @@ interface ComponentProps {
 export default function FeatureCard({
   title,
   description,
-  onClick
+  onClick,
 }: ComponentProps) {
   return (
-    <div className='bg-white rounded-lg shadow-md p-6'>
-      <h3 className='font-bold text-lg mb-2'>{title}</h3>
-      <p className='text-gray-600'>{description}</p>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="font-bold text-lg mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
       {onClick && (
         <button
           onClick={onClick}
-          className='mt-4 px-4 py-2 bg-blue-600 text-white rounded'
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
         >
           Click me
         </button>
@@ -633,7 +638,7 @@ export default function ActorDetails({ actorId }: { actorId: string }) {
   if (!actor) return <NotFound />;
 
   return (
-    <div className='actor-details'>
+    <div className="actor-details">
       <h1>{actor.name}</h1>
       {actor.bio && <p>{actor.bio}</p>}
       {/* ... other actor details */}
@@ -653,7 +658,7 @@ export function useActorCollaboration(actorId: string) {
   return {
     actor: actorDetails,
     collaborators: coActors,
-    isLoading: !coActors || !actorDetails
+    isLoading: !coActors || !actorDetails,
   };
 }
 ```
@@ -667,9 +672,9 @@ export function useActorCollaboration(actorId: string) {
 
 ```typescript
 // Good example
-<div className='bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow'>
-  <h3 className='font-bold text-lg mb-4'>{title}</h3>
-  <p className='text-gray-600'>{description}</p>
+<div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+  <h3 className="font-bold text-lg mb-4">{title}</h3>
+  <p className="text-gray-600">{description}</p>
 </div>
 
 // Avoid inline styles or custom CSS classes
@@ -686,11 +691,11 @@ export function useActorCollaboration(actorId: string) {
 ```typescript
 // Accessible component example
 <button
-  aria-label='Clear search results'
-  className='focus:outline-none focus:ring-2 focus:ring-blue-600'
+  aria-label="Clear search results"
+  className="focus:outline-none focus:ring-2 focus:ring-blue-600"
   onClick={handleClear}
 >
-  <svg aria-hidden='true' focusable='false'>
+  <svg aria-hidden="true" focusable="false">
     {/* Icon */}
   </svg>
 </button>
@@ -768,7 +773,7 @@ describe("ActorCard", () => {
     const mockActor = {
       id: "Q123",
       name: "John Doe",
-      imageUrl: "https://example.com/image.jpg"
+      imageUrl: "https://example.com/image.jpg",
     };
 
     render(<ActorCard {...mockActor} />);
@@ -793,7 +798,7 @@ describe("useActorSearch", () => {
   beforeEach(() => {
     (fetch as jest.Mock).mockResolvedValue({
       ok: true,
-      json: async () => [{ id: "Q123", label: "Test Actor" }]
+      json: async () => [{ id: "Q123", label: "Test Actor" }],
     });
   });
 
@@ -945,3 +950,133 @@ npx tsc --showConfig
 6. **Reviews**: Submit code for peer review via Gerrit
 
 For detailed contribution guidelines, see the [Wikimedia Gerrit Tutorial](https://www.mediawiki.org/wiki/Gerrit/Tutorial).
+
+Here is the updated `DEVELOPER_GUIDE.md`. I have added a comprehensive **Internationalization (i18n)** section. This section follows the architecture and patterns we implemented in the previous tasks.
+
+### `DEVELOPER_GUIDE.md`
+
+Add this section to your `DEVELOPER_GUIDE.md`, ideally after the "API Integration Guide" and before "API v2 Migration Guide" or at the end of the Architecture section.
+
+```markdown
+## Internationalization (i18n)
+
+WdTmCollab supports a global user base through a robust internationalization strategy built on [next-intl](https://next-intl-docs.vercel.app/). This system handles routing, locale detection, and string translation across the application.
+
+### 1. i18n Strategy & Structure
+
+Our localization strategy relies on **Path-based Routing** (e.g., `/en/actors`, `/fr/actors`).
+
+- **Source of Truth**: English (`en`) is the default locale. All new keys must be added to `en.json` first.
+- **Routing**: The application uses a dynamic `[locale]` folder in the `app` directory.
+- **Middleware**: `src/middleware.ts` automatically detects the user's preferred language from browser headers and redirects them to the correct locale prefix.
+
+#### Directory Structure
+```
+
+### 2. How to Add Translations
+
+When creating a new component or page, avoid hardcoding text. Instead, follow these steps:
+
+#### Step 1: Add Keys to `messages/en.json`
+
+Group keys by Component or Page name to keep the file organized.
+
+```json
+// messages/en.json
+{
+  "MyNewComponent": {
+    "title": "Welcome to the Dashboard",
+    "description": "You have {count} new notifications",
+    "submitButton": "Save Changes"
+  }
+}
+```
+
+#### Step 2: Use the Hook in Your Component
+
+Use the `useTranslations` hook to retrieve the text.
+
+```tsx
+"use client";
+
+import { useTranslations } from "next-intl";
+
+export default function MyNewComponent({ count }: { count: number }) {
+  // 1. Scope to your namespace
+  const t = useTranslations("MyNewComponent");
+
+  return (
+    <div className="p-4">
+      {/* 2. access keys */}
+      <h1>{t("title")}</h1>
+
+      {/* 3. Pass dynamic values */}
+      <p>{t("description", { count })}</p>
+
+      <button>{t("submitButton")}</button>
+    </div>
+  );
+}
+```
+
+### 3. Handling Navigation (Important)
+
+**Do not** import `Link`, `useRouter`, or `usePathname` from `next/link` or `next/navigation`. You must use the localized versions to ensure the language prefix is preserved.
+
+```tsx
+import Link from "next/link"; // Will link to /actors (404) instead of /en/actors
+
+import { Link } from "@/src/i18n/routing";
+
+export default function Nav() {
+  return (
+    <Link href="/actors">Go to Actors</Link> // Automatically becomes /en/actors or /fr/actors
+  );
+}
+```
+
+### 4. Adding a New Language
+
+To support a new language (e.g., Spanish `es`), follow this process:
+
+1. **Create the Message File**:
+   Copy `messages/en.json` to `messages/es.json` and translate the values.
+2. **Update Routing Configuration**:
+   Open `src/i18n/routing.ts` and add the code to the `locales` array.
+
+```typescript
+export const routing = defineRouting({
+  locales: ["en", "fr", "ja", "zh-Hans", "zh-Hant", "es"], // Added 'es'
+  defaultLocale: "en",
+  // ...
+});
+```
+
+3. **Update Middleware Matcher**:
+   Open `src/middleware.ts` and update the regex to include the new code.
+
+```typescript
+export const config = {
+  // Add 'es' to the regex
+  matcher: ["/", "/(en|fr|ja|zh-Hans|zh-Hant|es)/:path*"],
+};
+```
+
+4. **Update Language Switcher**:
+   Add the new option to `src/components/layout/language-switcher.tsx`.
+
+```tsx
+<option value="es">Español</option>
+```
+
+### 5. Translation Best Practices
+
+- **No Pluralization Logic in Code**: Use ICU syntax in the JSON file.
+- _Bad_: `count > 1 ? "Items" : "Item"`
+- _Good JSON_: `"{count, plural, =0 {No items} one {# item} other {# items}}"`
+
+- **Avoid Concatenation**: Do not build sentences in code (e.g., `t('hello') + ' ' + name`). Different languages have different word orders. Use variables instead: `t('greeting', { name })`.
+
+```
+
+```
