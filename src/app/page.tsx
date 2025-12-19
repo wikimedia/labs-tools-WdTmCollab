@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SearchComponent from "@/src/components/searchComponent";
-import { usePopularActors, Actor } from "@/src/hooks/api/useActors";
 import { Clapperboard, GitMerge, Network, Users, AlertTriangle } from "lucide-react";
+
+import GenericSearch from "@/src/components/ui/generic-search";
 import {
   Card,
   CardHeader,
@@ -13,6 +13,8 @@ import {
   CardDescription,
 } from "../components/ui/card";
 import { SkeletonCard, SkeletonRepeat } from "../components/ui/skeleton-loader";
+
+import { usePopularActors, Actor, useActorSearch } from "@/src/hooks/api/useActors";
 
 const features = [
   {
@@ -75,7 +77,7 @@ export default function Home() {
       <section className="relative bg-gradient-to-b from-blue-50/50 to-white pt-20 pb-32 px-4">
         <div className="container mx-auto text-center">
           <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8">
-            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2"></span>
+            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
             v1.0 Public Beta
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
@@ -87,11 +89,11 @@ export default function Home() {
             communities of the entertainment industry.
           </p>
 
-          {/* FIX IS HERE: Changed z-10 to z-50 */}
-          {/* This ensures the parent container sits ABOVE the features section (z-20) */}
+          {/* FIX: z-50 ensures the search bar sits ABOVE the features grid below */}
           <div className="max-w-2xl mx-auto relative z-50 shadow-xl rounded-2xl bg-white">
-            <SearchComponent
+            <GenericSearch<Actor>
               onSelect={handleActorSelect}
+              useSearchHook={useActorSearch}
               placeholder="Search for an actor (e.g., Tom Hanks)..."
             />
           </div>

@@ -1,113 +1,130 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useCoActors } from "@/src/hooks/api/useActors"; // Using the paginated hook!
 import Link from "next/link";
 import { useState } from "react";
+import { useCoActors } from "@/src/hooks/api/useActors";
+import { ChevronLeft, Loader2, Users, AlertTriangle } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
+import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
+import { Card, CardContent } from "@/src/components/ui/card";
 
 export default function ActorCollaboratorsPage() {
   const params = useParams();
   const actorId = params.id as string;
   const [page, setPage] = useState(1);
-  const ITEMS_PER_PAGE = 20; // Show more on a dedicated page
+  const ITEMS_PER_PAGE = 20;
 
-  // Use the existing paginated hook
   const {
     data: coActors = [],
     isLoading,
     isError,
-    isPlaceholderData,
-    refetch
+    isPlaceholderData
   } = useCoActors(actorId, page, ITEMS_PER_PAGE);
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div className="mb-8">
         <Link
           href={`/actors/${actorId}`}
-          className="text-blue-600 hover:underline flex items-center mb-4"
+          className="text-muted-foreground hover:text-primary flex items-center mb-4 transition-colors w-fit"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <ChevronLeft className="h-4 w-4 mr-1" />
           Back to Profile
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Full Collaboration History</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-foreground">Full Collaboration History</h1>
+        <p className="text-muted-foreground mt-2">
           All actors who have worked with this person.
         </p>
       </div>
 
-      {isLoading && (
-        <div className="flex justify-center py-12">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      {/* Loading State */}
+      {isLoading ? (
+        <SkeletonRepeat
+          count={8}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          <SkeletonCard />
+        </SkeletonRepeat>
+      ) : isError ? (
+        <div className="p-8 text-center bg-destructive/10 border border-destructive/20 rounded-xl text-destructive flex flex-col items-center gap-2">
+          <AlertTriangle className="h-6 w-6" />
+          <span>Failed to load collaborators. Please try again later.</span>
         </div>
-      )}
-
-      {isError && (
-        <div className="mt-6 flex justify-center">
-          <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">We couldn’t load collaborators</h3>
-            <p className="text-gray-600 mb-4">Check your connection and try again.</p>
-            <Button onClick={() => refetch()} className="bg-blue-600 hover:bg-blue-700 text-white">Retry</Button>
-          </div>
-        </div>
-      )}
-
-      {!isLoading && !isError && (
+      ) : (
         <>
+          {/* Grid of Actors */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {coActors.map((actor: any) => (
               <Link
                 key={actor.actorId}
                 href={`/actors/${encodeURIComponent(actor.actorId)}`}
-                className="group block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-200"
+                className="block group h-full"
               >
-                <div className="aspect-square w-full bg-gray-100 relative overflow-hidden">
-                  {actor.image ? (
-                    <img
-                      src={actor.image}
-                      alt={actor.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400 text-4xl">
-                      {actor.name?.charAt(0)}
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    {actor.name}
-                  </h3>
-                  <div className="mt-2 flex items-center text-sm text-gray-600">
-                    <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-md font-medium">
-                      {actor.sharedWorks} collaborations
-                    </span>
+                <Card className="h-full overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all duration-300">
+                  <div className="aspect-square w-full bg-muted relative overflow-hidden">
+                    {actor.image ? (
+                      <img
+                        src={actor.image}
+                        alt={actor.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-muted-foreground/30">
+                        <Users className="h-20 w-20" />
+                      </div>
+                    )}
                   </div>
-                </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                      {actor.name}
+                    </h3>
+                    <div className="mt-3 flex items-center text-sm">
+                      <span className="inline-flex items-center bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium text-xs">
+                        <Users className="w-3 h-3 mr-1.5" />
+                        {actor.sharedWorks} collaborations
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
               </Link>
             ))}
           </div>
 
+          {/* Empty State */}
+          {coActors.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+              No collaboration history found.
+            </div>
+          )}
+
           {/* Pagination Controls */}
-          <div className="flex justify-center items-center space-x-4 mt-12">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
+          <div className="flex justify-center items-center space-x-4 mt-12 py-8 border-t border-border/40">
+            <Button
+              variant="outline"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || isLoading}
-              className="px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              <ChevronLeft className="w-4 h-4 mr-2" />
               Previous
-            </button>
-            <span className="text-gray-600">Page {page}</span>
-            <button
-              onClick={() => setPage(p => p + 1)}
-              disabled={coActors.length < ITEMS_PER_PAGE || isPlaceholderData}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            </Button>
+
+            <span className="text-sm font-medium text-muted-foreground min-w-[3rem] text-center">
+              Page {page}
+            </span>
+
+            <Button
+              variant="default"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={coActors.length < ITEMS_PER_PAGE || isPlaceholderData || isLoading}
             >
               Next
-            </button>
+              {isLoading && isPlaceholderData ? (
+                <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+              ) : (
+                <ChevronLeft className="w-4 h-4 ml-2 rotate-180" />
+              )}
+            </Button>
           </div>
         </>
       )}

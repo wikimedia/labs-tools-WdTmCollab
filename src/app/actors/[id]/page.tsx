@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useActorDetails } from "@/src/hooks/api/useActors";
 import ActorAnalytics from "@/src/components/actors/ActorAnalytics";
+import Image from "next/image";
+import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
 
 export default function ActorDetailPage() {
   const params = useParams();
@@ -28,15 +30,14 @@ export default function ActorDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="sr-only">Loading Actor Details</h1>
-        <div role="status" aria-label="Loading actor details" className="text-center text-gray-600 mt-20">
-          Loading actor details...
-        </div>
-      </main>
-    );
+    <SkeletonRepeat
+      count={8}
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+    >
+      <SkeletonCard />
+    </SkeletonRepeat>
   }
+
   if (error || !actor) {
     return (
       <main className="container mx-auto px-4 py-8">
@@ -75,12 +76,11 @@ export default function ActorDetailPage() {
         </div>
 
         <div className="bg-white overflow-hidden">
-          {/* Header Section */}
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-center gap-6">
               <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                 {actor.imageUrl ? (
-                  <img
+                  <Image
                     src={actor.imageUrl}
                     alt={actor.name ?? "actor image"}
                     className="w-full h-full object-cover"
@@ -157,14 +157,14 @@ export default function ActorDetailPage() {
                       {actor.awards.map((a: any) => (
                         <li key={a.id} className="text-sm">
                           {a.url ? (
-                            <a
+                            <Link
                               href={a.url}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-blue-600 hover:underline"
                             >
                               {a.label}
-                            </a>
+                            </Link>
                           ) : (
                             <span>{a.label}</span>
                           )}
@@ -206,14 +206,14 @@ export default function ActorDetailPage() {
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Website</h3>
                   {actor.website ? (
-                    <a
+                    <Link
                       href={actor.website}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline break-all"
                     >
                       {actor.website}
-                    </a>
+                    </Link>
                   ) : (
                     <div className="text-gray-600">No website listed.</div>
                   )}
@@ -234,7 +234,7 @@ export default function ActorDetailPage() {
                           >
                             <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
                               {c.image ? (
-                                <img
+                                <Image
                                   src={c.image}
                                   alt={c.name ?? "co-actor"}
                                   className="w-full h-full object-cover"
@@ -272,13 +272,12 @@ export default function ActorDetailPage() {
           </div>
         </div>
 
-        {/* 2. INSERT ANALYTICS HERE */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Network & Analytics</h2>
           <ActorAnalytics actorId={actorId} />
         </div>
 
       </div>
-    </main>
+    </main >
   );
 }
