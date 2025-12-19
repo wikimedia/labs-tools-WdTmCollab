@@ -2,6 +2,14 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: true,
+    timeout: 180000,
+  },
+  workers: 2,
+  retries: 1,
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
