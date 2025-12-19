@@ -75,13 +75,13 @@ export default function ActorsPage() {
           <SkeletonCard />
         </SkeletonRepeat>}
 
-        {displayResults.length > 0 && (
+        {results.length > 0 && (
           <div className="w-full max-w-5xl mt-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               Collaborators of <span className="text-blue-600">{actorLabel}</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayResults.map((coActor: any) => (
+              {results.map((coActor: any) => (
                 <div key={coActor.actorId} className="flex flex-col items-center bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
                     src={coActor.image || `https://ui-avatars.com/api/?name=${coActor.name}&background=random`}

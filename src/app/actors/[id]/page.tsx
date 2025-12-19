@@ -80,7 +80,7 @@ export default function ActorDetailPage() {
             <div className="flex flex-col md:flex-row md:items-center gap-6">
               <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                 {actor.imageUrl ? (
-                  <Image
+                  <img
                     src={actor.imageUrl}
                     alt={actor.name ?? "actor image"}
                     className="w-full h-full object-cover"
@@ -234,7 +234,7 @@ export default function ActorDetailPage() {
                           >
                             <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
                               {c.image ? (
-                                <Image
+                                <img
                                   src={c.image}
                                   alt={c.name ?? "co-actor"}
                                   className="w-full h-full object-cover"

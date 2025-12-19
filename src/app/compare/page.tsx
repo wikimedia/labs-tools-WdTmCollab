@@ -42,7 +42,7 @@ export default function SharedActorsFromMovies() {
     >
       <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-blue-100 text-blue-500">
         {movie.imageUrl ? (
-          <Image src={movie.imageUrl} alt="" className="h-full w-full object-cover" />
+          <img src={movie.imageUrl} alt="" className="h-full w-full object-cover" />
         ) : (
           <Clapperboard className="w-5 h-5" />
         )}
@@ -94,7 +94,7 @@ export default function SharedActorsFromMovies() {
             {sharedActors.map((actor) => (
               <Card key={actor.id} className="p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
                 <div className="h-16 w-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                  <Image src={actor.image || ""} alt={actor.name} className="w-full h-full object-cover" />
+                  <img src={actor.image || ""} alt={actor.name} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900">{actor.name}</h3>

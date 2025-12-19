@@ -26,7 +26,7 @@ export default function ProductionDetailPage() {
         <div className="w-full md:w-64 flex-shrink-0">
           <div className="aspect-[2/3] bg-gray-200 rounded-lg overflow-hidden shadow-md">
             {production.imageUrl ? (
-              <Image src={production.imageUrl} alt={production.title} className="w-full h-full object-cover" />
+              <img src={production.imageUrl} alt={production.title} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-gray-400">
                 {production.title.charAt(0)}
