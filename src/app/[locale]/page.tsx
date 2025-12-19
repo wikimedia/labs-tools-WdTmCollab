@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Clapperboard, GitMerge, Network, Users, AlertTriangle } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import {
+  Clapperboard,
+  GitMerge,
+  Network,
+  Users,
+  AlertTriangle,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import GenericSearch from "@/src/components/ui/generic-search";
 import {
@@ -13,36 +19,43 @@ import {
   CardContent,
   CardDescription,
 } from "@/src/components/ui/card";
-import { SkeletonCard, SkeletonRepeat } from "@/src/components/ui/skeleton-loader";
-import { usePopularActors, Actor, useActorSearch } from "@/src/hooks/api/useActors";
+import {
+  SkeletonCard,
+  SkeletonRepeat,
+} from "@/src/components/ui/skeleton-loader";
+import {
+  usePopularActors,
+  Actor,
+  useActorSearch,
+} from "@/src/hooks/api/useActors";
 
 export default function Home() {
   const router = useRouter();
-  const t = useTranslations('HomePage');
+  const t = useTranslations("HomePage");
   const { data: popularActors = [], isLoading, error } = usePopularActors();
 
   const features = [
     {
-      title: t('features.collaborators'),
-      description: t('features.collaboratorsDesc'),
+      title: t("features.collaborators"),
+      description: t("features.collaboratorsDesc"),
       icon: <Users className="w-6 h-6" />,
       link: "/actors",
     },
     {
-      title: t('features.shared'),
-      description: t('features.sharedDesc'),
+      title: t("features.shared"),
+      description: t("features.sharedDesc"),
       icon: <Clapperboard className="w-6 h-6" />,
       link: "/compare",
     },
     {
-      title: t('features.crossProject'),
-      description: t('features.crossProjectDesc'),
+      title: t("features.crossProject"),
+      description: t("features.crossProjectDesc"),
       icon: <GitMerge className="w-6 h-6" />,
       link: "/productions",
     },
     {
-      title: t('features.clusters'),
-      description: t('features.clustersDesc'),
+      title: t("features.clusters"),
+      description: t("features.clustersDesc"),
       icon: <Network className="w-6 h-6" />,
       link: "/clusters",
     },
@@ -57,24 +70,26 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-blue-50/50 to-white pt-20 pb-32 px-4">
+      <section className="relative bg-gradient-to-b from-blue-50/50 to-white pt-20 pb-32 px-4 dark:bg-gradient-to-b dark:from-slate-900/80 dark:to-slate-950/90">
         <div className="container mx-auto text-center">
-          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8">
+          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300">
             <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-            {t('betaLabel')}
+            {t("betaLabel")}
           </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
-            Wikidata <span className="text-primary">TransMedia</span> Collaboration
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground drop-shadow-sm">
+            <span className="gradient-text">Wikidata</span>{" "}
+            <span className="text-primary">TransMedia</span>{" "}
+            <span className="gradient-text">Collaboration</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
-            {t('subtitle')}
+            {t("subtitle")}
           </p>
 
           <div className="max-w-2xl mx-auto relative z-50 shadow-xl rounded-2xl bg-white">
             <GenericSearch<Actor>
               onSelect={handleActorSelect}
               useSearchHook={useActorSearch}
-              placeholder={t('searchPlaceholder')}
+              placeholder={t("searchPlaceholder")}
             />
           </div>
         </div>
@@ -89,7 +104,7 @@ export default function Home() {
               href={feature.link}
               className="block group outline-none h-full"
             >
-              <Card className="h-full bg-white/80 backdrop-blur border-white/20 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <Card className="h-full bg-white/80 dark:bg-secondary/80 backdrop-blur border-white/20 dark:border-secondary/20 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <CardHeader>
                   <div className="text-primary mb-4 bg-primary/10 w-12 h-12 flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform">
                     {feature.icon}
@@ -111,14 +126,22 @@ export default function Home() {
         {/* Popular Actors Section */}
         <section className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold tracking-tight">{t('popularActors')}</h2>
-            <Link href="/actors" className="text-primary hover:underline font-medium">
-              {t('viewAll')}
+            <h2 className="text-3xl font-bold tracking-tight">
+              {t("popularActors")}
+            </h2>
+            <Link
+              href="/actors"
+              className="text-primary hover:underline font-medium"
+            >
+              {t("viewAll")}
             </Link>
           </div>
 
           {isLoading ? (
-            <SkeletonRepeat count={8} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <SkeletonRepeat
+              count={8}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+            >
               <SkeletonCard />
             </SkeletonRepeat>
           ) : error ? (
@@ -132,7 +155,7 @@ export default function Home() {
                 <Link
                   key={actor.id ? actor.id : `actor-${idx}`}
                   href={`/actors/${actor.id}`}
-                  className="flex items-center p-3 bg-white border rounded-xl hover:shadow-md hover:border-primary/50 transition-all gap-4 group"
+                  className="flex items-center p-3 bg-white dark:bg-secondary border rounded-xl hover:shadow-md hover:border-primary/50 transition-all gap-4 group"
                 >
                   <div className="w-14 h-14 rounded-full bg-muted flex-shrink-0 overflow-hidden border-2 border-transparent group-hover:border-primary transition-colors">
                     {actor.imageUrl ? (
@@ -154,7 +177,7 @@ export default function Home() {
                     <div className="text-xs text-muted-foreground truncate font-medium">
                       {actor.awardCount !== undefined
                         ? `${actor.awardCount} awards`
-                        : t('viewAll')}
+                        : t("viewAll")}
                     </div>
                   </div>
                 </Link>

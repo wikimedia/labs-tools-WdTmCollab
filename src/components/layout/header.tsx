@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Navigation from "./navigation";
 import SkipNav from "./skip-nav";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 export default function Header() {
   return (
@@ -31,7 +32,10 @@ export default function Header() {
             </svg>
             <span className='text-xl font-bold'>WdTmCollab</span>
           </Link>
-          <Navigation />
+          <div className="flex items-center gap-4">
+            <Navigation />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
     </>
