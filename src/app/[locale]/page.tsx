@@ -1,5 +1,5 @@
 "use client";
-import { Link, Locale } from "../../i18n/routing";
+import { Link } from "../../i18n/routing";
 import { useRouter } from "next/navigation";
 import {
   Clapperboard,
@@ -31,7 +31,6 @@ import {
 export default function Home() {
   const router = useRouter();
   const t = useTranslations("home");
-  const tCommon = useTranslations("common");
 
   const features = [
     {
@@ -59,6 +58,7 @@ export default function Home() {
       link: "/clusters",
     },
   ];
+
   const { data: popularActors = [], isLoading, error } = usePopularActors();
 
   const handleActorSelect = (actor: Actor | null) => {
@@ -68,15 +68,15 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-background text-foreground">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-blue-50/50 to-white pt-20 pb-32 px-4 dark:bg-secondary/50">
+      <section className="relative bg-gradient-to-b from-primary/5 to-background pt-20 pb-32 px-4">
         <div className="container mx-auto text-center">
-          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-8 dark:bg-secondary/50">
-            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
+          <div className="inline-flex items-center rounded-full border border-primary/20 bg-secondary px-3 py-1 text-sm font-medium text-primary mb-8">
+            <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
             {t("versionBadge")}
           </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
             <span className="gradient-text">{t("heroTitle1")}</span>{" "}
             <span className="text-primary">{t("heroTitle2")}</span>{" "}
             <span className="gradient-text">{t("heroTitle3")}</span>
@@ -85,7 +85,7 @@ export default function Home() {
             {t("heroDescription")}
           </p>
 
-          <div className="max-w-2xl mx-auto relative z-50 shadow-xl rounded-2xl bg-white">
+          <div className="max-w-2xl mx-auto relative z-50 shadow-2xl rounded-2xl bg-card border border-border">
             <GenericSearch<Actor>
               onSelect={handleActorSelect}
               useSearchHook={useActorSearch}
@@ -104,17 +104,17 @@ export default function Home() {
               href={feature.link}
               className="block group outline-none h-full"
             >
-              <Card className="h-full bg-white/80 dark:bg-secondary/80 backdrop-blur border-white/20 dark:border-secondary/20 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <Card className="h-full bg-card/80 backdrop-blur border-border shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <CardHeader>
                   <div className="text-primary mb-4 bg-primary/10 w-12 h-12 flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform">
                     {feature.icon}
                   </div>
-                  <CardTitle className="group-hover:text-primary transition-colors">
+                  <CardTitle className="group-hover:text-primary transition-colors text-foreground">
                     {feature.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base leading-relaxed">
+                  <CardDescription className="text-muted-foreground text-base leading-relaxed">
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -126,7 +126,7 @@ export default function Home() {
         {/* Popular Actors Section */}
         <section className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">
               {t("popularActors.title")}
             </h2>
             <Link
@@ -145,7 +145,7 @@ export default function Home() {
               <SkeletonCard />
             </SkeletonRepeat>
           ) : error ? (
-            <div className="p-8 text-center bg-destructive/10 rounded-xl text-destructive flex flex-col items-center">
+            <div className="p-8 text-center bg-destructive/10 rounded-xl text-destructive flex flex-col items-center border border-destructive/20">
               <AlertTriangle className="h-6 w-6 mb-2" />
               {t("popularActors.errorMessage")}
             </div>
@@ -155,9 +155,9 @@ export default function Home() {
                 <Link
                   key={actor.id ? actor.id : `actor-${idx}`}
                   href={`/actors/${actor.id}`}
-                  className="flex items-center p-3 bg-white dark:bg-secondary border rounded-xl hover:shadow-md hover:border-primary/50 transition-all gap-4 group"
+                  className="flex items-center p-3 bg-card border border-border rounded-xl hover:shadow-md hover:border-primary/50 transition-all gap-4 group"
                 >
-                  <div className="w-14 h-14 rounded-full bg-muted flex-shrink-0 overflow-hidden border-2 border-transparent group-hover:border-primary transition-colors">
+                  <div className="w-14 h-14 rounded-full bg-muted flex-shrink-0 overflow-hidden border-2 border-border group-hover:border-primary transition-colors">
                     {actor.imageUrl ? (
                       <img
                         src={actor.imageUrl}

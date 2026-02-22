@@ -42,7 +42,7 @@ export default function SharedActorsFromMovies() {
   };
 
   return (
-    <main className='flex-grow'>
+    <main className='flex-grow h-screen bg-background text-foreground'>
       <div className='container mx-auto px-4 py-8'>
         <h2>{t("pageTitle")}</h2>
         <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto relative z-50'>
@@ -79,9 +79,9 @@ export default function SharedActorsFromMovies() {
             {sharedActors.map((actor) => (
               <Card
                 key={actor.id}
-                className='p-4 flex items-center gap-4 hover:shadow-md transition-shadow'
+                className='p-4 flex items-center gap-4 bg-card border-border hover:shadow-md transition-all'
               >
-                <div className='h-16 w-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0'>
+                <div className='h-16 w-16 bg-muted rounded-lg overflow-hidden flex-shrink-0 border border-border'>
                   <img
                     src={actor.imageUrl || ""}
                     alt={actor.name}
@@ -89,8 +89,8 @@ export default function SharedActorsFromMovies() {
                   />
                 </div>
                 <div>
-                  <h3 className='font-bold text-gray-900'>{actor.name}</h3>
-                  <span className='text-blue-600 text-sm font-medium'>
+                  <h3 className='font-bold text-foreground'>{actor.name}</h3>
+                  <span className='text-primary text-sm font-medium'>
                     {actor.sharedWorks} {t("sharedWorks")}
                   </span>
                 </div>
@@ -100,7 +100,7 @@ export default function SharedActorsFromMovies() {
         )}
 
         {sharedActors.length === 0 && !loading && movie1Id && movie2Id && (
-          <p className='mt-4 text-gray-600'>{t("noSharedActors")}</p>
+          <p className='mt-4 text-muted-foreground'>{t("noSharedActors")}</p>
         )}
       </div>
     </main>

@@ -126,7 +126,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    /* @apply bg-background text-foreground; */
   }
 }
 .text-caption {
@@ -196,6 +196,6 @@
   }
 
   .content-text {
-    @apply mb-4 text-base leading-relaxed text-gray-700 text-center;
+    @apply mb-4 text-base leading-relaxed text-foreground text-center;
   }
 }

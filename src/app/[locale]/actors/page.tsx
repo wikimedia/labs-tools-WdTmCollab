@@ -66,13 +66,13 @@ export default function ActorsPage() {
   };
 
   return (
-    <main className='flex-grow'>
-      <div className='min-h-screen bg-slate-50 flex flex-col items-center pt-16 px-4 pb-12'>
+    <main className='flex-grow bg-background'>
+      <div className='min-h-screen  flex flex-col items-center pt-16 px-4 pb-12'>
         <div className='w-full max-w-5xl p-8 space-y-6'>
-          <h1 className="text-4xl font-bold text-center text-gray-800">
+          <h1 className="text-4xl font-bold text-center text-foreground">
             {t("pageTitle")}
           </h1>
-          <p className="text-center text-gray-600 text-lg">
+          <p className="text-center text-muted-foreground text-lg">
             {t("pageDescription")}
           </p>
 
@@ -89,52 +89,52 @@ export default function ActorsPage() {
         {loading && <SkeletonCollaboratorCard />}
 
         {allCoActors.length > 0 && (
-          <div className="w-full max-w-5xl mt-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          <div className="w-full bg-background max-w-5xl mt-12">
+            <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
               {t("collaboratorsTitle", { actorName: actorLabel })}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {allCoActors.map((coActor: any) => (
-                <div key={coActor.actorId} className="flex flex-col items-center bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300">
+                <div key={coActor.actorId} className="flex flex-col items-center bg-secondary rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
                     src={
                       coActor.image ||
                       `https://ui-avatars.com/api/?name=${coActor.name}&background=random`
                     }
                     alt={coActor.name}
-                    className='w-28 h-28 object-cover rounded-full border-4 border-white shadow-lg mb-4'
+                    className='w-28 h-28 object-cover rounded-full border-4 border-border shadow-lg mb-4'
                   />
-                  <h3 className='text-lg font-bold text-gray-900 text-center'>
+                  <h3 className='text-lg font-bold text-foreground text-center'>
                     {coActor.name}
                   </h3>
-                  <span className='mt-4 inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full'>
+                  <span className='mt-4 inline-block bg-primary/10 bg-primary text-xs font-semibold px-3 py-1 rounded-full'>
                     {coActor.sharedWorks} {t("collaborationsLabel")}
                   </span>
                 </div>
-            ))}
-            {/* Sentinel for infinite scroll */}
-            {hasNextPage && (
-              <div ref={sentinelRef} className="h-4 col-span-full"></div>
-            )}
+              ))}
+              {/* Sentinel for infinite scroll */}
+              {hasNextPage && (
+                <div ref={sentinelRef} className="h-4 col-span-full"></div>
+              )}
+            </div>
           </div>
-        </div>
         )}
         {!loading && allCoActors.length === 0 && actorId && (
-          <p className="mt-8 text-center text-gray-600">
+          <p className="mt-8 text-center text-muted-foreground">
             {t("loadingCollaborators")}
           </p>
         )}
-    
+
         {isError && (
           <div className="mt-8 flex justify-center">
-            <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("errorLoadingCollaborators")}</h3>
-              <p className="text-gray-600 mb-4">{t("errorDescription")}</p>
+            <div className="w-full max-w-md bg-secondary rounded-xl shadow-md p-6 text-center">
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t("errorLoadingCollaborators")}</h3>
+              <p className="text-muted-foreground mb-4">{t("errorDescription")}</p>
             </div>
           </div>
         )}
 
-        {isError && <p className='mt-8 text-red-600'>{t("errorFetchingActors")}</p>}
+        {isError && <p className='mt-8 text-destructive'>{t("errorFetchingActors")}</p>}
       </div>
     </main>
   );

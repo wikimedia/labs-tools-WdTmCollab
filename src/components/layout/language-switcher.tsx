@@ -29,10 +29,10 @@ export function LanguageSwitcher() {
 
   return (
     <div className="flex items-center gap-2">
-      <Globe className="w-4 h-4 text-gray-500" />
+      <Globe className="w-4 h-4 text-muted-foreground" />
       <select
         defaultValue={locale}
-        className="bg-transparent text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded p-1 cursor-pointer"
+        className="bg-transparent text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary rounded p-1 cursor-pointer"
         aria-label={t("label")}
       >
         {Object.entries(languageNames).map(([key, name]) => (
@@ -40,6 +40,7 @@ export function LanguageSwitcher() {
             key={key}
             value={key}
             onClick={() => handleLanguageChange(key as Locale)}
+            className="bg-card text-foreground"
           >
             {name}
           </option>

@@ -8,7 +8,7 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-gray-200/80", className)} // Changed to gray-200 for better visibility if muted isn't defined
+      className={cn("animate-pulse rounded-md bg-muted", className)}
       {...props}
     />
   );
@@ -39,7 +39,7 @@ export function SkeletonText({
 
 export function SkeletonCard() {
   return (
-    <div className="flex items-center p-3 bg-white border rounded-xl gap-4">
+    <div className="flex items-center p-3 bg-card border border-border rounded-xl gap-4">
       <SkeletonAvatar className="h-14 w-14" />
       <SkeletonText lines={2} />
     </div>
@@ -66,10 +66,10 @@ export function SkeletonRepeat({
 
 export function ActorProfileSkeleton() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="bg-background mx-auto px-4 py-8">
       <Skeleton className="w-32 h-6 mb-6" />
 
-      <div className="bg-white overflow-hidden rounded-lg border border-gray-100 mb-12">
+      <div className="bg-card overflow-hidden rounded-lg border border-border mb-12">
         <div className="p-8">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             {/* Avatar */}
@@ -112,7 +112,7 @@ export function ProductionProfileSkeleton() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8 flex flex-col md:flex-row gap-8">
+      <div className="bg-card rounded-xl shadow-sm border border-border  p-8 mb-8 flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-64 flex-shrink-0">
           <Skeleton className="aspect-[2/3] w-full rounded-lg" />
         </div>
@@ -127,7 +127,7 @@ export function ProductionProfileSkeleton() {
       <Skeleton className="h-8 w-48 mb-6" />
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="bg-white border rounded-lg overflow-hidden">
+          <div key={i} className="bg-card border rounded-lg overflow-hidden">
             <Skeleton className="aspect-square w-full" />
             <div className="p-3">
               <Skeleton className="h-4 w-3/4" />
@@ -141,8 +141,8 @@ export function ProductionProfileSkeleton() {
 
 export function SkeletonCollaboratorCard() {
   return (
-    <div className="flex flex-col items-center p-6 bg-white border rounded-xl shadow-sm h-full">
-      <SkeletonAvatar className="w-28 h-28 mb-4 border-4 border-white shadow-sm" />
+    <div className="flex flex-col items-center p-6 bg-card border rounded-xl shadow-sm h-full">
+      <SkeletonAvatar className="w-28 h-28 mb-4 border-4border-border  shadow-sm" />
 
       <Skeleton className="h-6 w-3/4 mb-4" />
 

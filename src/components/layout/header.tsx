@@ -9,11 +9,11 @@ export default function Header() {
   const t = useTranslations("navigation");
 
   return (
-    <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/40">
+    <header className="bg-background/95 dark:bg-background backdrop-blur sticky top-0 z-50 w-full border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           href="/"
-          className="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded"
+          className="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
           aria-label={t("homeAriaLabel")}
         >
           <svg
@@ -24,7 +24,7 @@ export default function Header() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-8 w-8 text-blue-600"
+            className="h-8 w-8 text-primary"
             aria-hidden="true"
             focusable="false"
           >
@@ -32,7 +32,7 @@ export default function Header() {
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
             <path d="M12 17h.01" />
           </svg>
-          <span className="text-xl font-bold">{t("brandName")}</span>
+          <span className="text-xl font-bold text-foreground">{t("brandName")}</span>
         </Link>
         <Navigation />
 

@@ -39,10 +39,10 @@ export default function ClustersPage() {
   };
 
   return (
-    <main className='flex-grow container mx-auto px-4 py-8 min-h-screen'>
+    <main className='flex-grow bg-background text-foreground mx-auto px-4 py-8 min-h-screen'>
       <div className='max-w-4xl mx-auto mb-12 text-center'>
         <h2>{t("pageTitle")}</h2>
-        <p className='text-gray-600 mb-8'>
+        <p className='text-foreground mb-8'>
           {t("pageDescription")}
         </p>
 
@@ -66,8 +66,8 @@ export default function ClustersPage() {
       )}
 
       {!isLoading && actorId && clusters.length === 0 && (
-        <div className='text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200'>
-          <p className='text-gray-500'>
+        <div className='text-center py-12bg-secondary/50 rounded-lg border border-dashed border-border'>
+          <p className='text-muted-foreground'>
             {t("noEnsembles")}
           </p>
         </div>
@@ -78,7 +78,7 @@ export default function ClustersPage() {
         <div className='animate-in fade-in slide-in-from-bottom-4 duration-500'>
           <h2 className='text-xl font-bold mb-6 flex items-center gap-2'>
             {t("topEnsemblesFor")}{" "}
-            <span className='text-blue-600'>{actorLabel}</span>
+            <span className='text-primary'>{actorLabel}</span>
           </h2>
 
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
@@ -88,28 +88,28 @@ export default function ClustersPage() {
                 href={`/productions/${cluster.id}`}
                 className='block group h-full'
               >
-                <Card className='p-6 hover:shadow-lg transition-all hover:border-blue-200 h-full flex flex-col justify-between'>
+                <Card className='p-6 bg-card border-border hover:shadow-lg transition-all hover:border-primary/50 h-full flex flex-col justify-between'>
                   <div>
                     <div className='flex justify-between items-start mb-3'>
-                      <div className='p-2 bg-blue-50 text-blue-600 rounded-lg'>
+                      <div className='p-2 bg-primary/10 text-primary rounded-lg'>
                         <Clapperboard className='w-5 h-5' />
                       </div>
-                      <span className='bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1'>
+                      <span className='bg-primary/20 text-primary text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1'>
                         <Users className='w-3 h-3' />
                         {cluster.size}
                       </span>
                     </div>
 
-                    <h3 className='text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors mb-2'>
+                    <h3 className='text-lg font-bold text-foreground group-hover:text-primary transition-colors mb-2'>
                       {cluster.label}
                     </h3>
 
-                    <p className='text-sm text-gray-500 leading-relaxed'>
+                    <p className='text-sm text-muted-foreground leading-relaxed'>
                       {actorLabel} {t("workedWithActors", { size: cluster.size })}
                     </p>
                   </div>
 
-                  <div className='mt-4 pt-4 border-t border-gray-100 text-blue-600 text-sm font-medium flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
+                  <div className='mt-4 pt-4 border-t border-border text-primary text-sm font-medium flex items-center gap-1 group-hover:translate-x-1 transition-transform'>
                     {t("viewFullCast")}
                   </div>
                 </Card>

@@ -18,23 +18,23 @@ export default function ActorAnalytics({ actorId }: { actorId: string }) {
       <div className="space-y-6 w-full">
         <CollaborationStatsCard actorId={actorId} />
 
-        <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">{t("topEnsembles")}</h3>
+        <div className="bg-secondary p-6 rounded-xl shadow-md border border-border">
+          <h3 className="text-lg font-bold text-foreground mb-4">{t("topEnsembles")}</h3>
           {clusters?.length ? (
             <ul className="space-y-3">
               {clusters.map((cluster) => (
-                <li key={cluster.id} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded transition-colors">
-                  <span className="font-medium text-gray-700 truncate max-w-[180px]" title={cluster.label}>
+                <li key={cluster.id} className="flex justify-between items-center p-2 hover:bg-secondary/50 rounded transition-colors">
+                  <span className="font-medium text-foreground truncate max-w-[180px]" title={cluster.label}>
                     {cluster.label}
                   </span>
-                  <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap">
+                  <span className="text-xs bg-primary/50 text-primary px-2 py-1 rounded-full whitespace-nowrap">
                     {t("cast")}: {cluster.size}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-gray-600 italic">{t("noMajorEnsemblesFound")}</p>
+            <p className="text-sm text-muted-foreground italic">{t("noMajorEnsemblesFound")}</p>
           )}
         </div>
       </div>
@@ -42,21 +42,21 @@ export default function ActorAnalytics({ actorId }: { actorId: string }) {
       {/* Right Column: Visualization (Takes 2 columns) */}
       {/* FIX: Set a specific height for Desktop so Graph can expand */}
       <div className="lg:col-span-2 w-full min-w-0">
-        <div className="bg-white p-1 rounded-xl shadow-md border border-gray-100 h-[500px] lg:h-[600px] flex flex-col relative z-0">
-          <div className="p-4 border-b border-gray-100 flex-shrink-0">
-            <h3 className="text-lg font-bold text-gray-800">{t("collaborationNetwork")}</h3>
+        <div className="bg-secondary p-1 rounded-xl shadow-md border border-border h-[500px] lg:h-[600px] flex flex-col relative z-0">
+          <div className="p-4 border-b border-border flex-shrink-0">
+            <h3 className="text-lg font-bold text-foreground">{t("collaborationNetwork")}</h3>
           </div>
 
           <div className="flex-grow relative overflow-hidden w-full">
             {isNetworkLoading ? (
-              <div className="absolute inset-0 bg-gray-50 animate-pulse flex items-center justify-center text-gray-400">
+              <div className="absolute inset-0 bg-secondary/50 animate-pulse flex items-center justify-center text-muted-foreground">
                 {t("buildingNetworkGraph")}
               </div>
             ) : networkData && networkData.nodes.length > 0 ? (
               // Passing no height prop allows it to fill the flex container
               <CollaborationNetwork data={networkData} />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-gray-600 bg-gray-50">
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground bg-secondary/50">
                 {t("notEnoughDataToGenerateNetwork")}
               </div>
             )}

@@ -38,10 +38,10 @@ export default function ProductionsPage() {
   };
 
   return (
-    <main className='flex-grow bg-gray-50 dark:bg-slate-900 transition-colors duration-300'>
+    <main className='flex-grow bg-background transition-colors h-screen duration-300'>
       <div className='container mx-auto px-4 py-8'>
         <div className='flex flex-col items-center justify-center w-full'>
-          <h2 className="text-3xl font-bold mb-6 text-slate-900 dark:text-slate-100">{t("pageTitle")}</h2>
+          <h2 className="text-3xl font-bold mb-6 text-foreground">{t("pageTitle")}</h2>
           <div className='mb-8 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-2xl relative z-50'>
             <GenericSearch<Actor>
               placeholder={t("selectFirstActor")}
@@ -59,22 +59,21 @@ export default function ProductionsPage() {
         </div>
       </div>
 
-      {/* Results Rendering */}
       {sharedCastings.length > 0 && (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 container mx-auto'>
           {sharedCastings.map((production, idx) => (
             <div
               key={production.id || idx}
-              className='p-4 border rounded-lg shadow-md bg-white dark:bg-slate-800 dark:border-slate-700 flex flex-col transition-colors duration-300'
+              className='p-4 border border-border rounded-lg shadow-md bg-card flex flex-col transition-colors duration-300 hover:shadow-lg'
             >
               <img
                 src={production.image || production.logo || ""}
                 alt={production.title}
-                className='w-full h-48 object-cover rounded bg-gray-200 dark:bg-slate-700'
+                className='w-full h-48 object-cover rounded bg-muted'
               />
               <div className='mt-2'>
-                <h3 className='text-lg font-medium text-slate-900 dark:text-slate-100'>{production.title}</h3>
-                <p className='text-sm text-gray-600 dark:text-slate-400 line-clamp-3'>
+                <h3 className='text-lg font-medium text-foreground'>{production.title}</h3>
+                <p className='text-sm text-muted-foreground line-clamp-3'>
                   {production.description}
                 </p>
               </div>
@@ -84,10 +83,10 @@ export default function ProductionsPage() {
       )}
 
       {loading && (
-        <div className='text-center mt-8 text-slate-600 dark:text-slate-400'>{t("loadingProductions")}</div>
+        <div className='text-center mt-8 text-muted-foreground'>{t("loadingProductions")}</div>
       )}
       {error && (
-        <p className='text-center text-red-500 mt-4'>
+        <p className='text-center text-destructive mt-4 font-medium'>
           {t("errorFetchingProductions")}
         </p>
       )}

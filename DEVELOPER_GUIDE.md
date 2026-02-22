@@ -136,11 +136,11 @@ export const endpoints = {
     `${API_BASE_URL}/productions/search?title=${encodeURIComponent(title)}`,
   productionsShared: (actor1Id: string, actor2Id: string) =>
     `${API_BASE_URL}/productions/shared?actor1Id=${encodeURIComponent(
-      actor1Id
+      actor1Id,
     )}&actor2Id=${encodeURIComponent(actor2Id)}`,
   sharedActors: (movie1Id: string, movie2Id: string) =>
     `${API_BASE_URL}/productions/shared-actors?movie1=${encodeURIComponent(
-      movie1Id
+      movie1Id,
     )}&movie2=${encodeURIComponent(movie2Id)}`,
 };
 ```
@@ -209,12 +209,10 @@ As of the latest update, all frontend API calls have been migrated to use the **
 #### Key Changes in v2 API Integration
 
 1. **Versioned Endpoints**: All endpoints now use `/api/v2/` prefix
-
    - Before: `/api/actors/search?name=query`
    - After: `/api/v2/actors/search?name=query`
 
 2. **Rate Limiting Support**: The v2 API includes rate limiting with proper headers
-
    - `X-RateLimit-Limit`: Total requests allowed
    - `X-RateLimit-Remaining`: Requests remaining
    - `X-RateLimit-Reset`: Unix timestamp of rate limit reset
@@ -328,7 +326,7 @@ import { fetchWithRetry } from "@/utils/rateLimit";
 const { response, rateLimitInfo } = await fetchWithRetry(
   url,
   options,
-  3 // Maximum 3 retries
+  3, // Maximum 3 retries
 );
 
 // Backoff delays: 1s, 2s, 4s, 8s... (with jitter)
@@ -362,7 +360,7 @@ When adding a new API endpoint, follow this checklist:
    const result = await fetchWithContext<DataType>(
      endpoints.newEndpoint(param),
      {},
-     3 // maxRetries
+     3, // maxRetries
    );
    ```
 
@@ -482,16 +480,16 @@ export default function NewEntitySearch({
       {isLoading && <div>Loading...</div>}
 
       {results.length > 0 && (
-        <ul className="mt-2 bg-white border rounded-lg shadow-lg">
+        <ul className="mt-2 bg-secondary border rounded-lg shadow-lg">
           {results.map((entity) => (
             <li
               key={entity.id}
               onClick={() => onSelect(entity)}
-              className="p-3 hover:bg-gray-100 cursor-pointer"
+              className="p-3 hover:bg-secondary cursor-pointer"
             >
               {entity.label}
               {entity.description && (
-                <p className="text-sm text-gray-600">{entity.description}</p>
+                <p className="text-sm text-muted-foreground">{entity.description}</p>
               )}
             </li>
           ))}
@@ -541,7 +539,7 @@ export default function NewEntitiesPage() {
           Search New Entities
         </h1>
 
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-secondary rounded-xl shadow-lg p-8">
           <NewEntitySearch
             onSelect={handleSelectEntity}
             initialValue={entityLabel}
@@ -552,7 +550,7 @@ export default function NewEntitiesPage() {
             <div className="mt-8">
               <h2 className="text-2xl font-bold">
                 Details for:{" "}
-                <span className="text-blue-600">{entityLabel}</span>
+                <span className="bg-primary">{entityLabel}</span>
               </h2>
               {/* Add your entity details display here */}
             </div>
@@ -572,7 +570,7 @@ Update `src/components/layout/navigation.tsx`:
 <li>
   <Link
     href="/new-entities"
-    className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
+    className="text-muted-foreground hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
     aria-label="Search new entities"
   >
     New Entities
@@ -606,9 +604,9 @@ export default function FeatureCard({
   onClick,
 }: ComponentProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-secondary rounded-lg shadow-md p-6">
       <h3 className="font-bold text-lg mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <p className="text-muted-foreground">{description}</p>
       {onClick && (
         <button
           onClick={onClick}
@@ -672,9 +670,9 @@ export function useActorCollaboration(actorId: string) {
 
 ```typescript
 // Good example
-<div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+<div className="bg-secondary rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
   <h3 className="font-bold text-lg mb-4">{title}</h3>
-  <p className="text-gray-600">{description}</p>
+  <p className="text-muted-foreground">{description}</p>
 </div>
 
 // Avoid inline styles or custom CSS classes

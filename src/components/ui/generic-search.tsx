@@ -125,8 +125,8 @@ export default function GenericSearch<T extends SearchItem>({
       className={`relative w-full max-w-2xl mx-auto ${className || ""}`}
     >
       {/* Search Input Bar */}
-      <div className="relative flex items-center w-full h-14 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md focus-within:shadow-md transition-shadow overflow-hidden z-10">
-        <div className="pl-5 pr-3 text-gray-400">
+      <div className="relative flex items-center w-full h-14 rounded-full border border-border bg-card shadow-sm hover:shadow-md focus-within:ring-2 focus-within:ring-primary/50 transition-all overflow-hidden z-10">
+        <div className="pl-5 pr-3 text-muted-foreground">
           <Search className="w-5 h-5" />
         </div>
 
@@ -139,13 +139,13 @@ export default function GenericSearch<T extends SearchItem>({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="flex-grow h-full outline-none text-gray-900 placeholder:text-gray-400 text-lg bg-transparent"
+          className="flex-grow h-full outline-none text-foreground placeholder:text-muted-foreground text-lg bg-transparent"
         />
 
         {query && (
           <button
             onClick={handleClear}
-            className="p-3 mr-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-3 mr-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-secondary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -154,15 +154,15 @@ export default function GenericSearch<T extends SearchItem>({
 
       {/* Dropdown Results */}
       {isOpen && query.length > 0 && (
-        <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+        <div className="absolute top-full left-0 w-full mt-2 bg-card rounded-2xl shadow-xl border border-border overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
           {query.length < 3 && (
-            <div className="p-4 text-sm text-gray-500 text-center">
+            <div className="p-4 text-sm text-muted-foreground text-center">
               Type at least 3 characters...
             </div>
           )}
 
           {shouldFetch && isLoading && (
-            <div className="p-4 flex justify-center items-center text-gray-500">
+            <div className="p-4 flex justify-center items-center text-muted-foreground">
               <Loader2 className="w-5 h-5 animate-spin mr-2" />
               <span>Searching...</span>
             </div>
@@ -176,7 +176,7 @@ export default function GenericSearch<T extends SearchItem>({
           )}
 
           {shouldFetch && !isLoading && !isError && results.length === 0 && (
-            <div className="p-4 text-center text-gray-500">
+            <div className="p-4 text-center text-muted-foreground">
               No results found for "{query}"
             </div>
           )}
@@ -196,9 +196,9 @@ export default function GenericSearch<T extends SearchItem>({
                   ) : (
                     <button
                       onClick={() => handleSelect(item)}
-                      className="w-full flex items-center px-5 py-3 hover:bg-gray-50 transition-colors text-left group"
+                      className="w-full flex items-center px-5 py-3 hover:bg-secondary transition-colors text-left group"
                     >
-                      <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200">
+                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0 border border-border">
                         {item.imageUrl ? (
                           <img
                             src={item.imageUrl}
@@ -206,16 +206,16 @@ export default function GenericSearch<T extends SearchItem>({
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <Search className="w-5 h-5 text-gray-400" />
+                          <Search className="w-5 h-5 text-muted-foreground" />
                         )}
                       </div>
 
                       <div className="ml-4 flex-grow min-w-0">
-                        <p className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                        <p className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
                           {item.label}
                         </p>
                         {item.description && (
-                          <p className="text-sm text-gray-500 truncate">
+                          <p className="text-sm text-muted-foreground truncate">
                             {item.description}
                           </p>
                         )}

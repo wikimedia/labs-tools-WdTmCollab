@@ -43,7 +43,7 @@ export default function CollaboratorList({ actorId }: Props) {
       const data = await res.json();
       // Data shape: { results: CoActor[], pagination: { total, limit, offset, hasMore } }
       const pageResults: CoActor[] = data.results || [];
-      const pagination = data.pagination || { total: null, limit: perPage, offset: (pageToLoad-1)*perPage, hasMore: false };
+      const pagination = data.pagination || { total: null, limit: perPage, offset: (pageToLoad - 1) * perPage, hasMore: false };
 
       setHasMore(Boolean(pagination.hasMore));
       setPage(pageToLoad);
@@ -69,9 +69,9 @@ export default function CollaboratorList({ actorId }: Props) {
       {results.length === 0 && !loading && <p className="text-sm text-gray-500">No collaborators found.</p>}
       <ul className="space-y-2">
         {results.map((c) => (
-          <li key={c.actorId} className="p-3 bg-white rounded shadow-sm flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-              {c.image ? <img src={c.image} alt={c.name} /> : <span className="text-gray-600">{c.name.charAt(0)}</span>}
+          <li key={c.actorId} className="p-3 bg-secondary rounded shadow-sm flex items-center space-x-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden text-muted flex items-center justify-center">
+              {c.image ? <img src={c.image} alt={c.name} /> : <span className="text-muted-foreground">{c.name.charAt(0)}</span>}
             </div>
             <div>
               <div className="font-medium">{c.name}</div>
@@ -81,11 +81,11 @@ export default function CollaboratorList({ actorId }: Props) {
         ))}
       </ul>
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && <div className="text-sm text-destructive">{error}</div>}
 
       {hasMore && (
         <div className="text-center">
-          <button onClick={handleLoadMore} disabled={loading} className="text-blue-600 hover:underline">
+          <button onClick={handleLoadMore} disabled={loading} className="bg-primary hover:underline">
             {loading ? t("loading") : t("loadMoreCollaborators")}
           </button>
         </div>

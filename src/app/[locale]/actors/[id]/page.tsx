@@ -35,22 +35,22 @@ export default function ActorDetailPage() {
 
   if (error || !actor) {
     return (
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">
+      <main className="mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold text-center text-foreground mb-4">
           {t("errorTitle")}
         </h1>
-        <div className="text-center text-red-500">{t("errorMessage")}</div>
+        <div className="text-center text-destructive">{t("errorMessage")}</div>
       </main>
     );
   }
 
   return (
-    <main>
+    <main className="bg-background text-foreground min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link
             href="/actors"
-            className="text-blue-600 hover:underline flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded p-1"
+            className="text-primary hover:underline flex items-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded p-1"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -71,10 +71,10 @@ export default function ActorDetailPage() {
           </Link>
         </div>
 
-        <div className="bg-white overflow-hidden">
+        <div className=" overflow-hidden">
           <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-center gap-6">
-              <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+              <div className="w-32 h-32 rounded-full text-muted border border-border flex items-center justify-center overflow-hidden flex-shrink-0">
                 {actor.imageUrl ? (
                   <img
                     src={actor.imageUrl}
@@ -84,7 +84,7 @@ export default function ActorDetailPage() {
                     height={128}
                   />
                 ) : (
-                  <div className="text-gray-600 text-4xl">
+                  <div className="text-muted-foreground text-4xl">
                     {actor.label?.charAt(0) ?? "?"}
                   </div>
                 )}
@@ -92,31 +92,31 @@ export default function ActorDetailPage() {
 
               <div className="flex-1">
                 <h1 className="text-3xl font-bold mb-1">{actor.label}</h1>
-                <div className="text-sm text-gray-600 mb-2">{actor.id}</div>
+                <div className="text-sm text-muted-foreground mb-2">{actor.id}</div>
 
                 {actor.description && (
-                  <p className="text-gray-700 mb-4">{actor.description}</p>
+                  <p className="text-foreground mb-4">{actor.description}</p>
                 )}
 
                 <div className="flex flex-wrap gap-3 items-center text-sm">
                   {actor.gender && (
-                    <span className="px-2 py-1 rounded-md bg-gray-100 text-gray-700">
+                    <span className="px-2 py-1 rounded-md bg-secondary text-foreground">
                       {actor.gender}
                     </span>
                   )}
 
                   {actor.dateOfBirth && (
-                    <div className="text-gray-600">
+                    <div className="text-muted-foreground">
                       {t("born")} {formatDate(actor.dateOfBirth)}
                     </div>
                   )}
 
                   {actor.placeOfBirth && (
-                    <div className="text-gray-600">• {actor.placeOfBirth}</div>
+                    <div className="text-muted-foreground">• {actor.placeOfBirth}</div>
                   )}
 
                   {actor.countryOfCitizenship && (
-                    <div className="text-gray-600">
+                    <div className="text-muted-foreground">
                       • {actor.countryOfCitizenship}
                     </div>
                   )}
@@ -137,7 +137,7 @@ export default function ActorDetailPage() {
                       <li key={p.id}>
                         <Link
                           href={`/productions/${p.id}`}
-                          className="text-blue-600 hover:underline"
+                          className="text-primary hover:underline"
                         >
                           {p.title} {p.year ? `(${p.year})` : null}
                         </Link>
@@ -145,7 +145,7 @@ export default function ActorDetailPage() {
                     ))}
                   </ul>
                 ) : (
-                  <div className="text-gray-600">{t("noProductions")}</div>
+                  <div className="text-muted-foreground">{t("noProductions")}</div>
                 )}
 
                 <div className="mt-6">
@@ -159,7 +159,7 @@ export default function ActorDetailPage() {
                               href={a.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
+                              className="text-primary hover:underline"
                             >
                               {a.label}
                             </Link>
@@ -167,7 +167,7 @@ export default function ActorDetailPage() {
                             <span>{a.label}</span>
                           )}
                           {a.description ? (
-                            <div className="text-gray-600 text-sm">
+                            <div className="text-muted-foreground text-sm">
                               {a.description}
                             </div>
                           ) : null}
@@ -175,7 +175,7 @@ export default function ActorDetailPage() {
                       ))}
                     </ul>
                   ) : (
-                    <div className="text-gray-600">{t("noAwards")}</div>
+                    <div className="text-muted-foreground">{t("noAwards")}</div>
                   )}
                 </div>
               </section>
@@ -190,14 +190,14 @@ export default function ActorDetailPage() {
                       {actor.occupations.map((oc: string, i: number) => (
                         <span
                           key={i}
-                          className="text-sm bg-gray-100 px-2 py-1 rounded-full text-gray-700"
+                          className="text-sm bg-secondary px-2 py-1 rounded-full text-foreground"
                         >
                           {oc}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-gray-600">{t("noOccupations")}</div>
+                    <div className="text-muted-foreground">{t("noOccupations")}</div>
                   )}
                 </div>
 
@@ -208,12 +208,12 @@ export default function ActorDetailPage() {
                       href={actor.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline break-all"
+                      className="text-primary hover:underline break-all"
                     >
                       {actor.website}
                     </Link>
                   ) : (
-                    <div className="text-gray-600">{t("noWebsite")}</div>
+                    <div className="text-muted-foreground">{t("noWebsite")}</div>
                   )}
                 </div>
 
@@ -230,9 +230,9 @@ export default function ActorDetailPage() {
                         return (
                           <div
                             key={i}
-                            className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50"
+                            className="flex items-center gap-3 p-2 rounded-md hover:bg-secondary/50 border border-transparent hover:border-border transition-colors"
                           >
-                            <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden flex-shrink-0">
                               {c.image ? (
                                 <img
                                   src={c.image}
@@ -242,7 +242,7 @@ export default function ActorDetailPage() {
                                   height={40}
                                 />
                               ) : (
-                                <div className="text-gray-600 text-center">
+                                <div className="text-muted-foreground text-center">
                                   {(c.name && c.name.charAt(0)) ?? "?"}
                                 </div>
                               )}
@@ -252,7 +252,7 @@ export default function ActorDetailPage() {
                                 {c.name ?? shortId ?? "Unknown"}
                               </div>
                               {c.sharedWorks ? (
-                                <div className="text-gray-600">
+                                <div className="text-muted-foreground">
                                   {t("shared")} {String(c.sharedWorks)}
                                 </div>
                               ) : null}
@@ -262,7 +262,7 @@ export default function ActorDetailPage() {
                       })}
                     </div>
                   ) : (
-                    <div className="text-gray-600">{t("noCollaborators")}</div>
+                    <div className="text-muted-foreground">{t("noCollaborators")}</div>
                   )}
                 </div>
               </aside>
@@ -271,7 +271,7 @@ export default function ActorDetailPage() {
         </div>
 
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-6">
             {t("networkAnalytics")}
           </h2>
           <ActorAnalytics actorId={actorId} />

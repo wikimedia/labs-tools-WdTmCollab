@@ -33,7 +33,7 @@ export function RateLimitIndicator({ status, visible = true }: RateLimitIndicato
   }
 
   const severity = status.isLimited ? "critical" : "warning";
-  const bgColor = severity === "critical" ? "bg-red-100" : "bg-yellow-100";
+  const bgColor = severity === "critical" ? "bg-destructive/50" : "bg-yellow-100";
   const borderColor = severity === "critical" ? "border-red-300" : "border-yellow-300";
   const textColor = severity === "critical" ? "text-red-800" : "text-yellow-800";
   const badgeBg = severity === "critical" ? "bg-red-200" : "bg-yellow-200";
@@ -96,7 +96,7 @@ export function RateLimitBadge({ status }: { status: RateLimitStatus | null }) {
   let statusColor = "text-green-600";
 
   if (percentage < 10) {
-    statusColor = "text-red-600";
+    statusColor = "text-destructive";
   } else if (percentage < 25) {
     statusColor = "text-orange-600";
   } else if (percentage < 50) {

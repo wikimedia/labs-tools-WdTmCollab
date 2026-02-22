@@ -39,7 +39,7 @@ export default function Navigation() {
           <li>
             <Link
               href="/actors"
-              className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-1 py-1"
+              className="text-primary hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-1 py-1"
               aria-label={t("findCollaboratorsAriaLabel")}
             >
               {t("findCollaborators")}
@@ -48,7 +48,7 @@ export default function Navigation() {
           <li>
             <Link
               href="/productions"
-              className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
+              className="text-primary hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
               aria-label={t("sharedProductionsAriaLabel")}
             >
               {t("sharedProductions")}
@@ -57,20 +57,19 @@ export default function Navigation() {
           <li>
             <Link
               href="/compare"
-              className="text-gray-600 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
+              className="text-primary hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1"
               aria-label={t("compareActorsAriaLabel")}
             >
               {t("compareActors")}
             </Link>
           </li>
         </ul>
-        
       </nav>
       {/* Mobile Nav */}
       <div className="md:hidden">
         <button
           onClick={toggleMobileMenu}
-          className="p-2 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-all duration-200"
+          className="p-2 rounded-xl text-primary hover:bg-secondary hover:bg-secondary/50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-all duration-200"
           aria-label={t("toggleNavigationAriaLabel")}
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-menu"
@@ -108,7 +107,7 @@ export default function Navigation() {
         {isMobileMenuOpen && (
           <div
             id="mobile-menu"
-            className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 overflow-hidden"
+            className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-secondary shadow-2xl z-50 overflow-hidden"
             style={{
               transform: isMobileMenuOpen
                 ? "translateX(0)"
@@ -118,10 +117,10 @@ export default function Navigation() {
               maxWidth: "224px",
             }}
           >
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+            <div className="flex items-center justify-between p-6 border-b border-border bg-gradient-to-r from-blue-50 to-purple-50">
               <button
                 onClick={closeMobileMenu}
-                className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-white/50 transition-all duration-200"
+                className="p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-secondary/50 transition-all duration-200"
                 aria-label={t("closeNavigationAriaLabel")}
               >
                 <svg
@@ -145,7 +144,7 @@ export default function Navigation() {
                   <Link
                     href="/actors"
                     onClick={closeMobileMenu}
-                    className="block items-center px-4 py-4 text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-b border-gray-300"
+                    className="block items-center px-4 py-4 text-primary hover:bg-secondary hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-b border-gray-300"
                     aria-label={t("findCollaboratorsAriaLabel")}
                   >
                     <div className="font-medium text-base">
@@ -157,7 +156,7 @@ export default function Navigation() {
                   <Link
                     href="/productions"
                     onClick={closeMobileMenu}
-                    className="block items-center px-4 py-4 text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-b border-gray-300"
+                    className="block items-center px-4 py-4 text-primary hover:bg-secondary hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-b border-gray-300"
                     aria-label={t("sharedProductionsAriaLabel")}
                   >
                     <div className="font-medium text-base">
@@ -169,7 +168,7 @@ export default function Navigation() {
                   <Link
                     href="/compare"
                     onClick={closeMobileMenu}
-                    className="block items-center px-4 py-4 text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-b border-gray-300"
+                    className="block items-center px-4 py-4 text-primary hover:bg-secondary hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-b border-gray-300"
                     aria-label={t("compareActorsAriaLabel")}
                   >
                     <div className="flex-1">

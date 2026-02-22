@@ -54,7 +54,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={`block text-sm font-medium text-gray-700 mb-1 ${disabled ? "opacity-50" : ""
+            className={`block text-sm font-medium foreground mb-1 ${disabled ? "opacity-50" : ""
               } ${labelClassName || ""}`}
           >
             {label}
@@ -67,10 +67,11 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           id={inputId}
           type="text"
           className={`
-         w-full px-3 py-3 border rounded-lg shadow-sm transition duration-200 ease-in-out
-         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-         disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50
-         placeholder:text-gray-400
+         w-full px-3 py-3 bg-background text-foreground border-border border
+        rounded-lg shadow-sm transition duration-200 ease-in-out
+        focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
+         disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground
+        placeholder:text-muted-foreground
          ${error
               ? "border-red-300 focus:ring-red-500 focus:border-red-500"
               : "border-gray-300 hover:border-gray-400"
@@ -87,7 +88,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         />
 
         {helperText && !error && (
-          <p id={`${inputId}-helper`} className="mt-1 text-sm text-gray-600">
+          <p id={`${inputId}-helper`} className="mt-1 text-sm text-muted-foreground">
             {helperText}
           </p>
         )}
@@ -95,7 +96,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         {error && (
           <p
             id={`${inputId}-error`}
-            className={`mt-1 text-sm text-red-600 ${errorClassName || ""}`}
+            className={`mt-1 text-sm text-destructive ${errorClassName || ""}`}
             role="alert"
             aria-live="polite"
           >

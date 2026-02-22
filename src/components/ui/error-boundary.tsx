@@ -72,7 +72,7 @@ function ErrorBoundary({ children, fallback }: ErrorBoundaryProps) {
       <div className="min-h-screen w-full flex items-center justify-center bg-muted/30 px-4">
         <div className="max-w-md w-full bg-background shadow-xl border rounded-xl p-8 text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
 
-          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 bg-destructive/50 rounded-full flex items-center justify-center">
             <AlertTriangle className="w-8 h-8 text-destructive" />
           </div>
 

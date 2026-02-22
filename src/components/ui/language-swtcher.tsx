@@ -29,7 +29,7 @@ export default function LanguageSwitcher() {
         defaultValue={locale}
         disabled={isPending}
         onChange={handleChange}
-        className="bg-transparent py-1 px-2 border rounded hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer"
+        className="bg-transparent py-1 px-2 border rounded hover:bg-secondary focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer"
       >
         {routing.locales.map((cur) => (
           <option key={cur} value={cur}>
