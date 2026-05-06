@@ -28,6 +28,7 @@ export interface SharedActor {
   name: string;
   description?: string;
   image?: string;
+  imageUrl?: string;
   sharedWorks?: string;
   awardCount?: string;
 }

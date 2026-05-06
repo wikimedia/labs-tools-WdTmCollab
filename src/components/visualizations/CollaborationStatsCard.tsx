@@ -15,14 +15,14 @@ export default function CollaborationStatsCard({ actorId }: { actorId: string })
       <h3 className="text-lg font-bold text-foreground mb-4">{t("careerStats")}</h3>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-3 bg-primary/50 rounded-lg">
-          <div className="text-2xl font-bold bg-primary">{stats.totalWorks}</div>
-          <div className="text-xs bg-primary uppercase tracking-wide">{t("totalWorks")}</div>
+        <div className="p-3 bg-secondary rounded-lg">
+          <div className="text-2xl font-bold text-blue-700 ">{stats.totalWorks}</div>
+          <div className="text-xs text-primary/70 uppercase tracking-wide">{t("totalWorks")}</div>
         </div>
 
         <div className="p-3 bg-secondary rounded-lg border border-border">
           <div className="text-2xl font-bold text-purple-600">{stats.totalCollaborators}</div>
-          <div className="text-xs text-purple-800 uppercase tracking-wide">{t("collaborators")}</div>
+          <div className="text-xs text-purple-700 uppercase tracking-wide">{t("collaborators")}</div>
         </div>
 
         <div className="p-3 bg-secondary rounded-lg col-span-2">

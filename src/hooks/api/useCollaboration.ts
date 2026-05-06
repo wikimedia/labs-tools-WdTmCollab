@@ -6,21 +6,45 @@ import { useQuery } from "@tanstack/react-query";
 export interface CollaborationNode {
   id: string;
   name: string;
-  image?: string;
+  image?: string | null;
+  imageUrl?: string | null;
   type: "actor" | "production";
   weight?: number; // Used for node size (collaboration count)
+  sharedWorks?: number;
+  count?: number;
   group?: number; // Used for color coding clusters
 }
 
 export interface CollaborationLink {
   source: string;
   target: string;
-  value: number;
+  value?: number;
+  weight?: number;
+  count?: number;
 }
 
 export interface NetworkData {
   nodes: CollaborationNode[];
   links: CollaborationLink[];
+}
+
+function asNumber(value: unknown, fallback = 1) {
+  const numberValue = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(numberValue) ? numberValue : fallback;
+}
+
+function normalizeNetworkData(data: NetworkData): NetworkData {
+  return {
+    nodes: data.nodes.map((node) => ({
+      ...node,
+      image: node.image ?? node.imageUrl ?? null,
+      weight: asNumber(node.weight ?? node.sharedWorks ?? node.count, 1),
+    })),
+    links: data.links.map((link) => ({
+      ...link,
+      value: asNumber(link.value ?? link.weight ?? link.count, 1),
+    })),
+  };
 }
 
 export interface CollaborationStats {
@@ -57,7 +81,7 @@ export function useCollaborationNetwork(actorId: string) {
     queryFn: async () => {
       const res = await fetch(endpoints.collabNetwork(actorId));
       if (!res.ok) throw new Error("Failed to fetch network");
-      return res.json();
+      return normalizeNetworkData(await res.json());
     },
     enabled: !!actorId,
     staleTime: 10 * 60 * 1000, // 10 mins
